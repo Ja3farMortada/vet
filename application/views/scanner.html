@@ -1,0 +1,209 @@
+<div class="container-fluid">
+
+    <!-- Navigation tabs -->
+    <div class="container justify-content-center d-flex">
+        <ul class="nav nav-tabs nav-fills">
+            <li class="nav-item text-center">
+                <a class="nav-link text-secondary text-uppercase animate__animated"
+                    ng-class="{'active': tabSelected === 0, 'active-tab-dir': tabSelected === 0, 'animate__fadeIn': tabSelected === 0}"
+                    ng-click="selectTab(0)"><i class="fas fa-teeth fa-2x fa-fw"></i> Sell</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-secondary text-uppercase animate__animated"
+                    ng-class="{'active': tabSelected === 1, 'active-tab-dir': tabSelected === 1, 'animate__fadeIn': tabSelected === 1}"
+                    ng-click="selectTab(1)"><i class="fas fa-cog fa-2x fa-fw"></i>Settings</a>
+            </li>
+        </ul>
+    </div>
+
+    <br>
+
+    <div ng-show="tabSelected == 0" class="text-center">
+        <!-- <h1 class="text-dark">Remaining Films: {{ settings[0].value }}</h1> -->
+        <div class="col-3 mx-auto">
+            <div class="card shadows border-left-dark">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="text-primary">Remaining Films</div>
+                            <div class="h1 mb-0 font-weight-bold text-dark">{{ settings[0].value }}</div>
+                        </div>
+                        <!-- <div class="col-auto"><i class="fas fa-teeth fa-2x text-secondary"></i></div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <!-- button -->
+        <button ng-disabled="settings[0].value == 0" class="btn btn-outline-primary btn-lg"
+            ng-click="openFilmModal()"><i class="fas fa-file-export"></i> New Film</button>
+
+
+        <hr>
+
+        <div class="row">
+            <div class="col-12">
+                <!-- date input -->
+                <div class="form-group row col-5 mb-2">
+                    <label class="col-2 col-form-label text-right">Date:</label>
+                    <div class="col-7">
+                        <input type="text" class="form-control text-center" id="historyDatePicker">
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-info" ng-click="today()">today</button>
+                    </div>
+                </div>
+                <!-- table -->
+                <table class="table table-bordered table-sm text-center shadows">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Customer Name</th>
+                            <th>Doctor Name</th>
+                            <th>Invoice Time</th>
+                            <th>Net Income</th>
+                            <th>Doctor Fee</th>
+                            <th colspan="2">Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr dir-paginate="data in invoices | itemsPerPage: 5">
+                            <td>{{ data.record_ID }}</td>
+                            <td>{{ data.customer_name || '----' }}</td>
+                            <td>{{ data.doctor_name || '----' }}</td>
+                            <td>{{ data.record_time }}</td>
+                            <td>{{ data.record_value.toLocaleString() }} L.L</td>
+                            <td>{{ data.doctor_fee.toLocaleString() || 0 }} L.L</td>
+
+                            <td class="btn-outline-dark" ng-click="printRecord(data)"><i class="fas fa-print"></i></td>
+                            <td  ng-if="loggedInUser.type == 'admin'" class="btn-outline-danger" ng-click="deleteRecord(data)"><i class="fas fa-trash-alt"></i></td>
+                        </tr>
+                        <tr class="table-active" ng-if="invoices.length == 0">
+                            <td colspan="8">There Are No Records Yet!</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <dir-pagination-controls max-size="5" direction-links="true" boundary-links="false"
+                    template-url="../templates/dirPagination.tpl.html">
+                </dir-pagination-controls>
+
+            </div>
+            <!-- <div class="col-4">
+                test
+            </div> -->
+        </div>
+    </div>
+
+
+    <!-- ************ TAB 1 **************** -->
+    <!-- ************ TAB 1 **************** -->
+
+    <div ng-if="tabSelected == 1" class="row justify-content-center">
+        <div class="col-6">
+            <table class="table table-bordered table-sm text-center">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Remaining Films</td>
+                        <td>{{ settings[0].value }}</td>
+                        <td class="btn-outline-dark" ng-click="addFilmsPackage()"><i class="fas fa-plus"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Doctor Fee</td>
+                        <td>{{ settings[1].value.toLocaleString() }} L.L</td>
+                        <td ng-if="loggedInUser.type == 'admin'" class="btn-outline-info"
+                            ng-click="editSettings('doctor')"><i class="fas fa-edit"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Scan Price</td>
+                        <td>{{ settings[2].value.toLocaleString() }} L.L</td>
+                        <td ng-if="loggedInUser.type == 'admin'" class="btn-outline-info"
+                            ng-click="editSettings('price')"><i class="fas fa-edit"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- New Film MODAL -->
+<div class="modal fade" id="filmModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">New Film</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form ng-submit="submit()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1"
+                                ng-value="false" ng-model="isDoctor">
+                            <label class="form-check-label">No Doctor</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2"
+                                ng-value="true" ng-model="isDoctor">
+                            <label class="form-check-label">To Doctor</label>
+                        </div>
+                    </div>
+
+                    <div ng-if="isDoctor" class="mb-2">
+                        <select ng-options="doctor.doctor_ID as doctor.doctor_name for doctor in doctors"
+                            ng-model="newFilmData.doctor_ID_FK" class="form-control col-6" required>
+                            <option value="">Choose doctor:</option>
+                        </select>
+                    </div>
+
+                    <label class="mt-2">Customer Name</label>
+                    <input type="text" class="form-control text-center col-6" spellcheck="false"
+                        ng-model="newFilmData.customer_name">
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
+                        Cancel</button>
+                    <button class="btn btn-primary" type="submit"><i class="fas fa-check"></i>
+                        Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- edit settings MODAL -->
+<div class="modal fade" id="editSettingsModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form ng-submit="submitEditSettings()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <label>New Value</label>
+                    <input type="number" min="0" class="form-control text-center" spellcheck="false"
+                        ng-model="editModalData.value">
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
+                        Cancel</button>
+                    <button class="btn btn-primary" type="submit"><i class="fas fa-check"></i>
+                        Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

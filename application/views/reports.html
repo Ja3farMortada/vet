@@ -1,0 +1,143 @@
+<div class="container-fluid">
+    <div class="d-flex mt-2 justify-content-center">
+        <label class="col-form-label">Show Reports From:</label>
+        <input type="text" id="startDatepicker" class="text-center form-control col-2 mx-2" ng-model="dates.start_date">
+        <label class="col-form-label ml-3">To:</label>
+        <input type="text" id="endDatepicker" class="text-center form-control col-2 mx-2" ng-model="dates.end_date">
+        <button class="btn btn-outline-primary ml-3" ng-click="getReports()" id="check"><i class="fas fa-chart-pie"></i>
+            Generate Report</button>
+    </div>
+
+    <hr>
+
+    <!-- ng-show="topSupplies.length != 0" -->
+    <div class="row">
+        <!-- Top Sales -->
+        <div class="col-4">
+            <div class="card shadow">
+                <div class="card-header text-center">
+                    <h5 class="font-weight-bold">Top Sales</h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm text-center mb-0">
+                        <tr>
+                            <th>Name</th>
+                            <th>Amount</th>
+                        </tr>
+                        <tr ng-repeat="data in topSales">
+                            <td>{{ data.items }}</td>
+                            <td>{{ data.count }}</td>
+                        </tr>
+                        <tr ng-if="topSales.length == 0" class="table-active">
+                            <td colspan="2">No Records Yet!</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <br> <br>
+            <div class="card shadow">
+                <div class="card-header text-center">
+                    <h5 class="font-weight-bold">Top Supplies</h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm text-center mb-0">
+                        <tr>
+                            <th>Name</th>
+                            <th>Amount</th>
+                        </tr>
+                        <tr ng-repeat="data in topSupplies">
+                            <td>{{ data.items }}</td>
+                            <td>{{ data.count }}</td>
+                        </tr>
+                        <tr ng-if="topSupplies.length == 0" class="table-active">
+                            <td colspan="2">No Records Yet!</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finance  -->
+        <div class="col-5">
+            <div class="card shadow">
+                <div class="card-header text-center">
+                    <h5 class="font-weight-bold">Finance</h5>
+                    <div class="justify-content-center d-flex">
+                        <form class="form-inline">
+                            <!-- <label>Show by:</label> -->
+                            <select class="form-control"
+                                ng-options="supplier.supplier_ID as supplier.supplier_name for supplier in suppliers"
+                                ng-model="selectedSupplier.value">
+                                <option value="">All</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="salesReport"></canvas>
+                    <table class="table table-sm table-bordered text-center mt-2">
+                        <tr>
+                            <th width="60%">Sales</th>
+                            <td width="40%" class="text-dark h6">
+                                {{ salesReport[0]['total_sales'].toLocaleString() || 0 }} $
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Profit</th>
+                            <td class="text-success h6">
+                                {{ (salesReport[0]['total_sales'] - salesReport[0]['total_cost']).toLocaleString() || 0 }}
+                                $</td>
+                        </tr>
+                        <tr>
+                            <th>Debts</th>
+                            <td class="text-danger h6">{{ salesReport[1]['total_sales'].toLocaleString() || 0 }} $
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Debts Payments</th>
+                            <td class="text-primary h6">
+                                {{ totalPayments[0]['totalPayments'].toLocaleString() || 0 }} $</td>
+                        </tr>
+                        <tr>
+                            <th>Supplies</th>
+                            <td class="text-warning h6">{{ salesReport[2]['total_cost'].toLocaleString() || 0 }} $
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Supplies Payments</th>
+                            <td class="text-info h6">{{ totalPayments[1]['totalPayments'].toLocaleString() || 0 }}
+                                $</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panoramic Report -->
+        <div class="col-3">
+            <div class="card shadow">
+                <div class="card-header text-center">
+                    <h5 class="font-weight-bold">Panoramic</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="panoramicChartElement"></canvas>
+                    <table class="table table-sm table-bordered text-center mt-2">
+                        <tr>
+                            <th width="50%">Total Sales</th>
+                            <th>Doctors Fees</th>
+                        </tr>
+                        <tr>
+                            <td class="bg-success text-dark h6">{{ panoramicData.totalSales.toLocaleString() || 0 }} L.L
+                            </td>
+                            <td class="bg-pink text-dark h6">{{ panoramicData.doctorsFees.toLocaleString() || 0 }} L.L
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>

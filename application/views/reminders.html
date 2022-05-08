@@ -1,0 +1,115 @@
+<div class="container-fluid select-off">
+    <div class="row justify-content-center mt-3">
+        <div class="card btn btn-outline-success bg-smoke" id="remindersAdd" ng-click="openReminderModal('add')">
+            <div class="card-body text-center">
+                <i class="fas fa-plus fa-4x"></i>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="container">
+        <h1 class="text-center mt-5 text-secondary animate__animated animate__swing" ng-if="reminders.length == 0">No
+            Active Reminders</h1>
+        <ul class="list-group">
+            <li class="list-group-item" ng-repeat="reminder in reminders">
+                <div class="row">
+                    <div class="col-1 p-0 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-exclamation-circle fa-2x text-dark"
+                            ng-if="reminder.reminder_type === 'task'"></i>
+                        <i class="fas fa-bell fa-2x text-danger" ng-if="reminder.reminder_type === 'notification'"></i>
+                    </div>
+                    <div class="col-11 pl-0">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-0">{{reminder.reminder_title}}</h5>
+                            <small
+                                ng-if="reminder.reminder_type === 'notification'">{{moment(reminder.due_date + ' ' + reminder.due_time).format('LLLL')}}</small>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="mb-0">{{reminder.reminder_text}}</p>
+                            <div>
+                                <button class="btn btn-info"
+                                    ng-click="openReminderModal('edit', reminder.reminder_ID)"><i
+                                        class="fas fa-edit"></i></button>
+                                <button class="btn btn-success" ng-click="removeReminder(reminder.reminder_ID)"><i
+                                        class="fas fa-check"></i></button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- <small>Notification</small> -->
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- Reminders Modal -->
+<div class="modal fade" id="remindersModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">{{modalTitle}}</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form ng-submit="submit()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <label>Title*</label>
+                    <input type="text" class="form-control" ng-model="data.reminder_title" spellcheck="false" autofocus
+                        required>
+                    <footer><small>*<span class="text-danger"><b>notice:</b></span> Don't forget to add phone number if
+                            required</small>
+                    </footer>
+
+                    <label>Text</label>
+                    <textarea class="form-control" rows="2" ng-model="data.reminder_text" spellcheck="false"></textarea>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <label>Reminder Type</label>
+                            <select class="form-control text-center" ng-model="data.reminder_type">
+                                <option value="task" selected>Task</option>
+                                <option value="notification">Notification</option>
+                            </select>
+                        </div>
+                        <div class="col-6" ng-show="data.reminder_type === 'notification'">
+                            <label>Repeat</label>
+                            <select class="form-control" ng-model="data.repeat_reminder">
+                                <option value="">Never</option>
+                                <option value="daily">Every day</option>
+                                <option value="weekly">Every week</option>
+                                <option value="monthly">Every month</option>
+                                <option value="yearly">Every year</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row" ng-show="data.reminder_type === 'notification'">
+                        <div class="col-6">
+                            <label>Date</label>
+                            <input type="text" class="form-control text-center" id="reminderDatePicker"
+                                ng-required="data.reminder_type === 'notification'" ng-model="data.due_date">
+                        </div>
+                        <div class="col-6">
+                            <label>Time</label>
+                            <input type="time" class="form-control" ng-value="data.due_time" id="timeInput">
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <!-- Add new client Button -->
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal" tabindex="-1"><i
+                            class="fas fa-times"></i>
+                        Cancel</button>
+                    <button type="submit" class="btn btn-success" tabindex="0"><i class="fas fa-check"></i>
+                        Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

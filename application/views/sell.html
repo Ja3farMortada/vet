@@ -1,0 +1,203 @@
+<div class="container-fluid mt-2 select-off">
+    <div class="row d-flex justify-content-between">
+        <div class="col-4">
+            <h6>Please focus here before scanning barcode:</h6>
+            <input id="barcodeInput" type="text" class="form-control" ng-model="barcode">
+        </div>
+        <div class="col-4 d-flex align-items-center justify-content-center">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input pointer" id="currency" ng-model="isLira"
+                    ng-click="toggleCurrency()">
+                <label class="custom-control-label pointer" for="currency">Show in LBP</label>
+            </div>
+        </div>
+        <div class="col-4">
+            <h6>Select Items:</h6>
+            <input id="itemsDataList" list="itemsList" class="form-control" spellcheck="false" ng-model="selectedItem"
+                ng-keydown="selectOption($event)">
+            <datalist id="itemsList">
+                <option ng-repeat="item in items">{{item.item_name}}</option>
+            </datalist>
+        </div>
+    </div>
+    <br>
+    <form ng-submit="checkout()">
+        <table class="table text-center">
+            <thead class="table-bordered">
+                <tr>
+                    <th width="15%">Barcode</th>
+                    <th width="35%">Item Name</th>
+                    <th width="15%">Unit Price</th>
+                    <th width="5%">Quantity</th>
+                    <th width="15%">Total Unit Price</th>
+                    <th width="15%" colspan="2">Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in invoice" class="table-bordered table-sm">
+                    <td ng-if="item.barcode">{{item.barcode}}</td>
+                    <td ng-if="!item.barcode"> --- </td>
+                    <td>{{item.name}}</td>
+
+                    <!-- unit price -->
+                    <td ng-if="!isLira">{{(item.price).toLocaleString()}} $</td>
+                    <td ng-if="isLira">{{ (item.price * exchangeRate.exchange_rate).toLocaleString() }} L.L</td>
+
+                    <!-- qty -->
+                    <td>
+                        <input id="input{{$index}}" type="number" class="text-center form-control form-control-sm"
+                            ng-model="item.quantity" ng-focus="selectQuantity($index)" min="1" required>
+                    </td>
+
+                    <!-- total unit price -->
+                    <td ng-if="!isLira">{{ (item.price * item.quantity).toLocaleString() }} $</td>
+                    <td ng-if="isLira">{{ (item.price * item.quantity * exchangeRate.exchange_rate).toLocaleString() }} L.L</td>
+
+                    <td width="7.5%" class="btn-outline-info pointer" ng-click="openEditPriceModal($index)"><i
+                            class="fas fa-edit"></i></td>
+                    <td width="7.5%" class="btn-outline-danger pointer"
+                        ng-click="deleteRow($index,item.price*item.quantity)"><i class="fas fa-times"></i></td>
+                </tr>
+
+                <tr class="table-active" ng-if="!invoice || invoice.length == 0">
+                    <td colspan="7">There are no items selected yet</td>
+                </tr>
+                <tr ng-if="invoice">
+                    <td colspan="7">
+                        <div class="float-left" ng-if="invoice.length !== 0">
+                            <button type="submit" class="btn btn-success"><i class="fas fa-cart-arrow-down"></i>
+                                Checkout</button>
+                            <button type="button" class="btn btn-dark" ng-click="openPrintModal()"><i
+                                    class="fas fa-print"></i>
+                                Print</button>
+                            <button type="button" class="btn btn-secondary" ng-click="cancelOrder()"><i
+                                    class="fas fa-times"></i>
+                                Cancel</button>
+                        </div>
+                        <div class="float-right" ng-if="invoice.length !== 0">
+                            <label ng-if="!isLira" class="h5">Total Price: {{(totalPrice).toLocaleString()}} $</label>
+                            <label ng-if="isLira" class="h5">Total Price: {{ (totalLiraPrice).toLocaleString() }} L.L</label>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <!--  EDIT PRICE MODAL -->
+    <div class="modal fade" id="editPriceModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Price</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <form ng-submit="editPrice()">
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-6" ng-show="loggedInUser.type === 'admin'">
+                                <label>Unit Cost</label>
+                                <input class="form-control" ng-model="selectedRowCost" type="text" autocomplete="off"
+                                    tabindex="-1" disabled>
+                            </div>
+                            <div class="col-6">
+                                <label>Selected Unit Price</label>
+                                <input class="form-control" ng-model="selectedRowPrice" type="text" autocomplete="off"
+                                    tabindex="-1" disabled>
+                            </div>
+                        </div>
+                        <label>New Unit Price</label>
+                        <input type="number" step="any" id="newPrice" class="form-control" ng-model="newPrice"
+                            tabindex="1" autocomplete="off" autofocus min="{{minAtt}}" required>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <!-- Add new client Button -->
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal" tabindex="2"><i
+                                class="fas fa-times"></i>
+                            Cancel</button>
+                        <button type="submit" class="btn btn-success" tabindex="3"><i class="fas fa-check"></i>
+                            Confirm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Choose Customer Modal -->
+    <div class="modal fade" id="selectCustomer">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Choose Customer</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <form ng-submit="confirmOrderClicked()">
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <label>Select Customer:</label>
+                        <input ng-change="validate()" ng-class="{'is-invalid': validated == false}" id="choose"
+                            list="chooseCustomer" class="form-control" ng-model="selectedCustomer"
+                            placeholder="No Customer Selected" autofocus spellcheck="false">
+                        <datalist id="chooseCustomer">
+                            <option ng-repeat="customer in customers">{{customer.customer_name}}</option>
+                        </datalist>
+                        <div ng-if="validated == false" class="invalid-feedback">
+                            Please choose a correct username!
+                        </div>
+                        <br>
+                        <label>Cash Received</label>
+                        <input type="number" class="form-control" id="cashInput" ng-model="cashReceived">
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <!-- Add new client Button -->
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal" tabindex="2"><i
+                                class="fas fa-times"></i>
+                            Cancel</button>
+                        <button type="submit" class="btn btn-success" tabindex="3"><i class="fas fa-check"></i>
+                            Confirm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Modal -->
+    <div class="modal fade" id="printModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Choose Customer</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <form ng-submit="print()">
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <label>Customer Name</label>
+                        <input class="form-control" ng-model="printData.name" placeholder="Billed To .." autofocus>
+                        <label>Choose Currency</label>
+                        <select class="form-control" ng-model="printData.currency">
+                            <option value="dollar">US Dollar $</option>
+                            <option value="lira">Lebanese Pound L.L</option>
+                        </select>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <!-- Add new client Button -->
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal" tabindex="2"><i
+                                class="fas fa-times"></i>
+                            Cancel</button>
+                        <button type="submit" class="btn btn-dark" tabindex="3"><i class="fas fa-print"></i>
+                            Print</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>

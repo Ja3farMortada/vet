@@ -1,0 +1,106 @@
+.pointer {
+    cursor: pointer;
+}
+
+a[ng-click] {
+    cursor: pointer;
+    user-select: none;
+}
+
+.select-off {
+    user-select: none;
+}
+
+small {
+    font-size: small;
+}
+
+:focus {
+    outline: none;
+}
+
+.swal-button--danger {
+    background-color: red;
+}
+
+.swal-button--danger:hover {
+    background-color: #dc3545 !important;
+}
+
+.border-left-primary {
+    border-left: .25rem solid #007bff !important;
+    /* #4e73df */
+}
+
+.border-left-success {
+    border-left: .25rem solid #28a745 !important;
+}
+
+.border-left-warning {
+    border-left: .25rem solid #f6c23e !important;
+}
+
+.border-left-danger {
+    border-left: .25rem solid #dc3545 !important;
+}
+
+.border-left-dark {
+    border-left: .25rem solid #343a40 !important;
+}
+
+.border-left-pink {
+    border-left: .25rem solid #FF1493 !important;
+}
+.text-pink {
+    color: #FF1493;
+}
+
+.bg-pink {
+    background-color: #FF1493 !important;
+}
+
+.active-tab-dir {
+    border-top: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-bottom: .15rem solid #041666 !important;
+    color: black !important;
+    background-color: whitesmoke !important;
+    background-color: #0c1e6e10 !important;
+}
+
+.bg-smoke {
+    background-color: whitesmoke !important;
+}
+
+.bg-grey {
+    background-color: rgb(241, 241, 241) !important;
+}
+
+.scrollable {
+    display: block;
+    overflow-y: scroll;
+    height: 30em;
+    border-bottom: 0px;
+    border-right: 0px;
+    border-left: 0px;
+}
+
+.badge-fa {
+    width: 2rem;
+    height: 2rem;
+}
+
+#remindersAdd {
+    color: #6c757d !important;
+}
+#remindersAdd:hover{
+    color: #28a745 !important;
+}
+
+form label {
+    margin-bottom: 0;
+}
+ textarea {
+    margin-bottom: 10px;
+}

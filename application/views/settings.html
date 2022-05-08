@@ -1,0 +1,82 @@
+<div class="row no-gutters select-off">
+    <div class="col-3 border-right">
+        <ul class="list-group list-group-flush mb-4 border-bottom">
+            <li class="list-group-item text-center">
+                <h3><strong>Settings</strong></h3>
+            </li>
+        </ul>
+        <ul class="list-group list-group-flush border-bottom">
+
+            <!-- Account -->
+            <a href="" ng-click="selectTab('Account')" ng-class="{'active': tabSelected === 'Account'}"
+                class="list-group-item list-group-item-action d-flex mb-4 align-items-center border-top">
+                <i class="fas fa-user-circle fa-3x mr-3"></i>
+                <h5>Account</h5>
+            </a>
+
+            <!-- General -->
+            <a href="" ng-click="selectTab('General')" ng-class="{'active': tabSelected === 'General'}"
+                class="list-group-item list-group-item-action d-flex h5 mb-0 border-top"><span
+                    class="badge badge-secondary badge-fa mr-4 d-flex align-items-center justify-content-center"><i
+                        class="fas fa-cog fa-lg"></i></span>General</a>
+            <!-- Stock -->
+            <a href="" ng-click="selectTab('Stock')" ng-class="{'active': tabSelected === 'Stock'}"
+                class="list-group-item list-group-item-action d-flex h5 mb-0"><span
+                    class="badge badge-warning badge-fa mr-4 d-flex align-items-center justify-content-center"><i
+                        class="fas fa-warehouse fa-lg"></i></span>Stock</a>
+            <!-- Supply -->
+            <a href="" ng-click="selectTab('Suppliers')" ng-class="{'active': tabSelected === 'Suppliers'}"
+                class="list-group-item list-group-item-action d-flex h5 mb-0"><span
+                    class="badge badge-info badge-fa mr-4 d-flex align-items-center justify-content-center"><i
+                        class="fas fa-truck-loading"></i></span>Suppliers</a>
+            <!-- Customers -->
+            <a href="" ng-click="selectTab('Customers')" ng-class="{'active': tabSelected === 'Customers'}"
+                class="list-group-item list-group-item-action d-flex h5 mb-0"><span
+                    class="badge badge-success badge-fa mr-4 d-flex align-items-center justify-content-center"><i
+                        class="fas fa-users"></i></span>Customers</a>
+            <!-- Doctors -->
+            <a href="" ng-click="selectTab('Doctors')" ng-class="{'active': tabSelected === 'Doctors'}"
+                class="list-group-item list-group-item-action d-flex h5 mb-0"><span
+                    class="badge badge-danger badge-fa mr-4 d-flex align-items-center justify-content-center"><i
+                        class="fas fa-user-md"></i></span>Doctors</a>
+        </ul>
+    </div>
+    <div class="col-9">
+        <!-- Header section -->
+        <ul class="list-group list-group-flush mb-4 border-bottom">
+            <li class="list-group-item text-center">
+                <h3><strong>{{tabSelected}}</strong></h3>
+            </li>
+        </ul>
+
+        <!-- Selected tab -->
+        <div class="container-fluid">
+
+            <!-- Account Settings Directive -->
+            <account-settings ng-if="tabSelected === 'Account'"></account-settings>
+
+            <!-- General Settings Directive -->
+            <general-settings ng-if="tabSelected === 'General'"></general-settings>
+
+            <!-- Stock Settings Directive -->
+            <div ng-if="tabSelected === 'Stock'">
+                <li class="list-group-item">
+                    <exchange-rate></exchange-rate>
+                </li>
+                <div>
+                    <p class="ml-2 text-secondary">Define 1 USD exchange rate for Lebanese Pounds</p>
+                </div>
+            </div>
+
+            <!-- Suppliers Settings Directive -->
+            <suppliers-settings ng-if="tabSelected === 'Suppliers'"></suppliers-settings> 
+
+            <!-- Customers Settings Directive -->
+            <customers-settings ng-if="tabSelected === 'Customers'"></customers-settings>
+            
+            <!-- Doctors Settings Directive -->
+            <doctors-settings ng-if="tabSelected === 'Doctors'"></doctors-settings>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,147 @@
+<div class="container-fluid">
+    <h3 class="text-center mb-0">Supply</h3>
+    <div class="row mt-4 justify-content-around">
+
+        <div class="col-5">
+            <!-- select items -->
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label ">Select Items:</label>
+                <div class="col-sm-7">
+                    <form ng-submit="submitItem()">
+                        <input list="itemsList" type="text" class="form-control" ng-model="selectedItem"
+                            spellcheck="false" required>
+                        <datalist id="itemsList">
+                            <option ng-repeat="data in items">{{ data.item_name }}</option>
+                        </datalist>
+
+                    </form>
+                </div>
+            </div>
+            <!-- Barcode -->
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label ">Scan Barcode:</label>
+                <div class="col-sm-7">
+                    <form ng-submit="submitBarcode()">
+                        <input type="text" class="form-control" ng-model="barcodeInput" spellcheck="false" required>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-5">
+            <!-- Choose supplier -->
+            <div class="form-group row ">
+                <label class="col-sm-2 col-form-label">Supplier:</label>
+                <div class="col-sm-7">
+                    <input ng-class="{'is-invalid': !isValidated}" list="suppliersList" type="text"
+                        class="form-control text-center" ng-model="selectedSupplier" spellcheck="false">
+                    <datalist id="suppliersList">
+                        <option ng-repeat="data in suppliers">{{ data.supplier_name }}</option>
+                    </datalist>
+                </div>
+            </div>
+            <!-- Datepicker -->
+            <div class="form-group row justify-content-endsss">
+                <label class="col-sm-2 col-form-label">Date:</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control text-center" id="supplyDatePicker"
+                        ng-model="invoiceDetails.record_date">
+                </div>
+                <div class="col-sm-3">
+                    <button class="btn btn-info" ng-click="today()">today</button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Invoice Table -->
+    <form ng-submit="submitInvoice()">
+        <table class="table text-center mt-4">
+            <thead class="table-bordered">
+                <tr>
+                    <th width="15%">Barcode</th>
+                    <th width="35%">Item Name</th>
+                    <th width="15%">Unit Cost</th>
+                    <th width="5%">Quantity</th>
+                    <th width="15%">Total Unit Cost</th>
+                    <th width="15%" colspan="2">Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in invoice" class="table-bordered table-sm">
+                    <td ng-if="item.barcode">{{item.barcode}}</td>
+                    <td ng-if="!item.barcode"> --- </td>
+                    <td>{{item.name}}</td>
+                    <td>{{(item.cost).toLocaleString()}} $</td>
+                    <td>
+                        <input id="qtyInput{{$index}}" type="number" class="text-center form-control form-control-sm"
+                            ng-model="item.quantity" ng-focus="selectQuantity($index)" min="1" required>
+                    </td>
+                    <td>{{(item.cost * item.quantity).toLocaleString()}} $</td>
+
+                    <td tabindex="-1" width="7.5%" class="btn-outline-info pointer" ng-click="openEditCostModal($index)"><i
+                            class="fas fa-edit"></i></td>
+                    <td tabindex="-1" width="7.5%" class="btn-outline-danger pointer"
+                        ng-click="deleteRow($index,item.price*item.quantity)"><i class="fas fa-times"></i></td>
+                </tr>
+                <tr class="table-active" ng-if="invoice.length == 0">
+                    <td colspan="6">There are no data selected yet!</td>
+                </tr>
+                <tr ng-if="invoice">
+                    <td colspan="7">
+                        <div class="float-left" ng-if="invoice.length !== 0">
+                            <button type="submit" class="btn btn-success"><i class="fas fa-check"></i>
+                                Confirm</button>
+                            <button type="button" class="btn btn-secondary" ng-click="cancelOrder()"><i
+                                    class="fas fa-times"></i>
+                                Cancel</button>
+                        </div>
+                        <div class="float-right" ng-if="invoice.length !== 0">
+                            <label class="h5">Total Cost: {{ (totalCost).toLocaleString() }} $</label>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <!--  EDIT PRICE MODAL -->
+    <div class="modal fade" id="editCostModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Price</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <form ng-submit="editPrice()">
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <!-- <div class="row">
+                            <div class="col-6" ng-show="loggedInUser.type === 'admin'">
+                                <label>Unit Cost</label>
+                                <input class="form-control" ng-model="selectedRowCost" type="text" autocomplete="off"
+                                    tabindex="-1" disabled>
+                            </div>
+                        </div> -->
+                        <label>New Unit Cost</label>
+                        <input type="number" step="any" id="newCost" class="form-control" ng-model="newCost"
+                            tabindex="1" autocomplete="off" autofocus required>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <!-- Add new client Button -->
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal" tabindex="2"><i
+                                class="fas fa-times"></i>
+                            Cancel</button>
+                        <button type="submit" class="btn btn-success" tabindex="3"><i class="fas fa-check"></i>
+                            Confirm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>

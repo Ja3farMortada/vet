@@ -1,0 +1,8 @@
+<form class="form-inline select-off" ng-submit="updateRate()">
+    <div class="form-group">
+        <label class="h5">$ =</label>
+        <input type="number" class="form-control col-5 mx-2"
+            placeholder="{{ exchangeRate.exchange_rate.toLocaleString() }} L.L" ng-model="rate" required>
+        <button type="submit" class="btn btn-success">Update</button>
+    </div>
+</form>
