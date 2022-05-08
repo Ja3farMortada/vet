@@ -1,7 +1,7 @@
 {
-    "name": "a-medicare",
+    "name": "petshop",
     "version": "1.4.0",
-    "description": "A-Medicare POS System",
+    "description": "Pet Shop Veterinary System",
     "main": "main.js",
     "scripts": {
         "start": "electron .",
@@ -15,17 +15,17 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/Ja3farMortada/fakih.git"
+        "url": "https://github.com/Ja3farMortada/vet.git"
     },
     "build": {
-        "appId": "com.binariez.Ja3farMortada.fakih",
-        "productName": "A-Medicare",
+        "appId": "com.binariez.Ja3farMortada.vet",
+        "productName": "PetShop Veterinary",
         "target": "NSIS",
         "publish": [
             {
                 "provider": "github",
                 "owner": "Ja3farMortada",
-                "repo": "fakih"
+                "repo": "vet"
             }
         ],
         "directories": {

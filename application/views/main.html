@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>A-Medicare</title>
+    <title>PetShop Veterinary</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- load bootstrap and designs -->
@@ -33,7 +33,7 @@
         ng-cloak>
         <!-- Brand nav -->
         <span class="navbar-brand h1" style="user-select: none">
-            <img src="../assets/medicare.jpeg" width="30" height="30" style="border-radius: 15%">
+            <img src="../assets/vet-logo.png" width="30" height="30" style="border-radius: 15%">
             <small><samp>v{{package.version}}</samp></small>
         </span>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
@@ -46,27 +46,27 @@
                 <li class="nav-item">
                     <a ng-click="clickedTab('/sell')" ng-class="{active: location == '/sell'}" class="nav-link" tabindex="-1" href="#!/sell"><i class="fas fa-shopping-cart"></i> Sell</a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a ng-click="clickedTab('/scanner')" ng-class="{active: location == '/scanner'}" class="nav-link" tabindex="-1" href="#!/scanner"><i class="fas fa-radiation-alt"></i> Panoramic</a>
-                </li>
-                <li class="nav-item">
+                </li> -->
+                <!-- <li class="nav-item">
                     <a ng-click="clickedTab('/supply')" ng-class="{active: location == '/supply'}" class="nav-link" tabindex="-1" href="#!/supply"><i class="fas fa-truck-loading"></i> Supply</a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     <a ng-click="clickedTab('/stock')" ng-class="{active: location == '/stock'}" class="nav-link" tabindex="-1" href="#!/stock"><i class="fas fa-warehouse"></i> Stock</a>
                 </li>
                 <li class="nav-item">
                     <a ng-click="clickedTab('/history')" ng-class="{active: location == '/history'}" class="nav-link" tabindex="-1" href="#!/history"><i class="fas fa-history"></i> History</a>
                 </li>
-                <li class="nav-item" ng-if="loggedInUser.canViewCustomers === 1">
+                <!-- <li class="nav-item" ng-if="loggedInUser.canViewCustomers === 1">
                     <a ng-click="clickedTab('/debts')" ng-class="{active: location == '/debts'}" class="nav-link" tabindex="-1" href="#!/debts"><i class="fas fa-users"></i> Customers</a>
-                </li>
-                <li class="nav-item" ng-if="loggedInUser.canViewCustomers === 1">
+                </li> -->
+                <!-- <li class="nav-item" ng-if="loggedInUser.canViewCustomers === 1">
                     <a ng-click="clickedTab('/suppliers')" ng-class="{active: location == '/suppliers'}" class="nav-link" tabindex="-1" href="#!/suppliers"><i class="fas fa-user-tie"></i> Suppliers</a>
-                </li>
-                <li class="nav-item">
+                </li> -->
+                <!-- <li class="nav-item">
                     <a ng-click="clickedTab('/doctors')" ng-class="{active: location == '/doctors'}" class="nav-link" tabindex="-1" href="#!/doctors"><i class="fas fa-user-md"></i> Doctors</a>
-                </li>
+                </li> -->
                 <!-- <li class="nav-item" ng-if="loggedInUser.canViewPayments === 1">
                     <a ng-click="clickedTab('/payments')" ng-class="{active: location == '/payments'}" class="nav-link" tabindex="-1" href="#!/payments"><i class="fas fa-money-bill-wave"></i> Payments</a>
                 </li> -->
@@ -121,7 +121,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-info-circle fa-lg"></i> About A-Medicare</h5>
+                    <h5 class="modal-title"><i class="fas fa-info-circle fa-lg"></i> About PetShop Veterinary</h5>
                     <button type="button" class="close" data-dismiss="modal">
                         <span>&times;</span>
                     </button>
@@ -191,7 +191,8 @@
                     </button>
                 </div>
                 <div class="modal-body text-center">
-                    <h3 class="text-center">A-Medicare</h3>
+                    <img src="../assets/vet-bg.png" width="300" height="168">
+                    <!-- <h3 class="text-center">Pet Shop</h3> -->
                     <h6 class="text-center">current version: {{package.version}}</h6>
 
                     <!-- text -->
