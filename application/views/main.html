@@ -44,11 +44,11 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav nav-pills">
                 <li class="nav-item">
+                    <a ng-click="clickedTab('/animals')" ng-class="{active: location == '/animals'}" class="nav-link" tabindex="-1" href="#!/animals"><i class="fas fa-paw"></i> Animals</a>
+                </li>
+                <li class="nav-item">
                     <a ng-click="clickedTab('/sell')" ng-class="{active: location == '/sell'}" class="nav-link" tabindex="-1" href="#!/sell"><i class="fas fa-shopping-cart"></i> Sell</a>
                 </li>
-                <!-- <li class="nav-item">
-                    <a ng-click="clickedTab('/scanner')" ng-class="{active: location == '/scanner'}" class="nav-link" tabindex="-1" href="#!/scanner"><i class="fas fa-radiation-alt"></i> Panoramic</a>
-                </li> -->
                 <!-- <li class="nav-item">
                     <a ng-click="clickedTab('/supply')" ng-class="{active: location == '/supply'}" class="nav-link" tabindex="-1" href="#!/supply"><i class="fas fa-truck-loading"></i> Supply</a>
                 </li> -->

@@ -58,11 +58,11 @@ module.exports = (server, db) => {
     server.post('/deleteItem', (req, res) => {
         let ID = req.body.ID;
         let query = `UPDATE stock SET item_status = false where IID = ?`;
-        db.query(query, ID, function(error, results) {
+        db.query(query, ID, function(error) {
             if(error) {
                 res.status(400).send(error);
             } else {
-                res.send(results);
+                res.send('');
             }
         });
     });

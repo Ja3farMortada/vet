@@ -16,7 +16,6 @@ var Swal = require('../../node_modules/sweetalert2/dist/sweetalert2');
 // require('popper.js');
 // require('bootstrap')
 require('../../node_modules/bootstrap/dist/js/bootstrap.bundle');
-
 // require chart.js
 // var Chart = require('chart.js');
 
@@ -46,15 +45,16 @@ app.config(function ($routeProvider) {
 
     $routeProvider
 
+        .when('/animals', {
+            templateUrl: 'animals.html',
+            controller: 'animalsController'
+        })
+
         .when('/sell', {
             templateUrl: 'sell.html',
             controller: 'sellController'
         })
 
-        .when('/scanner', {
-            templateUrl: 'scanner.html',
-            controller: 'scannerController'
-        })
 
         .when('/supply', {
             templateUrl: 'supply.html',
@@ -269,7 +269,7 @@ app.controller('mainController', function ($scope, $timeout, $http, $interval, r
 // require SPA controllers
 require('../controllers/supplyController');
 require('../controllers/sellController');
-require('../controllers/scannerController');
+require('../controllers/animalsController');
 require('../controllers/stockController');
 require('../controllers/historyController');
 require('../controllers/debtsController');
@@ -284,7 +284,7 @@ require('../controllers/settingsController');
 // require SPA Models
 require('../models/supplyFactory');
 require('../models/sellFactory');
-require('../models/scannerFactory');
+require('../models/animalsFactory');
 require('../models/stockFactory');
 require('../models/historyFactory');
 require('../models/debtsFactory');

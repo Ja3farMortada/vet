@@ -1,17 +1,62 @@
 module.exports = (server, db) => {
 
     // get invoices
-    server.get('/getFilmInvoices', (req, res) => {
-        let date = req.query.date;
-        let query = `SELECT f.*, d.doctor_name FROM film_invoice AS f LEFT JOIN doctors AS d ON doctor_ID_FK = doctor_ID WHERE f.record_status = 1 AND f.record_date = ? ORDER BY f.record_time DESC`;
-        db.query(query, date, function (error, results) {
+    server.get('/getAnimals', (req, res) => {
+        let query = `SELECT * FROM animals WHERE animal_status = 1 ORDER BY animal_ID DESC`;
+        db.query(query, function (error, results) {
             if (error) {
                 res.status(400).send(error);
+            } else {
+                res.send(results);
             }
-            res.send(results);
         })
     })
 
+    // add animal
+    server.post('/addAnimal', (req, res) => {
+        let data = req.body.data;
+        let query = `INSERT INTO animals SET ?`;
+        db.query(query, data, function (error, results) {
+            if (error) {
+                res.status(400).send(error);
+            } else {
+                let query2 = `SELECT * FROM animals WHERE animal_ID = ${results.insertId}`;
+                db.query(query2, function (err, result) {
+                    if (err) {
+                        res.status(400).send(err);
+                    } else {
+                        res.send(result[0]);
+                    }
+                })
+            }
+        })
+    })
+
+    // edit animal
+    server.post('/editAnimal', (req, res) => {
+        let data = req.body.data;
+        let query = `UPDATE animals SET ? WHERE animal_ID = ${data.animal_ID}`;
+        db.query(query, data, function (error) {
+            if (error) {
+                res.status(400).send(error);
+            } else {
+                res.send('');
+            }
+        });
+    });
+
+    // delete animal
+    server.post('/deleteAnimal', (req, res) => {
+        let ID = req.body.ID;
+        let query = `UPDATE animals SET animal_status = false WHERE animal_ID = ?`;
+        db.query(query, ID, function (error) {
+            if (error) {
+                res.status(400).send(error);
+            } else {
+                res.send('');
+            }
+        });
+    });
 
     // addNewFilm
     server.post('/addNewFilm', (req, res) => {

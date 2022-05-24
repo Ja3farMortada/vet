@@ -3,7 +3,7 @@ const server = express();
 
 const loginRoutes = require('./routes/login.routes');
 const supplyRoutes = require('./routes/supply.routes');
-const scannerRoutes = require('./routes/scanner.routes');
+const animalsRoutes = require('./routes/animals.routes');
 const sellRoutes = require('./routes/sell.routes');
 const stockRoutes = require('./routes/stock.routes');
 const historyRoutes = require('./routes/history.routes');
@@ -26,7 +26,7 @@ server.use(express.json());
 loginRoutes(server, connection);
 supplyRoutes(server, connection);
 sellRoutes(server, connection);
-scannerRoutes(server, connection);
+animalsRoutes(server, connection);
 stockRoutes(server, connection);
 historyRoutes(server, connection);
 paymentsRoutes(server, connection);
