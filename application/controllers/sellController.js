@@ -178,56 +178,24 @@ app.controller('sellController', ['$scope', '$http', '$timeout', 'sellFactory', 
         $scope.selectedCustomer = null;
         $scope.cashReceived = null;
         $scope.validated = true;
-        $('#selectCustomer').modal('show');
-        $('#selectCustomer').on('shown.bs.modal', function () {
-            $(this).find('[autofocus]').trigger('focus');
-        });
+        NotificationService.showWarning().then(ok => {
+            if (ok.isConfirmed) {
+                confirmOrder()
+            }
+        })
+        // $('#selectCustomer').modal('show');
+        // $('#selectCustomer').on('shown.bs.modal', function () {
+        //     $(this).find('[autofocus]').trigger('focus');
+        // });
     };
 
     $scope.validate = () => {
         $scope.validated = true;
     };
-    // Confirm Order button clicked!
-    $scope.confirmOrderClicked = function () {
-        if (!$scope.selectedCustomer && $scope.cashReceived == null) {
-            $scope.cashReceived = 0;
-            $('#cashInput').trigger('select');
-        } else if (!$scope.selectedCustomer) {
-            Swal.fire({
-                title: `Change: ${($scope.cashReceived - $scope.totalPrice).toLocaleString()} $`,
-                icon: "info"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    confirmOrder(null);
-                }
-            });
-        } else {
-            $scope.validated = false;
-            let customerID;
-            for (let i = 0; i < $scope.customers.length; i++) {
-                if ($scope.customers[i].customer_name == $scope.selectedCustomer) {
-                    $scope.validated = true;
-                    customerID = $scope.customers[i].customer_ID;
-                    break;
-                } else {
-                    $('#choose').trigger('select');
-                }
-            }
-            if ($scope.validated) {
-                NotificationService.showWarning().then((result) => {
-                    if (result.isConfirmed) {
-                        confirmOrder(customerID);
-                    } else {
-                        $('#choose').trigger('focus');
-                    }
-                });
-            }
-        }
-    };
 
     // ***** CONFIRM ORDER FUNCTION *****
     async function confirmOrder(ID) {
-        $('#selectCustomer').modal('toggle');
+        // $('#selectCustomer').modal('toggle');
         let date = DateService.getDate();
         let time = DateService.getTime();
         $('#barcodeInput').trigger('focus');

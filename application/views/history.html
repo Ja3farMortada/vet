@@ -11,33 +11,31 @@
             <li class="nav-item">
                 <a class="nav-link text-secondary text-uppercase animate__animated"
                     ng-class="{'active': tabSelected === 1, 'active-tab-dir': tabSelected === 1, 'animate__fadeIn': tabSelected === 1}"
-                    ng-click="selectTab(1)"><i class="fas fa-file-invoice-dollar fa-2x fa-fw"></i>Supply Invoices</a>
+                    ng-click="selectTab(1)"><i class="fas fa-file-invoice-dollar fa-2x fa-fw"></i>Services Invoices</a>
             </li>
         </ul>
     </div>
 
     <br>
 
+    <div class="form-group row mb-2 col-4">
+        <label class="col-2 col-form-label text-right">Date:</label>
+        <div class="col-7">
+            <input type="text" class="form-control text-center" id="invoiceDatePicker">
+        </div>
+        <div class="col-3">
+            <button class="btn btn-info" ng-click="today()">today</button>
+        </div>
+    </div>
     <div class="row">
         <!-- invoices table -->
         <div class="col-4">
-            <!-- date input -->
-            <div class="form-group row mb-2">
-                <label class="col-2 col-form-label text-right">Date:</label>
-                <div class="col-7">
-                    <input type="text" class="form-control text-center" id="invoiceDatePicker">
-                </div>
-                <div class="col-3">
-                    <button class="btn btn-info" ng-click="today()">today</button>
-                </div>
-            </div>
             <!-- invoices -->
-            <table class="table table-bordered text-center table-hover table-sm">
+            <table class="table table-bordered text-center table-hover table-sm" ng-show="tabSelected === 0">
                 <thead style="user-select: none">
                     <tr>
                         <th width="15%">#</th>
-                        <th ng-if="tabSelected === 0" width="40%">Customer name</th>
-                        <th ng-if="tabSelected === 1" width="40%">Supplier name</th>
+                        <th width="40%">Customer name</th>
                         <th width="25%">Time</th>
                         <th width="20%">Total</th>
                     </tr>
@@ -46,42 +44,42 @@
                     <!-- sales invoices -->
                     <tr dir-paginate="invoice in salesInvoices | itemsPerPage:10" pagination-id="sales"
                         class="pointer" ng-click="showInvoiceDetails(invoice.invoice_ID, invoice.invoice_total_price)"
-                        ng-show="tabSelected === 0" ng-class="{'table-active': isActive(invoice.invoice_ID)}">
+                        ng-class="{'table-active': isActive(invoice.invoice_ID)}">
                         <td>{{ invoice.invoice_ID }}</td>
                         <td>{{ invoice.customer_name || '----' }}</td>
                         <td>{{ invoice.invoice_time }}</td>
                         <td>{{ invoice.invoice_total_price.toLocaleString() }} $</td>
                     </tr>
 
-                    <!-- supply invoices -->
-                    <tr dir-paginate="invoice in supplyInvoices | itemsPerPage:10" pagination-id="supply" class="pointer"
+                    <!-- services invoices -->
+                    <!-- <tr dir-paginate="invoice in servicesInvoices | itemsPerPage:10" pagination-id="services" class="pointer"
                         ng-click="showInvoiceDetails(invoice.record_ID, invoice.total_cost)"
                         ng-show="tabSelected === 1" ng-class="{'table-active': isActive(invoice.record_ID)}">
                         <td>{{ invoice.record_ID }}</td>
                         <td>{{ invoice.supplier_name || '----' }}</td>
                         <td>{{ invoice.record_time }}</td>
                         <td>{{ invoice.total_cost.toLocaleString() }} $</td>
-                    </tr>
+                    </tr> -->
 
                     <!-- if no records -->
-                    <tr ng-if="salesInvoices.length == 0 && tabSelected == 0">
+                    <tr ng-if="salesInvoices.length == 0">
                         <td colspan="4" class="table-active">No Records Yet!</td>
                     </tr>
-                    <tr ng-if="supplyInvoices.length == 0 && tabSelected == 1">
+                    <!-- <tr ng-if="servicesInvoices.length == 0 && tabSelected == 1">
                         <td colspan="4" class="table-active">No Records Yet!</td>
-                    </tr>
+                    </tr> -->
                 </tbody>
             </table>
-            <dir-pagination-controls ng-show="tabSelected === 0" pagination-id="sales" max-size="5"
+            <dir-pagination-controls pagination-id="sales" max-size="5"
                 direction-links="true" boundary-links="false" template-url="../templates/dirPagination.tpl.html">
             </dir-pagination-controls>
-            <dir-pagination-controls ng-show="tabSelected === 1" pagination-id="supply" max-size="5"
+            <!-- <dir-pagination-controls ng-show="tabSelected === 1" pagination-id="services" max-size="5"
                 direction-links="true" boundary-links="false" template-url="../templates/dirPagination.tpl.html">
-            </dir-pagination-controls>
+            </dir-pagination-controls> -->
         </div>
 
         <!-- invoice details table -->
-        <div id="test" class="col-8">
+        <div id="test" class="col-8" ng-show="tabSelected === 0">
             <table class="table text-center table-sm select-off">
                 <thead class="table-bordered">
                     <tr>
@@ -93,19 +91,19 @@
                 </thead>
                 <tbody>
                     <!-- sales invoice selected -->
-                    <tr ng-if="tabSelected == 0" ng-repeat="item in items" class="table-bordered">
+                    <tr ng-repeat="item in items" class="table-bordered">
                         <td>{{ item.item_name }}</td>
                         <td>{{ item.price.toLocaleString() }} $</td>
                         <td>{{ item.qty }}</td>
                         <td>{{ (item.price * item.qty).toLocaleString() }} $</td>
                     </tr>
                     <!-- stock invoice selected -->
-                    <tr ng-if="tabSelected == 1" ng-repeat="item in items" class="table-bordered">
+                    <!-- <tr ng-if="tabSelected == 1" ng-repeat="item in items" class="table-bordered">
                         <td>{{ item.item_name }}</td>
                         <td>{{ item.cost.toLocaleString() }} $</td>
                         <td>{{ item.qty }}</td>
                         <td>{{ (item.cost * item.qty).toLocaleString() }} $</td>
-                    </tr>
+                    </tr> -->
 
                     <tr class="table-active" ng-if="!items">
                         <td colspan="4">There is no invoice selected yet</td>
@@ -123,8 +121,6 @@
                         <td class="table-success">
                             <span class="h5">Total: {{ totalPrice.toLocaleString() }} $</span>
                         </td>
-                        <!-- <td class="table-dark">
-                        </td> -->
                     </tr>
                 </tbody>
             </table>
@@ -132,6 +128,34 @@
                 
                 <span class="h6">{{ user }}</span>
             </div>
+        </div>
+
+        <div class="col-12" ng-show="tabSelected === 1">
+            <table class="table table-bordered text-center table-sm">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Owner Name</th>
+                        <th>Animal Name</th>
+                        <th>Service Type</th>
+                        <th>Description</th>
+                        <th>Time</th>
+                        <th>Payment</th>
+                    </tr>
+                </thead>
+                <tbody dir-paginate="record in servicesInvoices | itemsPerPage: 15" pagination-id="services">
+                    <td>{{ record.service_ID }}</td>
+                    <td>{{ record.owner_name }}</td>
+                    <td>{{ record.animal_name }}</td>
+                    <td>{{ record.service_type }}</td>
+                    <td>{{ record.service_description || '----' }}</td>
+                    <td>{{ record.service_time }}</td>
+                    <td>{{ (record.payment_received).toLocaleString() }} L.L</td>
+                </tbody>
+            </table>
+            <dir-pagination-controls pagination-id="services" max-size="5"
+                direction-links="true" boundary-links="false" template-url="../templates/dirPagination.tpl.html">
+            </dir-pagination-controls>
         </div>
     </div>
 </div>

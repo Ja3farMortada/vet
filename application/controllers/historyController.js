@@ -8,7 +8,7 @@ app.controller('historyController', ['$scope', 'historyFactory', 'DateService', 
 
     // bind invoices with model factory
     $scope.salesInvoices = historyFactory.salesInvoices;
-    $scope.supplyInvoices = historyFactory.supplyInvoices;
+    $scope.servicesInvoices = historyFactory.servicesInvoices;
 
     // Tabs selection
     $scope.tabSelected = historyFactory.tabSelected;
@@ -24,6 +24,7 @@ app.controller('historyController', ['$scope', 'historyFactory', 'DateService', 
 
     // define datepicker value
     $scope.datePickerValue = historyFactory.datePickerValue;
+
     function datepicker() {
         $('#invoiceDatePicker').datepicker({
             dateFormat: 'yy-mm-dd',
@@ -51,7 +52,7 @@ app.controller('historyController', ['$scope', 'historyFactory', 'DateService', 
         $scope.items = null;
         $scope.activeRow = null;
         historyFactory.fetchSalesInvoices($scope.datePickerValue);
-        historyFactory.fetchSupplyInvoices($scope.datePickerValue);
+        historyFactory.fetchServicesInvoices($scope.datePickerValue);
     });
 
     // show invoice details 
@@ -67,12 +68,12 @@ app.controller('historyController', ['$scope', 'historyFactory', 'DateService', 
                 $scope.activeRow = ID;
                 break;
 
-            case 1:
-                let index2 = $scope.supplyInvoices.findIndex(index2 => index2.record_ID == ID);
-                selectedInvoice = $scope.supplyInvoices[index2];
-                $scope.items = $scope.supplyInvoices[index2]['invoice_details'];
-                $scope.activeRow = ID;
-                break;
+                // case 1:
+                //     let index2 = $scope.servicesInvoices.findIndex(index2 => index2.record_ID == ID);
+                //     selectedInvoice = $scope.servicesInvoices[index2];
+                //     $scope.items = $scope.servicesInvoices[index2]['invoice_details'];
+                //     $scope.activeRow = ID;
+                //     break;
         }
     };
 
@@ -106,22 +107,21 @@ app.controller('historyController', ['$scope', 'historyFactory', 'DateService', 
     }
     // print function
     $scope.print = function () {
-        console.log($scope.items);
         let invoice = [];
         // if ($scope.tabSelected === 0) {
-            for (let i = 0; i < $scope.items.length; i++) {
-                invoice[i] = {
-                    ID: selectedInvoice.invoice_ID || selectedInvoice.record_ID,
-                    name: $scope.items[i]['item_name'],
-                    price: $scope.items[i]['price'] || $scope.items[i]['cost'],
-                    quantity: $scope.items[i]['qty']
-                }
+        for (let i = 0; i < $scope.items.length; i++) {
+            invoice[i] = {
+                ID: selectedInvoice.invoice_ID || selectedInvoice.record_ID,
+                name: $scope.items[i]['item_name'],
+                price: $scope.items[i]['price'] || $scope.items[i]['cost'],
+                quantity: $scope.items[i]['qty']
             }
-            if ($scope.printData.currency == 'dollar') {
-                $scope.printData.total = $scope.totalPrice;
-            } else {
-                $scope.printData.total = $scope.totalPrice * stockModel.exchangeRate.exchange_rate;
-            }
+        }
+        if ($scope.printData.currency == 'dollar') {
+            $scope.printData.total = $scope.totalPrice;
+        } else {
+            $scope.printData.total = $scope.totalPrice * stockModel.exchangeRate.exchange_rate;
+        }
         // }
         ipcRenderer.send('printDocument', [invoice, $scope.printData]);
     };

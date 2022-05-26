@@ -19,7 +19,7 @@
                                 </th>
                                 <th>
                                     <input type="text" class="form-control form-control-sm"
-                                        ng-model="search.phone_number" spellcheck="false" placeholder="Phone...">
+                                        ng-model="search.owner_phone" spellcheck="false" placeholder="Phone...">
                                 </th>
                                 <th>
                                     <input type="text" class="form-control form-control-sm"
@@ -46,7 +46,7 @@
                                 ng-click="showAnimalDetails(data)"
                                 ng-class="{'table-active': isActive(data.animal_ID)}">
                                 <td>{{ data.owner_name }}</td>
-                                <td>{{ data.phone_number || '----' }}</td>
+                                <td>{{ data.owner_phone || '----' }}</td>
                                 <td>{{ data.animal_name }}</td>
                                 <td>
                                     <span class="badge badge-pill"
@@ -79,10 +79,13 @@
             <!-- Service buttons -->
             <div class="row mt-3" ng-show="selectedAnimal">
                 <div class="col-6">
-                    <button class="btn btn-outline-danger btn-lg btn-block"><i class="fas fa-clinic-medical fa-lg"></i> New Treatment</button>
+                    <button ng-click="openTreatmentModal()" class="btn btn-outline-danger btn-lg btn-block"><i
+                            class="fas fa-clinic-medical fa-lg"></i> New Treatment</button>
                 </div>
                 <div class="col-6">
-                    <button class="btn btn-outline-info btn-lg btn-block"><i class="fas fa-paw fa-lg"></i> New Service</button>
+                    <button ng-click="openServiceModal()" class="btn btn-outline-info btn-lg btn-block"><i
+                            class="fas fa-paw fa-lg"></i> New
+                        Service</button>
                 </div>
             </div>
         </div>
@@ -107,35 +110,48 @@
                     </h3>
                 </div>
                 <div class="card-body">
-                    <!-- <div class="row"> -->
-                    <div class="">
-                        <table class="table table-borderless text-center">
-                            <h5 class="text-center"><i class="fas fa-info-circle fa-lg"></i> Additional Info</h5>
-                            <tr>
-                                <th width="20%">Breed</th>
-                                <th width="15%">Gender</th>
-                                <th width="20%">Age</th>
-                                <th width="15%">Birthdate</th>
-                                <th width="30%">Notes</th>
-                            </tr>
-                            <tr>
-                                <td>{{ selectedAnimal.breed }}</td>
-                                <td><i ng-class="{'fa-mars text-primary': selectedAnimal.gender == 'male', 'fa-venus text-pink': selectedAnimal.gender == 'female'}"
-                                        class="fas fa-lg"></i> {{ selectedAnimal.gender }}</td>
-                                <td>{{ selectedAge }}</td>
-                                <td>{{ selectedAnimal.birthdate }}</td>
-                                <td>{{ selectedAnimal.notes || '----'}}</td>
-                            </tr>
-                        </table>
-                    </div>
+                    <table class="table table-borderless text-center">
+                        <h5 class="text-center"><i class="fas fa-info-circle fa-lg"></i> Additional Info</h5>
+                        <tr>
+                            <th width="20%">Breed</th>
+                            <th width="15%">Gender</th>
+                            <th width="20%">Age</th>
+                            <th width="20%">Birthdate</th>
+                            <th width="25%">Notes</th>
+                        </tr>
+                        <tr>
+                            <td>{{ selectedAnimal.breed }}</td>
+                            <td><i ng-class="{'fa-mars text-primary': selectedAnimal.gender == 'male', 'fa-venus text-pink': selectedAnimal.gender == 'female'}"
+                                    class="fas fa-lg"></i> {{ selectedAnimal.gender }}</td>
+                            <td>{{ selectedAge }}</td>
+                            <td>{{ selectedAnimal.birthdate }}</td>
+                            <td>{{ selectedAnimal.notes || '----'}}</td>
+                        </tr>
+                    </table>
 
                     <hr>
 
                     <div>
-                        <h5 class="text-center"><i class="fas fa-book-medical fa-lg"></i> Medical History</h5>
+                        <!-- Navigation Tabs -->
+                        <div class=" justify-content-center d-flex">
+                            <ul class="nav nav-tabs nav-fill">
+                                <li class="nav-item text-center">
+                                    <a class="nav-link text-secondary"
+                                        ng-class="{'active': tabSelected === 0, 'active-tab-dir': tabSelected === 0}"
+                                        ng-click="selectTab(0)"><i class="fas fa-notes-medical fa-2x fa-fw"></i> Treatment History</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-secondary"
+                                        ng-class="{'active': tabSelected === 1, 'active-tab-dir': tabSelected === 1}"
+                                        ng-click="selectTab(1)"><i
+                                            class="fas fa-file-invoice-dollar fa-2x fa-fw"></i>Service History</a>
+                                </li>
+                            </ul>
+                        </div>
+
                         <br>
 
-                        <ul class="cbp_tmtimeline">
+                        <ul ng-show="tabSelected === 0" class="cbp_tmtimeline">
                             <li>
                                 <time
                                     class="cbp_tmtime"><span>{{ moment(selectedAnimal.birthdate).format('MMM DD YYYY') }}</span>
@@ -150,53 +166,49 @@
                                 </div>
                             </li>
 
-                            <!-- <li ng-repeat="record in medicalHistory">
-                                <time class="cbp_tmtime"><span>May 5 2022</span>
-                                    <span>Two weeks ago</span></time>
-                                <div class="cbp_tmicon bg-success"><i class="fas fa-syringe text-light"></i></div>
+                            <li ng-repeat="record in treatmentHistory">
+                                <time
+                                    class="cbp_tmtime"><span>{{ moment(record.treatment_date).format('MMM DD YYYY') }}</span>
+                                    <span>{{ (moment.duration(moment().diff(moment(record.treatment_date + ' ' + record.treatment_time), 'milliseconds'))).humanize() }}
+                                        ago</span></time>
+                                <div class="cbp_tmicon" ng-class="{'bg-success': record.treatment_type == 'vaccine',
+                                'bg-danger': record.treatment_type == 'surgery',
+                                'bg-warning': record.treatment_type == 'first aid',
+                                'bg-dark': record.treatment_type == 'other'}">
+                                    <i class="fas text-light" ng-class="{'fa-syringe': record.treatment_type == 'vaccine',
+                                'fa-user-md': record.treatment_type == 'surgery',
+                                'fa-medkit': record.treatment_type == 'first aid',
+                                'fa-hand-holding-medical': record.treatment_type == 'other'}"></i></div>
                                 <div class="cbp_tmlabel">
-                                    <h5>Vaccinated</h5>
-                                    <p>Took XYZA Vaccine.</p>
-                                </div>
-                            </li> -->
-
-                            <!-- <li>
-                                <time class="cbp_tmtime" datetime="2017-11-04T03:45"><span>March 15 2022</span>
-                                    <span>Five months ago</span></time>
-                                <div class="cbp_tmicon bg-warning"><i class="fas fa-user-md"></i></div>
-                                <div class="cbp_tmlabel">
-                                    <h5>Checkup</h5>
-                                    <p>Routine Checkup.</p>
-                                </div>
-                            </li>
-
-                            <li>
-                                <time class="cbp_tmtime" datetime="2017-11-04T03:45"><span>Jun 1 2021</span>
-                                    <span>One year ago</span></time>
-                                <div class="cbp_tmicon bg-danger"><i class="fas fa-ambulance"></i></div>
-                                <div class="cbp_tmlabel">
-                                    <h5>Hand splinting</h5>
-                                    <p>Broken hand.</p>
+                                    <h5>{{ record.treatment_type }}</h5>
+                                    <p class="mb-0">{{ record.treatment_description }}</p>
                                 </div>
                             </li>
+                        </ul>
 
-                            <li>
-                                <time class="cbp_tmtime" datetime="2017-11-04T03:45"><span>May 5 2018</span>
-                                    <span>4 years ago</span></time>
-                                <div class="cbp_tmicon bg-success"><i class="fas fa-syringe text-light"></i></div>
+                        <ul ng-show="tabSelected === 1" class="cbp_tmtimeline">
+
+                            <li ng-repeat="record in serviceHistory">
+                                <time
+                                    class="cbp_tmtime"><span>{{ moment(record.service_date).format('MMM DD YYYY') }}</span>
+                                    <span>{{ (moment.duration(moment().diff(moment(record.service_date + ' ' + record.service_time), 'milliseconds'))).humanize() }}
+                                        ago</span></time>
+                                <div class="cbp_tmicon" ng-class="{'bg-primary': record.service_type == 'Shower',
+                                'bg-dark': record.service_type == 'Grooming',
+                                'bg-info': record.service_type == 'Boarding'}">
+                                    <i class="fas text-light" ng-class="{'fa-shower': record.service_type == 'Shower',
+                                'fa-feather': record.service_type == 'Grooming',
+                                'fa-hotel': record.service_type == 'Boarding'}"></i></div>
                                 <div class="cbp_tmlabel">
-                                    <h5>Vaccinated</h5>
-                                    <p>Took XYZA Vaccine.</p>
+                                    <h5>{{ record.service_type }}</h5>
+                                    <p class="mb-0">{{ record.service_description }}</p>
                                 </div>
-                            </li> -->
+                            </li>
                         </ul>
 
                     </div>
 
                 </div>
-                <!-- <div class="card-footer text-center">
-                    
-                </div> -->
             </div>
         </div>
     </div>
@@ -262,7 +274,7 @@
                         </div>
                         <div class="col-4">
                             <label>Owner Phone</label>
-                            <input ng-model="animalData.phone_number" type="number" class="form-control" required
+                            <input ng-model="animalData.owner_phone" type="number" class="form-control" required
                                 spellcheck="false">
                         </div>
                         <div class="col-4">
@@ -288,27 +300,117 @@
     </div>
 </div>
 
-<!-- edit settings MODAL -->
-<div class="modal fade" id="editSettingsModal">
-    <div class="modal-dialog modal-sm">
+<!-- Treatment MODAL -->
+<div class="modal fade" id="treatmentModal">
+    <div class="modal-dialog">
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">Edit</h4>
+                <h4 class="modal-title"><i class="fas fa-clinic-medical"></i> New Treatment</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-            <form ng-submit="submitEditSettings()">
+            <form ng-submit="submitTreatment()">
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <label>New Value</label>
-                    <input type="number" min="0" class="form-control text-center" spellcheck="false"
-                        ng-model="editModalData.value">
+                    <div class="row">
+                        <div class="col-6">
+                            <label>Select Treatment type:</label>
+                            <select class="form-control" required ng-model="treatmentData.treatment_type">
+                                <option value="">---</option>
+                                <option value="vaccine">Vaccine</option>
+                                <option value="surgery">Surgery</option>
+                                <option value="first aid">First Aid</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6">
+                            <label>Payment Received (L.L)</label>
+                            <input type="number" class="form-control text-center" required
+                                ng-model="treatmentData.payment_received">
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <label>Treatment Description</label>
+                            <input type="text" class="form-control text-center" required
+                                ng-model="treatmentData.treatment_description" spellcheck="false">
+                        </div>
+
+                        <div class="col-6 mt-3">
+                            <label>Add Reminder?</label>
+                            <select class="form-control" ng-model="treatmentData.has_reminder">
+                                <option ng-value="false">No</option>
+                                <option ng-value="true">Yes</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6 mt-3" ng-show="treatmentData.has_reminder">
+                            <label>Remind at:</label>
+                            <input ng-model="treatmentData.reminder_date" id="treatmentDatepicker" type="text"
+                                class="form-control text-center" ng-required="treatmentData.has_reminder">
+                        </div>
+
+                        <div class="col-12 mt-3" ng-show="treatmentData.has_reminder">
+                            <label>Reminder Notes</label>
+                            <input ng-model="treatmentData.reminder_notes" type="text" class="form-control"
+                                spellcheck="false">
+                        </div>
+                    </div>
                 </div>
                 <!-- Modal footer -->
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
                         Cancel</button>
-                    <button class="btn btn-primary" type="submit"><i class="fas fa-check"></i>
+                    <button class="btn btn-success" type="submit"><i class="fas fa-check"></i>
+                        Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- service MODAL -->
+<div class="modal fade" id="serviceModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fas fa-paw"></i> New Service</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form ng-submit="submitService()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <label>Select service type:</label>
+                            <select class="form-control" required ng-model="serviceData.service_type">
+                                <option value="">---</option>
+                                <option value="Shower">Shower</option>
+                                <option value="Grooming">Grooming</option>
+                                <option value="Boarding">Boarding</option>
+                                <!-- <option value="other">Other</option> -->
+                            </select>
+                        </div>
+
+                        <div class="col-6">
+                            <label>Payment Received (L.L)</label>
+                            <input type="number" class="form-control text-center" required
+                                ng-model="serviceData.payment_received">
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <label>Service Description</label>
+                            <input type="text" class="form-control text-center"
+                                ng-model="serviceData.service_description" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
+                        Cancel</button>
+                    <button class="btn btn-success" type="submit"><i class="fas fa-check"></i>
                         Confirm</button>
                 </div>
             </form>

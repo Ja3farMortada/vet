@@ -37,6 +37,31 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
         getAnimals();
     }
 
+    // fetchTreatmentHistory
+    model.fetchTreatmentHistory = data => {
+        return $http.get(`${url}/fetchTreatmentHistory`, {
+            params: {
+                "ID": data.animal_ID
+            }
+        }).then(response => {
+            return response.data;
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+    // fetchServiceHistory
+    model.fetchServiceHistory = data => {
+        return $http.get(`${url}/fetchServiceHistory`, {
+            params: {
+                "ID": data.animal_ID
+            }
+        }).then(response => {
+            return response.data;
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+
     // add animal
     model.addAnimal = data => {
         return $http.post(`${url}/addAnimal`, {data: data}).then(response => {
@@ -67,28 +92,23 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
         });
     };
 
-    // model.submit = data => {
-    //     NotificationService.showConfirm().then(ok => {
-    //         if (ok.isConfirmed) {
-    //             $http.post(`${url}/addNewFilm`, data).then(() => {
-    //                 model.fetchInvoices();
-    //                 model.fetchSettings();
-    //                 NotificationService.showSuccess();
-    //                 $('#filmModal').modal('toggle');
-    //                 // fetch doctors
-    //                 doctorsFactory.fetchDoctors();
-    //                 // fetch invoices if a doctor is selected
-    //                 if (doctorsFactory.selectedID) {
-    //                     doctorsFactory.getDebtsDetails({
-    //                         ID: doctorsFactory.selectedID
-    //                     });
-    //                 }
-    //             }, error => {
-    //                 NotificationService.showError(error);
-    //             });
-    //         }
-    //     })
-    // }
+    model.submitTreatment = data => {
+        $http.post(`${url}/newTreatment`, {data: data}).then(response => {
+            NotificationService.showSuccess();
+            $('#treatmentModal').modal('toggle');
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+
+    model.submitService = data => {
+        $http.post(`${url}/newService`, {data: data}).then(response => {
+            NotificationService.showSuccess();
+            $('#serviceModal').modal('toggle');
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
 
     return model;
 });

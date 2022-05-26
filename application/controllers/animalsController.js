@@ -1,9 +1,10 @@
-app.controller('animalsController', function ($scope, animalsFactory, DateService, NotificationService) {
+app.controller('animalsController', function ($scope, animalsFactory, DateService, NotificationService, stockModel) {
 
     // get logged in user type
     $scope.loggedInUser = JSON.parse(localStorage.getItem('setting'));
 
     $scope.moment = moment;
+    $scope.exchangeRate = stockModel.exchangeRate;
 
     // get animals
     $scope.animals = animalsFactory.animals;
@@ -13,7 +14,7 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
     $scope.tabSelected = animalsFactory.tabSelected;
     $scope.selectTab = tab => {
         animalsFactory.selectTab(tab);
-        $scope.selectedTab = animalsFactory.selectedTab;
+        $scope.tabSelected = animalsFactory.tabSelected;
     };
 
     // define datepicker value
@@ -22,11 +23,26 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
         $('#birthdatePicker').datepicker({
             dateFormat: 'yy-mm-dd',
             maxDate: DateService.getDate(),
+            changeYear: true,
+            changeMonth: true,
             onSelect: function () {
                 var d = $('#birthdatePicker').datepicker({
                     dateFormat: 'yy-mm-dd'
                 }).val();
                 $scope.$digest($scope.animalData.birthdate = d);
+            }
+        }).datepicker("setDate", null);
+
+        $('#treatmentDatepicker').datepicker({
+            dateFormat: 'yy-mm-dd',
+            changeYear: true,
+            changeMonth: true,
+            minDate: DateService.getDate(),
+            onSelect: function () {
+                var d = $('#treatmentDatepicker').datepicker({
+                    dateFormat: 'yy-mm-dd'
+                }).val();
+                $scope.$digest($scope.treatmentData.reminder_date = d);
             }
         }).datepicker("setDate", null);
     };
@@ -58,7 +74,7 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
             gender: null,
             notes: null,
             owner_name: null,
-            phone_number: null,
+            owner_phone: null,
             address: null
         };
         $('#animalModal').on('shown.bs.modal', function () {
@@ -68,8 +84,9 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
     }
 
     // Edit Animal function
-    
+
     let animalIndex;
+
     function editAnimalModal() {
         modalMode = 'edit';
         $scope.modalTitle = 'Edit Profile';
@@ -135,10 +152,63 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
         let diff = moment().diff(moment(date), 'milliseconds');
         let duration = moment.duration(diff);
         $scope.selectedAge = duration.humanize();
+        animalsFactory.fetchTreatmentHistory(data).then(response => {
+            if (response) {
+                $scope.treatmentHistory = response;
+            }
+        });
+        animalsFactory.fetchServiceHistory(data).then(response => {
+            if (response) {
+                $scope.serviceHistory = response;
+            }
+        })
     }
 
     $scope.isActive = ID => {
         return $scope.activeRow === ID;
     };
+
+
+
+    $scope.openTreatmentModal = () => {
+        $scope.treatmentData = {
+            animal_ID_FK: $scope.selectedAnimal.animal_ID,
+            treatment_type: null,
+            treatment_description: null,
+            payment_received: null,
+            has_reminder: false,
+            reminder_date: null,
+            reminder_notes: null,
+            exchange_rate: $scope.exchangeRate.exchange_rate,
+            animal_name: $scope.selectedAnimal.animal_name,
+            owner_name: $scope.selectedAnimal.owner_name,
+            owner_phone: $scope.selectedAnimal.owner_phone
+        }
+        $('#treatmentModal').modal('toggle');
+    }
+
+    $scope.submitTreatment = () => {
+        $scope.treatmentData.treatment_date = DateService.getDate();
+        $scope.treatmentData.treatment_time = DateService.getTime();
+        animalsFactory.submitTreatment($scope.treatmentData);
+        $scope.showAnimalDetails($scope.selectedAnimal)
+    }
+
+    $scope.openServiceModal = () => {
+        $scope.serviceData = {
+            animal_ID_FK: $scope.selectedAnimal.animal_ID,
+            service_type: null,
+            service_description: null,
+            payment_received: null,
+            exchange_rate: $scope.exchangeRate.exchange_rate,
+        }
+        $('#serviceModal').modal('toggle');
+    }
+    $scope.submitService = () => {
+        $scope.serviceData.service_date = DateService.getDate();
+        $scope.serviceData.service_time = DateService.getTime();
+        animalsFactory.submitService($scope.serviceData);
+        $scope.showAnimalDetails($scope.selectedAnimal);
+    }
 
 });

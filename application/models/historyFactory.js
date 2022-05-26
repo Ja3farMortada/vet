@@ -7,9 +7,9 @@ app.factory('historyFactory', ['$http', 'NotificationService', 'DateService', 'D
     model.tabSelected = 0;
     model.datePickerValue = DateService.getDate();
     model.salesInvoices = [];
-    model.supplyInvoices = [];
+    model.servicesInvoices = [];
     model.totalSales = [];
-    model.totalSupply = [];
+    model.totalServices = [];
 
     //tab selection
     model.selectTab = function (tab) {
@@ -54,27 +54,27 @@ app.factory('historyFactory', ['$http', 'NotificationService', 'DateService', 'D
     };
 
     // get cached stock invoices function
-    const getSupplyInvoices = () => {
-        return $http.get(`${url}/getSupplyInvoices`, {
+    const getServicesInvoices = () => {
+        return $http.get(`${url}/getServicesInvoices`, {
             params: {
                 "date": model.datePickerValue
             }
         }).then(function (response) {
-            angular.copy(response.data, model.supplyInvoices);
+            angular.copy(response.data, model.servicesInvoices);
         }, function (error) {
             NotificationService.showError(error);
         });
     };
-    model.getSupplyInvoices = getSupplyInvoices();
+    getServicesInvoices();
 
     // fetch stock invoices
-    model.fetchSupplyInvoices = date => {
-        return $http.get(`${url}/getSupplyInvoices`, {
+    model.fetchServicesInvoices = date => {
+        return $http.get(`${url}/getServicesInvoices`, {
             params: {
                 "date": date
             }
         }).then(function (response) {
-            angular.copy(response.data, model.supplyInvoices);
+            angular.copy(response.data, model.servicesInvoices);
         }, function (error) {
             NotificationService.showError(error);
         });
@@ -103,7 +103,7 @@ app.factory('historyFactory', ['$http', 'NotificationService', 'DateService', 'D
                     "debitAmount": invoice.total_cost,
                     "method": "substract"
                 });
-                model.fetchSupplyInvoices(date);
+                model.fetchservicesInvoices(date);
             }
             stockFactory.fetchItems();
             NotificationService.showSuccessToast();

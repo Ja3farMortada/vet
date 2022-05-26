@@ -58,9 +58,56 @@ module.exports = (server, db) => {
         });
     });
 
+
+    //fetchTreatmentHistory
+    server.get('/fetchTreatmentHistory', (req, res) => {
+        let ID = req.query.ID;
+        let query = `SELECT * FROM treatments WHERE animal_ID_FK = ? AND treatment_status = 1 ORDER BY treatment_date, treatment_time ASC`;
+        db.query(query, ID, function (error, results) {
+            if (error) {
+                res.status(400).send(error);
+            } else {
+                res.send(results);
+            }
+        });
+    });
+
+    //fetchServiceHistory
+    server.get('/fetchServiceHistory', (req, res) => {
+        let ID = req.query.ID;
+        let query = `SELECT * FROM services WHERE animal_ID_FK = ? AND service_status = 1 ORDER BY service_date, service_time ASC`;
+        db.query(query, ID, function (error, results) {
+            if (error) {
+                res.status(400).send(error);
+            } else {
+                res.send(results);
+            }
+        });
+    });
+
     // addNewFilm
-    server.post('/addNewFilm', (req, res) => {
-        let data = req.body;
+    server.post('/newTreatment', (req, res) => {
+        let data = req.body.data;
+
+        let treatmentData = {
+            animal_ID_FK: data.animal_ID_FK,
+            treatment_type: data.treatment_type,
+            treatment_description: data.treatment_description,
+            payment_received: data.payment_received,
+            exchange_rate: data.exchange_rate,
+            treatment_date: data.treatment_date,
+            treatment_time: data.treatment_time
+        };
+
+        let reminderData = {
+            reminder_title: `${data.treatment_type} for ${data.animal_name}, Owner: ${data.owner_name}, Phone: ${data.owner_phone}`,
+            reminder_text: data.reminder_notes,
+            reminder_type: 'notification',
+            due_date: data.reminder_date,
+            due_time: '12:00:00',
+            repeat_reminder: null
+        }
+
         db.getConnection(function (error, connection) {
             if (error) {
                 res.status(500).send(error);
@@ -70,43 +117,24 @@ module.exports = (server, db) => {
                     connection.destroy();
                     res.status(500).send(error);
                 }
-                let query = `INSERT INTO film_invoice SET ?`;
-                connection.query(query, data, function (error) {
+                let query = `INSERT INTO treatments SET ?`;
+                connection.query(query, treatmentData, function (error, result) {
                     if (error) {
                         connection.rollback(function () {
                             connection.destroy();
                             res.status(400).send(error);
                         });
                     } else {
-                        let query2 = `UPDATE settings SET value = value - 1 WHERE setting_ID = 1`;
-                        connection.query(query2, function (error) {
-                            if (error) {
-                                connection.rollback(function () {
-                                    connection.destroy();
-                                    res.status(400).send(error);
-                                });
-                            }
-                            if (data.doctor_ID_FK) {
-                                let query3 = `UPDATE doctors SET doctor_debit = doctor_debit + ${data.doctor_fee} WHERE doctor_ID = ${data.doctor_ID_FK}`;
-                                connection.query(query3, function (error) {
-                                    if (error) {
-                                        connection.rollback(function () {
-                                            connection.destroy();
-                                            res.status(400).send(error);
-                                        });
-                                    }
-                                    connection.commit(function (error) {
-                                        if (error) {
-                                            connection.rollback(function () {
-                                                connection.destroy();
-                                                res.status(400).send(error);
-                                            });
-                                        }
+                        // let response = result;
+                        if (data.has_reminder) {
+                            let query2 = `INSERT INTO reminders SET ?`;
+                            connection.query(query2, reminderData, function (error) {
+                                if (error) {
+                                    connection.rollback(function () {
                                         connection.destroy();
-                                        res.send('');
+                                        res.status(400).send(error);
                                     });
-                                })
-                            } else {
+                                }
                                 connection.commit(function (error) {
                                     if (error) {
                                         connection.rollback(function () {
@@ -117,48 +145,37 @@ module.exports = (server, db) => {
                                     connection.destroy();
                                     res.send('');
                                 });
-                            }
-                        })
+                            })
+                        } else {
+                            connection.commit(function (error) {
+                                if (error) {
+                                    connection.rollback(function () {
+                                        connection.destroy();
+                                        res.status(400).send(error);
+                                    });
+                                }
+                                connection.destroy();
+                                res.send('');
+                            });
+                        }
                     }
                 })
             })
         })
     })
 
-    server.get('/getSettings', (req, res) => {
-        let query = `SELECT * FROM settings`;
-        db.query(query, function (error, result) {
+    server.post('/newService', (req, res) => {
+        let data = req.body.data;
+        let query = `INSERT INTO services SET ?`;
+        db.query(query, data, function (error, result) {
             if (error) {
-                res.status(400).send(error);
-            } else {
-                res.send(result)
-            }
-        })
-    })
-
-    server.post('/addFilms', (req, res) => {
-        let query = `UPDATE settings SET value = 149 WHERE setting_ID = 1`;
-        db.query(query, function (error) {
-            if (error) {
+                console.log(error);
                 res.status(400).send(error);
             } else {
                 res.send('')
             }
         })
-    })
-
-    server.post('/editSettings', (req, res) => {
-        let value = req.body.value;
-        let ID = req.body.ID
-        let query = `UPDATE settings SET value = ? WHERE setting_ID = ${ID}`;
-        db.query(query, value, function (error) {
-            if (error) {
-                res.status(400).send(error);
-            } else {
-                res.send('')
-            }
-        })
-    })
+    });
 
     // delete film 
     server.post('/deleteFilmInvoice', (req, res) => {

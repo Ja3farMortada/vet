@@ -12,9 +12,9 @@ module.exports = (server, db) => {
         });
     });
 
-    server.get('/getSupplyInvoices', (req, res) => {
+    server.get('/getServicesInvoices', (req, res) => {
         let date = req.query.date;
-        let query = `SELECT i.*, sup.supplier_name, JSON_ARRAYAGG(JSON_OBJECT('record_ID', d.record_ID, 'item_ID_FK', d.item_ID_FK, 'item_name', s.item_name, 'qty', d.quantity, 'cost', d.cost)) invoice_details FROM supply_invoice as i INNER JOIN supply_invoice_map as d ON i.record_ID = d.invoice_ID_FK INNER JOIN stock as s ON s.IID = d.item_ID_FK LEFT JOIN suppliers as sup ON i.supplier_ID_FK = sup.supplier_ID WHERE record_date = '${date}' AND i.record_status = 1 GROUP BY i.record_ID`;
+        let query = `SELECT S.*, A.owner_name, A.animal_name FROM services as S INNER JOIN animals as A ON animal_ID_FK = animal_ID WHERE S.service_date = '${date}' AND S.service_status = 1 UNION SELECT T.*, A.owner_name, A.animal_name FROM treatments AS T INNER JOIN animals AS A on animal_ID_FK = animal_ID WHERE T.treatment_date = '${date}' AND T.treatment_status = 1 ORDER BY service_time DESC`;
         db.query(query, function (error, results) {
             if (error) {
                 res.status(400).send(error);
