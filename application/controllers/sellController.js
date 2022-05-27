@@ -1,4 +1,4 @@
-app.controller('sellController', ['$scope', '$http', '$timeout', 'sellFactory', 'stockFactory', 'DateService', 'DebtsFactory', 'NotificationService', 'stockModel', 'customersFactory', function ($scope, $http, $timeout, sellFactory, stockFactory, DateService, DebtsFactory, NotificationService, stockModel, customersFactory) {
+app.controller('sellController', function ($scope, $http, $timeout, sellFactory, stockFactory, DateService, NotificationService, stockModel) {
 
     // define server path
     const url = `http://${keys.host}:${keys.port}`;
@@ -7,7 +7,7 @@ app.controller('sellController', ['$scope', '$http', '$timeout', 'sellFactory', 
     $scope.items = stockFactory.items;
 
     // Get Customers
-    $scope.customers = customersFactory.customers;
+    // $scope.customers = customersFactory.customers;
 
     stockFactory.getItems.then(function () {
         angular.element(document.querySelector("#barcodeInput")).trigger('focus');
@@ -254,4 +254,4 @@ app.controller('sellController', ['$scope', '$http', '$timeout', 'sellFactory', 
         });
     }
 
-}]);
+});

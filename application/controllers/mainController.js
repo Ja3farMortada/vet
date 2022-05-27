@@ -288,7 +288,7 @@ require('../models/animalsFactory');
 require('../models/stockFactory');
 require('../models/historyFactory');
 require('../models/debtsFactory');
-require('../models/doctorsFactory');
+// require('../models/doctorsFactory');
 require('../models/paymentsFactory');
 require('../models/reportsFactory');
 require('../models/remindersFactory');
@@ -296,8 +296,8 @@ require('../models/settingsFactory');
 // custom directive's models
 require('../models/accountFactory');
 require('../models/generalFactory');
-require('../models/suppliersFactory');
-require('../models/customersFactory');
+// require('../models/suppliersFactory');
+// require('../models/customersFactory');
 require('../models/stockModel');
 
 //require Application Services
@@ -307,10 +307,10 @@ require('../services/dateService');
 //require Directives
 require('../directives/generalSettings');
 require('../directives/accountSettings');
-require('../directives/customersSettings');
-require('../directives/suppliersSettings');
+// require('../directives/customersSettings');
+// require('../directives/suppliersSettings');
 require('../directives/stockSettings');
-require('../directives/doctorsSettings');
+// require('../directives/doctorsSettings');
 
 
 //                             *** Very useful javaScript methods ***

@@ -178,70 +178,70 @@ module.exports = (server, db) => {
     });
 
     // delete film 
-    server.post('/deleteFilmInvoice', (req, res) => {
-        let data = req.body;
-        // let query  = `UPDATE film_invoice SET record_status = 0 WHERE record_ID = ${ID}`;
-        db.getConnection(function (error, connection) {
-            if (error) {
-                res.status(500).send(error);
-            }
-            connection.beginTransaction(function (error) {
-                if (error) {
-                    connection.destroy();
-                    res.status(500).send(error);
-                }
-                let query = `UPDATE film_invoice SET record_status = 0 WHERE record_ID = ${data.ID}`;
-                connection.query(query, data, function (error) {
-                    if (error) {
-                        connection.rollback(function () {
-                            connection.destroy();
-                            res.status(400).send(error);
-                        });
-                    } else {
-                        let query2 = `UPDATE settings SET value = value + 1 WHERE setting_ID = 1`;
-                        connection.query(query2, function (error) {
-                            if (error) {
-                                connection.rollback(function () {
-                                    connection.destroy();
-                                    res.status(400).send(error);
-                                });
-                            }
-                            if (data.doctor_ID_FK) {
-                                let query3 = `UPDATE doctors SET doctor_debit = doctor_debit - ${data.doctor_fee} WHERE doctor_ID = ${data.doctor_ID_FK}`;
-                                connection.query(query3, function (error) {
-                                    if (error) {
-                                        connection.rollback(function () {
-                                            connection.destroy();
-                                            res.status(400).send(error);
-                                        });
-                                    }
-                                    connection.commit(function (error) {
-                                        if (error) {
-                                            connection.rollback(function () {
-                                                connection.destroy();
-                                                res.status(400).send(error);
-                                            });
-                                        }
-                                        connection.destroy();
-                                        res.send('');
-                                    });
-                                })
-                            } else {
-                                connection.commit(function (error) {
-                                    if (error) {
-                                        connection.rollback(function () {
-                                            connection.destroy();
-                                            res.status(400).send(error);
-                                        });
-                                    }
-                                    connection.destroy();
-                                    res.send('');
-                                });
-                            }
-                        })
-                    }
-                })
-            })
-        })
-    })
+    // server.post('/deleteFilmInvoice', (req, res) => {
+    //     let data = req.body;
+    //     // let query  = `UPDATE film_invoice SET record_status = 0 WHERE record_ID = ${ID}`;
+    //     db.getConnection(function (error, connection) {
+    //         if (error) {
+    //             res.status(500).send(error);
+    //         }
+    //         connection.beginTransaction(function (error) {
+    //             if (error) {
+    //                 connection.destroy();
+    //                 res.status(500).send(error);
+    //             }
+    //             let query = `UPDATE film_invoice SET record_status = 0 WHERE record_ID = ${data.ID}`;
+    //             connection.query(query, data, function (error) {
+    //                 if (error) {
+    //                     connection.rollback(function () {
+    //                         connection.destroy();
+    //                         res.status(400).send(error);
+    //                     });
+    //                 } else {
+    //                     let query2 = `UPDATE settings SET value = value + 1 WHERE setting_ID = 1`;
+    //                     connection.query(query2, function (error) {
+    //                         if (error) {
+    //                             connection.rollback(function () {
+    //                                 connection.destroy();
+    //                                 res.status(400).send(error);
+    //                             });
+    //                         }
+    //                         if (data.doctor_ID_FK) {
+    //                             let query3 = `UPDATE doctors SET doctor_debit = doctor_debit - ${data.doctor_fee} WHERE doctor_ID = ${data.doctor_ID_FK}`;
+    //                             connection.query(query3, function (error) {
+    //                                 if (error) {
+    //                                     connection.rollback(function () {
+    //                                         connection.destroy();
+    //                                         res.status(400).send(error);
+    //                                     });
+    //                                 }
+    //                                 connection.commit(function (error) {
+    //                                     if (error) {
+    //                                         connection.rollback(function () {
+    //                                             connection.destroy();
+    //                                             res.status(400).send(error);
+    //                                         });
+    //                                     }
+    //                                     connection.destroy();
+    //                                     res.send('');
+    //                                 });
+    //                             })
+    //                         } else {
+    //                             connection.commit(function (error) {
+    //                                 if (error) {
+    //                                     connection.rollback(function () {
+    //                                         connection.destroy();
+    //                                         res.status(400).send(error);
+    //                                     });
+    //                                 }
+    //                                 connection.destroy();
+    //                                 res.send('');
+    //                             });
+    //                         }
+    //                     })
+    //                 }
+    //             })
+    //         })
+    //     })
+    // })
 };

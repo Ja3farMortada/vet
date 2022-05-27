@@ -1,4 +1,4 @@
-app.controller('historyController', ['$scope', 'historyFactory', 'DateService', 'NotificationService', 'stockModel', function ($scope, historyFactory, DateService, NotificationService, stockModel) {
+app.controller('historyController', function ($scope, historyFactory, DateService, NotificationService, stockModel) {
 
     // get logged in user type
     $scope.loggedInUser = JSON.parse(localStorage.getItem('setting'));
@@ -126,4 +126,4 @@ app.controller('historyController', ['$scope', 'historyFactory', 'DateService', 
         ipcRenderer.send('printDocument', [invoice, $scope.printData]);
     };
 
-}]);
+});

@@ -1,10 +1,10 @@
-app.controller('stockController', function ($scope, stockFactory, NotificationService, stockModel, suppliersFactory) {
+app.controller('stockController', function ($scope, stockFactory, NotificationService, stockModel) {
 
     $scope.loggedInUser = JSON.parse(localStorage.getItem('setting'));
 
 
     // bind with suppliers
-    $scope.suppliers = suppliersFactory.suppliers;
+    // $scope.suppliers = suppliersFactory.suppliers;
 
 
     // Get Items

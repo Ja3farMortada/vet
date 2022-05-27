@@ -1,4 +1,4 @@
-app.factory('historyFactory', ['$http', 'NotificationService', 'DateService', 'DebtsFactory', 'suppliersFactory', 'stockFactory', function ($http, NotificationService, DateService, DebtsFactory, suppliersFactory, stockFactory) {
+app.factory('historyFactory', function ($http, NotificationService, DateService, stockFactory) {
 
     // define url
     const url = `http://${keys.host}:${keys.port}`;
@@ -89,21 +89,14 @@ app.factory('historyFactory', ['$http', 'NotificationService', 'DateService', 'D
         return $http.post(`${url}/deleteInvoice`, data).then(function () {
             if (tab == 0) {
                 if (invoice.customer_ID_FK) {
-                    DebtsFactory.updateCustomerDebit({
-                        "customer_ID": invoice.customer_ID_FK,
-                        "debitAmount": invoice.invoice_total_price,
-                        "method": "substract"
-                    });
-                    DebtsFactory.getDebtsDetails(DebtsFactory.selectedID);
+                    // DebtsFactory.updateCustomerDebit({
+                    //     "customer_ID": invoice.customer_ID_FK,
+                    //     "debitAmount": invoice.invoice_total_price,
+                    //     "method": "substract"
+                    // });
+                    // DebtsFactory.getDebtsDetails(DebtsFactory.selectedID);
                 }
                 model.fetchSalesInvoices(date);
-            } else if (tab == 1) {
-                suppliersFactory.updateSupplierDebit({
-                    "supplier_ID": invoice.supplier_ID_FK,
-                    "debitAmount": invoice.total_cost,
-                    "method": "substract"
-                });
-                model.fetchservicesInvoices(date);
             }
             stockFactory.fetchItems();
             NotificationService.showSuccessToast();
@@ -113,4 +106,4 @@ app.factory('historyFactory', ['$http', 'NotificationService', 'DateService', 'D
     };
 
     return model;
-}]);
+});

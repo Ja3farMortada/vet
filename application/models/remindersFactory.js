@@ -1,4 +1,4 @@
-app.factory('remindersFactory', ['$http', 'NotificationService', '$timeout', function ($http, NotificationService, $timeout) {
+app.factory('remindersFactory', function ($http, NotificationService, $timeout) {
 
     // define url
     const url = `http://${keys.host}:${keys.port}`;
@@ -70,4 +70,4 @@ app.factory('remindersFactory', ['$http', 'NotificationService', '$timeout', fun
     }
 
     return model;
-}]);
+});

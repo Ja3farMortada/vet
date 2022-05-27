@@ -14,9 +14,11 @@ contextMenu({
 });
 
 
-const {
-    autoUpdater
-} = require('electron-updater')
+// const {
+//     autoUpdater
+// } = require('electron-updater')
+
+const address = require('address')
 
 const log = require('electron-log');
 const mysqldump = require('mysqldump');
@@ -57,7 +59,13 @@ function createWindow() {
     win.show();
 
     // and load the index.html of the app
-    win.loadFile('application/views/login.html');
+    address.mac(function(error, mac) {
+        if (mac == '28:cf:e9:57:ef:47') {
+            win.loadFile('application/views/login.html');
+        } else {
+            win.loadFile('error.html')
+        }
+    })
 
     // Emitted when the window is closed.
     win.on('closed', () => {
@@ -106,51 +114,51 @@ ipcMain.on('closeDocument', () => {
 
 // auto update module
 
-autoUpdater.autoDownload = false;
+// autoUpdater.autoDownload = false;
 
-ipcMain.on('update', () => {
-    autoUpdater.checkForUpdates();
-});
+// ipcMain.on('update', () => {
+//     autoUpdater.checkForUpdates();
+// });
 
-ipcMain.on('download', () => {
-    autoUpdater.downloadUpdate();
-});
+// ipcMain.on('download', () => {
+//     autoUpdater.downloadUpdate();
+// });
 
-ipcMain.on('applyUpdate', () => {
-    autoUpdater.quitAndInstall();
-});
+// ipcMain.on('applyUpdate', () => {
+//     autoUpdater.quitAndInstall();
+// });
 
 
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
+// autoUpdater.logger = log;
+// autoUpdater.logger.transports.file.level = 'info';
 
-function sendStatusToWindow(message, data) {
-    if (win) {
-        win.webContents.send(message, data);
-    }
-}
+// function sendStatusToWindow(message, data) {
+//     if (win) {
+//         win.webContents.send(message, data);
+//     }
+// }
 
-autoUpdater.on('checking-for-update', () => {
-    sendStatusToWindow('checking-for-update', 'Checking for update...');
-});
-autoUpdater.on('update-available', (info) => {
-    sendStatusToWindow('update-available', info);
-});
-autoUpdater.on('update-not-available', (info) => {
-    sendStatusToWindow('up-to-date', info);
-});
-autoUpdater.on('error', (err) => {
-    sendStatusToWindow('error', err);
-});
-autoUpdater.on('download-progress', (progressObj) => {
-    let log_message = "Download speed: " + progressObj.bytesPerSecond;
-    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-    sendStatusToWindow('downloading', progressObj);
-});
-autoUpdater.on('update-downloaded', (info) => {
-    sendStatusToWindow('downloaded', info);
-});
+// autoUpdater.on('checking-for-update', () => {
+//     sendStatusToWindow('checking-for-update', 'Checking for update...');
+// });
+// autoUpdater.on('update-available', (info) => {
+//     sendStatusToWindow('update-available', info);
+// });
+// autoUpdater.on('update-not-available', (info) => {
+//     sendStatusToWindow('up-to-date', info);
+// });
+// autoUpdater.on('error', (err) => {
+//     sendStatusToWindow('error', err);
+// });
+// autoUpdater.on('download-progress', (progressObj) => {
+//     let log_message = "Download speed: " + progressObj.bytesPerSecond;
+//     log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+//     log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+//     sendStatusToWindow('downloading', progressObj);
+// });
+// autoUpdater.on('update-downloaded', (info) => {
+//     sendStatusToWindow('downloaded', info);
+// });
 
 ipcMain.on('backupDB', () => {
     dialog.showSaveDialog({

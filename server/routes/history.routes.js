@@ -63,8 +63,8 @@ module.exports = (server, db) => {
                 let items = invoice.invoice_details;
                 switch (tab) {
                     case 0:
-                        let InvoiceID = req.body.invoice.invoice_ID;
-                        let query = `UPDATE invoice SET invoice_status = 0 WHERE invoice_ID = ${InvoiceID}`;
+                        var invoiceID = req.body.invoice.invoice_ID;
+                        let query = `UPDATE invoice SET invoice_status = 0 WHERE invoice_ID = ${invoiceID}`;
                         connection.query(query, function (error) {
                             if (error) {
                                 connection.rollback(function () {

@@ -1,4 +1,4 @@
-app.factory('animalsFactory', function ($http, NotificationService, DateService, doctorsFactory) {
+app.factory('animalsFactory', function ($http, NotificationService, DateService) {
 
     // define url
     const url = `http://${keys.host}:${keys.port}`;

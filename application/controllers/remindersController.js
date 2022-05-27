@@ -1,4 +1,4 @@
-app.controller('remindersController', ['$scope', 'remindersFactory', 'NotificationService', 'DateService', function ($scope, remindersFactory, NotificationService, DateService) {
+app.controller('remindersController', function ($scope, remindersFactory, NotificationService, DateService) {
 
     // bind reminders to application model
     $scope.reminders = remindersFactory.reminders;
@@ -99,4 +99,4 @@ app.controller('remindersController', ['$scope', 'remindersFactory', 'Notificati
         });
     }
 
-}]);
+});

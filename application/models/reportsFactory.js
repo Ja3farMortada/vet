@@ -5,13 +5,10 @@ app.factory('ReportsFactory', ['$http', 'NotificationService', function ($http, 
 
     var model = {};
     model.topSales = [];
-    model.topSupplies = [];
+    model.topServices = [];
     model.salesReport = [];
     model.totalPayments = [{}];
-    model.panoramicData = {};
-    model.selectedSupplier = {
-        value: null
-    }
+    model.animalsData = [{}, {}];
 
     model.dates = {
         start_date: moment().clone().startOf('month').format('YYYY-MM-DD'),
@@ -26,66 +23,66 @@ app.factory('ReportsFactory', ['$http', 'NotificationService', function ($http, 
         });
     }
 
-    model.topSuppliesReport = () => {
-        $http.post(`${url}/topSuppliesReport`, model.dates).then(function (response) {
-            angular.copy(response.data, model.topSupplies);
+    model.topServicesReport = () => {
+        $http.post(`${url}/topServicesReport`, model.dates).then(function (response) {
+            angular.copy(response.data, model.topServices);
         }, function (error) {
             NotificationService.showError(error);
         });
     }
 
-    model.getSalesReport = ID => {
+    model.getSalesReport = () => {
         let data = {
             start_date: model.dates.start_date,
-            end_date: model.dates.end_date,
-            supplier_ID: ID
+            end_date: model.dates.end_date
         }
         $http.post(`${url}/getSalesReport`, data).then(function (response) {
             angular.copy(response.data, model.salesReport);
-            model.getTotalPayments(ID);
-        }, function (error) {
-            NotificationService.showError(error);
-        });
-    }
-
-    // getTotalPayments
-    model.getTotalPayments = async ID => {
-        let data = {
-            start_date: model.dates.start_date,
-            end_date: model.dates.end_date,
-            supplier_ID: ID
-        }
-        await $http.post(`${url}/getTotalPayments`, data).then(function (response) {
-            angular.copy(response.data, model.totalPayments);
+            // model.getTotalPayments(ID);
             model.salesReportChart();
         }, function (error) {
             NotificationService.showError(error);
         });
     }
 
-    // get panoramic data
-    model.getPanoramicReport = async () => {
-        $http.post(`${url}/getPanoramicReport`, model.dates).then(response => {
-            angular.copy(response.data, model.panoramicData);
-            model.createPanoramicChart();
+    // getTotalPayments
+    // model.getTotalPayments = async ID => {
+    //     let data = {
+    //         start_date: model.dates.start_date,
+    //         end_date: model.dates.end_date,
+    //         supplier_ID: ID
+    //     }
+    //     await $http.post(`${url}/getTotalPayments`, data).then(function (response) {
+    //         angular.copy(response.data, model.totalPayments);
+    //         model.salesReportChart();
+    //     }, function (error) {
+    //         NotificationService.showError(error);
+    //     });
+    // }
+
+    // get Animals data
+    model.getAnimalsReport = async () => {
+        $http.post(`${url}/getAnimalsReport`, model.dates).then(response => {
+            angular.copy(response.data, model.animalsData);
+            model.createAnimalsChart();
         }, error => {
             NotificationService.showError(error);
         });
     }
 
-    model.createPanoramicChart = () => {
-        if (typeof panoramicChart !== 'undefined') {
-            panoramicChart.destroy();
+    model.createAnimalsChart = () => {
+        if (typeof animalsChart !== 'undefined') {
+            animalsChart.destroy();
         }
-        var ctx = document.getElementById('panoramicChartElement').getContext('2d');
-        panoramicChart = new Chart(ctx, {
+        var ctx = document.getElementById('animalsChartElement').getContext('2d');
+        animalsChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: [`Total Sales`, `Doctors Fees`],
+                labels: [`Total Services`, `Total Treatments`],
                 datasets: [{
                     label: ['test'],
-                    backgroundColor: ['#28a745', '#FF1493'],
-                    data: [model.panoramicData.totalSales || 0, model.panoramicData.doctorsFees || 0]
+                    backgroundColor: ['#007bff', '#dc3545'],
+                    data: [model.animalsData[0].total || 0, model.animalsData[1].total || 0]
                 }]
             }
         });
@@ -98,23 +95,19 @@ app.factory('ReportsFactory', ['$http', 'NotificationService', function ($http, 
         if (model.salesReport.length != 0) {
             let sales = this.salesReport[0]['total_sales'];
             let profit = this.salesReport[0]['total_sales'] - this.salesReport[0]['total_cost'];
-            let debts = this.salesReport[1]['total_sales'];
-            let debtsPayments = model.totalPayments[0]['totalPayments'];
-            let supplies = model.salesReport[2]['total_cost'];
-            let suppliesPayments = model.totalPayments[1]['totalPayments'];
             var ctx = document.getElementById('salesReport').getContext('2d');
             salesReportChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: [`Sales`, `Profit`, `Debts`, `D Payments`, `Supplies`, `S Payments`],
+                    labels: [`Sales`, `Profit`],
                     datasets: [{
-                        backgroundColor: ['#343a40', '#28a745', '#dc3545', '#007bff', '#ffc107', '#17a2b8'], //dc3545
-                        data: [sales, profit, debts, debtsPayments, supplies, suppliesPayments],
+                        backgroundColor: ['#343a40', '#28a745'], // '#dc3545', '#007bff', '#ffc107', '#17a2b8'
+                        data: [sales, profit],
                         stack: 'Stack 0'
                     }, ]
                 },
                 options: {
-                    // fill: true,
+                    fill: true,
                     // indexAxis: 'y',
                     plugins: {
                         legend: {

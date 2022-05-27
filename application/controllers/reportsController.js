@@ -2,18 +2,16 @@ app.controller('reportsController', function ($scope, ReportsFactory, suppliersF
 
     // bind variables with Factory
     $scope.dates = ReportsFactory.dates;
+
     $scope.topSales = ReportsFactory.topSales;
-    $scope.topSupplies = ReportsFactory.topSupplies;
+    $scope.topServices = ReportsFactory.topServices;
+
     $scope.salesReport = ReportsFactory.salesReport;
     $scope.totalPayments = ReportsFactory.totalPayments;
-    $scope.panoramicData = ReportsFactory.panoramicData;
-    $scope.selectedSupplier = ReportsFactory.selectedSupplier;
-
-    // bind suppliers
-    $scope.suppliers = suppliersFactory.suppliers;
+    $scope.animalsData = ReportsFactory.animalsData;
 
     ReportsFactory.salesReportChart();
-    ReportsFactory.createPanoramicChart();
+    ReportsFactory.createAnimalsChart();
 
     // start datepicker
     $('#startDatepicker').datepicker({
@@ -43,9 +41,9 @@ app.controller('reportsController', function ($scope, ReportsFactory, suppliersF
 
     $scope.getReports = () => {
         ReportsFactory.topSalesReport();
-        ReportsFactory.topSuppliesReport();
-        ReportsFactory.getSalesReport($scope.selectedSupplier.value);
-        ReportsFactory.getPanoramicReport();
+        ReportsFactory.topServicesReport();
+        ReportsFactory.getSalesReport();
+        ReportsFactory.getAnimalsReport();
     }
 
 });
