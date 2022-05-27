@@ -60,11 +60,11 @@ function createWindow() {
 
     // and load the index.html of the app
     address.mac(function(error, mac) {
-        if (mac == '28:cf:e9:57:ef:47') {
+        // if (mac == '30:52:cb:c3:42:7b') {
             win.loadFile('application/views/login.html');
-        } else {
-            win.loadFile('error.html')
-        }
+        // } else {
+        //     win.loadFile('error.html')
+        // }
     })
 
     // Emitted when the window is closed.

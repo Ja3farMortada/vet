@@ -1,4 +1,4 @@
-app.controller('reportsController', function ($scope, ReportsFactory, suppliersFactory) {
+app.controller('reportsController', function ($scope, ReportsFactory) {
 
     // bind variables with Factory
     $scope.dates = ReportsFactory.dates;
