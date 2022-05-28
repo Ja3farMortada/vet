@@ -6,6 +6,10 @@ const {
     dialog
 } = require('electron');
 
+const {
+    machineIdSync
+} = require('node-machine-id')
+
 const contextMenu = require('electron-context-menu');
 
 // context menu
@@ -58,14 +62,12 @@ function createWindow() {
     win.maximize();
     win.show();
 
-    // and load the index.html of the app
-    address.mac(function(error, mac) {
-        // if (mac == '30:52:cb:c3:42:7b') {
-            win.loadFile('application/views/login.html');
-        // } else {
-        //     win.loadFile('error.html')
-        // }
-    })
+    let ID = machineIdSync();
+    if (ID == 'a584e79c83a9d9964c0b4cb33c1479bbf2f2b9592a8e3e9ccaa3b50844800554') {
+        win.loadFile('application/views/login.html');
+    } else {
+        win.loadFile('error.html')
+    }
 
     // Emitted when the window is closed.
     win.on('closed', () => {
@@ -101,7 +103,7 @@ ipcMain.on('printDocument', function (event, data) {
     printWindow.show();
     printWindow.webContents.on('did-finish-load', async function () {
         await printWindow.webContents.send('printDocument', data);
-        printWindow.webContents.print(function() {
+        printWindow.webContents.print(function () {
             printWindow.close()
         });
     })

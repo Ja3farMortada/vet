@@ -59,6 +59,7 @@
         "moment": "^2.27.0",
         "mysql2": "^2.3.2",
         "mysqldump": "^3.2.0",
+        "node-machine-id": "^1.1.12",
         "popper.js": "^1.16.1",
         "sweetalert2": "^11.1.8",
         "update-electron-app": "^1.5.0"
