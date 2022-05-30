@@ -1,4 +1,4 @@
-app.factory('animalsFactory', function ($http, NotificationService, DateService) {
+app.factory('animalsFactory', function ($http, NotificationService, DateService, remindersFactory) {
 
     // define url
     const url = `http://${keys.host}:${keys.port}`;
@@ -96,6 +96,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService)
         $http.post(`${url}/newTreatment`, {data: data}).then(response => {
             NotificationService.showSuccess();
             $('#treatmentModal').modal('toggle');
+            remindersFactory.fetchReminders()
         }, error => {
             NotificationService.showError(error);
         })
@@ -105,6 +106,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService)
         $http.post(`${url}/newService`, {data: data}).then(response => {
             NotificationService.showSuccess();
             $('#serviceModal').modal('toggle');
+            remindersFactory.fetchReminders()
         }, error => {
             NotificationService.showError(error);
         })

@@ -148,7 +148,7 @@ app.controller('mainController', function ($scope, $timeout, $http, $interval, r
 
 
     // count reminders
-    $scope.remindersCount = remindersFactory.reminders;
+    $scope.remindersCount = remindersFactory.upcomingReminders;
 
     angular.element(document).ready(() => {
         $scope.check();

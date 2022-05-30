@@ -63,11 +63,11 @@ function createWindow() {
     win.show();
 
     let ID = machineIdSync();
-    if (ID == 'a584e79c83a9d9964c0b4cb33c1479bbf2f2b9592a8e3e9ccaa3b50844800554') {
+    // if (ID == 'a584e79c83a9d9964c0b4cb33c1479bbf2f2b9592a8e3e9ccaa3b50844800554') {
         win.loadFile('application/views/login.html');
-    } else {
-        win.loadFile('error.html')
-    }
+    // } else {
+    //     win.loadFile('error.html')
+    // }
 
     // Emitted when the window is closed.
     win.on('closed', () => {

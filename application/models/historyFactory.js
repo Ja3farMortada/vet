@@ -4,14 +4,14 @@ app.factory('historyFactory', function ($http, NotificationService, DateService,
     const url = `http://${keys.host}:${keys.port}`;
 
     var model = {};
-    model.tabSelected = 0;
     model.datePickerValue = DateService.getDate();
     model.salesInvoices = [];
     model.servicesInvoices = [];
     model.totalSales = [];
     model.totalServices = [];
-
+    
     //tab selection
+    model.tabSelected = 0;
     model.selectTab = function (tab) {
         if (this.tabSelected != tab) {
             switch (tab) {

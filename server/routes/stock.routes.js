@@ -29,7 +29,7 @@ module.exports = (server, db) => {
         let query = `INSERT INTO stock SET ?`;
         db.query(query, item, function (error, results) {
             if (error) {
-                res.status(400).end(error);
+                res.status(400).send(error);
             } else {
                 let sql = "SELECT * FROM `stock` WHERE `IID` = ? ";
                 db.query(sql, results.insertId, function (error, results) {

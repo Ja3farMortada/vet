@@ -2,7 +2,7 @@ module.exports = (server, db) => {
 
     //get reminders function
     function getReminders(res) {
-        let query = `SELECT * FROM reminders WHERE reminder_status = true`;
+        let query = `SELECT * FROM reminders WHERE reminder_status = 1 ORDER BY due_date DESC, due_time DESC`;
         db.query(query, function (error, results) {
             if (error) {
                 res.status(400).send(error);
@@ -55,4 +55,16 @@ module.exports = (server, db) => {
             }
         });
     });
+
+    // get upcoming reminders
+    server.get('/getUpcomingReminders', (req, res) => {
+        let query = `SELECT * FROM reminders WHERE reminder_type = 'notification' AND reminder_status = 1 AND due_date < DATE_ADD(CURRENT_DATE(), INTERVAL 15 DAY) ORDER BY due_date DESC, due_time DESC`;
+        db.query(query, function (error, results) {
+            if (error) {
+                res.status(400).send(error);
+            } else {
+                res.send(results);
+            }
+        });
+    })
 }

@@ -2,9 +2,22 @@ app.controller('remindersController', function ($scope, remindersFactory, Notifi
 
     // bind reminders to application model
     $scope.reminders = remindersFactory.reminders;
+    $scope.upcomingReminders = remindersFactory.upcomingReminders;
 
     // bind moment function with a scope to use it in view
     $scope.moment = moment;
+
+    // Tabs selection
+    $scope.tabSelected = remindersFactory.tabSelected;
+    $scope.selectTab = tab => {
+        if (tab != remindersFactory.tabSelected) {
+            remindersFactory.selectTab(tab);
+            $scope.tabSelected = remindersFactory.tabSelected;
+            $scope.items = null;
+            $scope.activeRow = null;
+            $scope.user = null;
+        }
+    };
 
     // open add reminder modal
     $scope.openReminderModal = function (type, ID) {
