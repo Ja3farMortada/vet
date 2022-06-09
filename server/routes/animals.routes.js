@@ -93,6 +93,7 @@ module.exports = (server, db) => {
             animal_ID_FK: data.animal_ID_FK,
             treatment_type: data.treatment_type,
             treatment_description: data.treatment_description,
+            payment_currency: data.payment_currency,
             payment_received: data.payment_received,
             exchange_rate: data.exchange_rate,
             treatment_date: data.treatment_date,

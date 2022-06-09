@@ -95,6 +95,7 @@ app.factory('remindersFactory', function ($http, NotificationService, $timeout) 
             // model.reminders.splice(index, 1);
             // angular.copy(response.data, model.reminders);
             NotificationService.showSuccessToast();
+            getUpcomingReminders();
             return index;
         }, function (error) {
             NotificationService.showError(error);

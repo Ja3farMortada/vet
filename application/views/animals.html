@@ -138,7 +138,8 @@
                                 <li class="nav-item text-center">
                                     <a class="nav-link text-secondary"
                                         ng-class="{'active': tabSelected === 0, 'active-tab-dir': tabSelected === 0}"
-                                        ng-click="selectTab(0)"><i class="fas fa-notes-medical fa-2x fa-fw"></i> Treatment History</a>
+                                        ng-click="selectTab(0)"><i class="fas fa-notes-medical fa-2x fa-fw"></i>
+                                        Treatment History</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-secondary"
@@ -324,19 +325,39 @@
                             </select>
                         </div>
 
+                        <!-- description -->
                         <div class="col-6">
-                            <label>Payment Received (L.L)</label>
-                            <input type="number" class="form-control text-center" required
-                                ng-model="treatmentData.payment_received">
-                        </div>
-
-                        <div class="col-12 mt-3">
                             <label>Treatment Description</label>
-                            <input type="text" class="form-control text-center" required
+                            <input type="text" class="form-control" required
                                 ng-model="treatmentData.treatment_description" spellcheck="false">
                         </div>
 
-                        <div class="col-6 mt-3">
+                        <!-- currency -->
+                        <div class="form-group col-6 mt-3">
+                            <label>Payment Currency</label>
+                            <select class="form-control text-center" ng-model="treatmentData.payment_currency" required>
+                                <option value="lira" selected>Lebanese Pound L.L</option>
+                                <option value="dollar">US Dollar $</option>
+                            </select>
+                        </div>
+                        <!-- payment -->
+                        <div class="form-group col-6 mt-3">
+                            <label>Payment Received</label>
+                            <!-- <input type="number" class="form-control text-center" required
+                                ng-model="treatmentData.payment_received"> -->
+                            <div class="input-group">
+                                <input type="number" class="form-control text-center"
+                                    ng-model="treatmentData.payment_received" min="0" required>
+                                <div class="input-group-append">
+                                    <span ng-if="treatmentData.payment_currency == 'lira'"
+                                        class="input-group-text">L.L</span>
+                                    <span ng-if="treatmentData.payment_currency == 'dollar'"
+                                        class="input-group-text">$</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 mt-2">
                             <label>Add Reminder?</label>
                             <select class="form-control" ng-model="treatmentData.has_reminder">
                                 <option ng-value="false">No</option>

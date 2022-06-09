@@ -35,7 +35,7 @@
     <div class="container" ng-show="tabSelected === 0">
         <h1 class="text-center mt-5 text-secondary" ng-if="upcomingReminders.length == 0">No
             Upcoming Reminders</h1>
-        <p>This section will show upcoming reminders within 2 weeks.</p>
+        <p ng-show="upcomingReminders.length > 0">This section will show upcoming reminders within 2 weeks.</p>
         <ul class="list-group mb-2">
             <li class="list-group-item" dir-paginate="reminder in upcomingReminders | itemsPerPage: 5">
                 <div class="row">

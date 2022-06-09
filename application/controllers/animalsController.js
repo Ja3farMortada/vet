@@ -175,6 +175,7 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
             animal_ID_FK: $scope.selectedAnimal.animal_ID,
             treatment_type: null,
             treatment_description: null,
+            payment_currency: 'lira',
             payment_received: null,
             has_reminder: false,
             reminder_date: null,
@@ -190,8 +191,9 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
     $scope.submitTreatment = () => {
         $scope.treatmentData.treatment_date = DateService.getDate();
         $scope.treatmentData.treatment_time = DateService.getTime();
+        console.log($scope.treatmentData);
         animalsFactory.submitTreatment($scope.treatmentData);
-        $scope.showAnimalDetails($scope.selectedAnimal)
+        $scope.showAnimalDetails($scope.selectedAnimal);
     }
 
     $scope.openServiceModal = () => {

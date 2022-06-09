@@ -150,7 +150,7 @@
                     <td>{{ record.service_type }}</td>
                     <td>{{ record.service_description || '----' }}</td>
                     <td>{{ record.service_time }}</td>
-                    <td>{{ (record.payment_received).toLocaleString() }} L.L</td>
+                    <td>{{ (record.payment_received).toLocaleString() }} <span ng-if="record.payment_currency == 'lira'">L.L</span><span ng-if="record.payment_currency == 'dollar'">$</span></td>
                 </tbody>
             </table>
             <dir-pagination-controls pagination-id="services" max-size="5"

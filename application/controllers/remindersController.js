@@ -98,7 +98,7 @@ app.controller('remindersController', function ($scope, remindersFactory, Notifi
             $scope.data.due_date = null;
             $scope.data.due_time = null;
         }
-        $scope.data.due_time = `${timeInput.value}:00`;
+        $scope.data.due_time = `${timeInput.value}`;
         remindersFactory.editReminder($scope.data);
     }
 
