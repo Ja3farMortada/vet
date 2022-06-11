@@ -12,29 +12,9 @@
 
     <!-- ng-show="topSupplies.length != 0" -->
     <div class="row">
+
         <!-- Top Sales -->
-        <div class="col-5">
-            <div class="card shadow">
-                <div class="card-header text-center">
-                    <h5 class="font-weight-bold">Top Sales</h5>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table table-sm text-center mb-0">
-                        <tr>
-                            <th>Name</th>
-                            <th>Amount</th>
-                        </tr>
-                        <tr ng-repeat="data in topSales">
-                            <td>{{ data.items }}</td>
-                            <td>{{ data.count }}</td>
-                        </tr>
-                        <tr ng-if="topSales.length == 0" class="table-active">
-                            <td colspan="2">No Records Yet!</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <br> <br>
+        <div class="col-6">
             <div class="card shadow">
                 <div class="card-header text-center">
                     <h5 class="font-weight-bold">Top Services</h5>
@@ -44,12 +24,12 @@
                         <tr>
                             <th>Name</th>
                             <th>Amount</th>
-                            <th>Total</th>
+                            <!-- <th>Total</th> -->
                         </tr>
                         <tr ng-repeat="data in topServices">
                             <td>{{ data.services }}</td>
                             <td>{{ data.count }}</td>
-                            <td>{{ (data.total).toLocaleString() }} L.L</td>
+                            <!-- <td>{{ (data.total).toLocaleString() }} L.L</td> -->
                         </tr>
                         <tr ng-if="topServices.length == 0" class="table-active">
                             <td colspan="3">No Records Yet!</td>
@@ -57,10 +37,63 @@
                     </table>
                 </div>
             </div>
+
+            <br><br>
+
+
+            <div class="row">
+                <div class="col-7">
+                    <div class="card shadow">
+                        <div class="card-header text-center">
+                            <h5 class="font-weight-bold">Top Sales</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm text-center mb-0">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Amount</th>
+                                </tr>
+                                <tr ng-repeat="data in topSales">
+                                    <td>{{ data.items }}</td>
+                                    <td>{{ data.count }}</td>
+                                </tr>
+                                <tr ng-if="topSales.length == 0" class="table-active">
+                                    <td colspan="2">No Records Yet!</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-5">
+                    <!-- Finance -->
+                    <div class="card shadow">
+                        <div class="card-header text-center">
+                            <h5 class="font-weight-bold">Sales Income</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salesReport"></canvas>
+                            <table class="table table-sm table-bordered text-center mt-2">
+                                <tr>
+                                    <th width="60%">Sales</th>
+                                    <th>Profit</th>
+                                </tr>
+                                <tr>
+                                    <td width="40%" class="text-dark h6">
+                                        {{ salesReport[0]['total_sales'].toLocaleString() || 0 }} $
+                                    </td>
+                                    <td class="text-success h6">
+                                        {{ (salesReport[0]['total_sales'] - salesReport[0]['total_cost']).toLocaleString() || 0 }}
+                                        $</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Animals Chart -->
-        <div class="col-4">
+        <div class="col-3">
             <div class="card shadow">
                 <div class="card-header text-center">
                     <h5 class="font-weight-bold">Services Income</h5>
@@ -82,27 +115,24 @@
                 </div>
             </div>
         </div>
-
-        <!-- Finance  -->
+        <!-- Animals Chart -->
         <div class="col-3">
             <div class="card shadow">
                 <div class="card-header text-center">
-                    <h5 class="font-weight-bold">Sales Income</h5>
+                    <h5 class="font-weight-bold">Services Income</h5>
                 </div>
                 <div class="card-body">
-                    <canvas id="salesReport"></canvas>
+                    <canvas id="animalsDollarChartElement"></canvas>
                     <table class="table table-sm table-bordered text-center mt-2">
                         <tr>
-                            <th width="60%">Sales</th>
-                            <th>Profit</th>
+                            <th width="50%">Total Services</th>
+                            <th>Total Treatments</th>
                         </tr>
                         <tr>
-                            <td width="40%" class="text-dark h6">
-                                {{ salesReport[0]['total_sales'].toLocaleString() || 0 }} $
+                            <td class="text-primary h6">{{ animalsDataDollar[0].total.toLocaleString() || 0 }} $
                             </td>
-                            <td class="text-success h6">
-                                {{ (salesReport[0]['total_sales'] - salesReport[0]['total_cost']).toLocaleString() || 0 }}
-                                $</td>
+                            <td class="text-danger h6">{{ animalsDataDollar[1].total.toLocaleString() || 0 }} $
+                            </td>
                         </tr>
                     </table>
                 </div>

@@ -168,81 +168,66 @@ module.exports = (server, db) => {
     server.post('/newService', (req, res) => {
         let data = req.body.data;
         let query = `INSERT INTO services SET ?`;
-        db.query(query, data, function (error, result) {
+        db.query(query, data, function (error) {
             if (error) {
-                console.log(error);
                 res.status(400).send(error);
             } else {
-                res.send('')
+                res.send('');
             }
         })
     });
 
-    // delete film 
-    // server.post('/deleteFilmInvoice', (req, res) => {
-    //     let data = req.body;
-    //     // let query  = `UPDATE film_invoice SET record_status = 0 WHERE record_ID = ${ID}`;
-    //     db.getConnection(function (error, connection) {
-    //         if (error) {
-    //             res.status(500).send(error);
-    //         }
-    //         connection.beginTransaction(function (error) {
-    //             if (error) {
-    //                 connection.destroy();
-    //                 res.status(500).send(error);
-    //             }
-    //             let query = `UPDATE film_invoice SET record_status = 0 WHERE record_ID = ${data.ID}`;
-    //             connection.query(query, data, function (error) {
-    //                 if (error) {
-    //                     connection.rollback(function () {
-    //                         connection.destroy();
-    //                         res.status(400).send(error);
-    //                     });
-    //                 } else {
-    //                     let query2 = `UPDATE settings SET value = value + 1 WHERE setting_ID = 1`;
-    //                     connection.query(query2, function (error) {
-    //                         if (error) {
-    //                             connection.rollback(function () {
-    //                                 connection.destroy();
-    //                                 res.status(400).send(error);
-    //                             });
-    //                         }
-    //                         if (data.doctor_ID_FK) {
-    //                             let query3 = `UPDATE doctors SET doctor_debit = doctor_debit - ${data.doctor_fee} WHERE doctor_ID = ${data.doctor_ID_FK}`;
-    //                             connection.query(query3, function (error) {
-    //                                 if (error) {
-    //                                     connection.rollback(function () {
-    //                                         connection.destroy();
-    //                                         res.status(400).send(error);
-    //                                     });
-    //                                 }
-    //                                 connection.commit(function (error) {
-    //                                     if (error) {
-    //                                         connection.rollback(function () {
-    //                                             connection.destroy();
-    //                                             res.status(400).send(error);
-    //                                         });
-    //                                     }
-    //                                     connection.destroy();
-    //                                     res.send('');
-    //                                 });
-    //                             })
-    //                         } else {
-    //                             connection.commit(function (error) {
-    //                                 if (error) {
-    //                                     connection.rollback(function () {
-    //                                         connection.destroy();
-    //                                         res.status(400).send(error);
-    //                                     });
-    //                                 }
-    //                                 connection.destroy();
-    //                                 res.send('');
-    //                             });
-    //                         }
-    //                     })
-    //                 }
-    //             })
-    //         })
-    //     })
-    // })
+    // delete treatment
+    server.post('/deleteTreatment', (req, res) => {
+        let ID = req.body.ID;
+        let query = `UPDATE treatments SET treatment_status = 0 WHERE treatment_ID = ?`;
+        db.query(query, ID, function (error) {
+            if (error) {
+                res.status(400).send(error);
+            } else {
+                res.send('');
+            }
+        })
+    });
+
+    // editTreatment
+    server.post('/editTreatment', (req, res) => {
+        let data = req.body.data;
+        let query = `UPDATE treatments SET ? WHERE treatment_ID = ${data.treatment_ID}`;
+        db.query(query, data, function (error) {
+            if (error) {
+                res.status(400).send(error);
+            } else {
+                res.send('');
+            }
+        })
+    });
+
+
+    // delete service
+    server.post('/deleteService', (req, res) => {
+        let ID = req.body.ID;
+        let query = `UPDATE services SET service_status = 0 WHERE service_ID = ?`;
+        db.query(query, ID, function (error) {
+            if (error) {
+                res.status(400).send(error);
+            } else {
+                res.send('');
+            }
+        })
+    });
+
+    // editservice
+    server.post('/editService', (req, res) => {
+        let data = req.body.data;
+        let query = `UPDATE services SET ? WHERE service_ID = ${data.service_ID}`;
+        db.query(query, data, function (error) {
+            if (error) {
+                res.status(400).send(error);
+            } else {
+                res.send('');
+            }
+        })
+    });
+
 };

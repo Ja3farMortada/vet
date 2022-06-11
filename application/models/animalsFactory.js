@@ -92,7 +92,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
         });
     };
 
-    model.submitTreatment = data => {
+    model.submitAddTreatment = data => {
         $http.post(`${url}/newTreatment`, {data: data}).then(response => {
             NotificationService.showSuccess();
             $('#treatmentModal').modal('toggle');
@@ -102,7 +102,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
         })
     }
 
-    model.submitService = data => {
+    model.submitAddService = data => {
         $http.post(`${url}/newService`, {data: data}).then(response => {
             NotificationService.showSuccess();
             $('#serviceModal').modal('toggle');
@@ -110,6 +110,45 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
         }, error => {
             NotificationService.showError(error);
         })
+    }
+
+    // delete treatment
+    model.deleteTreatment = ID => {
+        $http.post(`${url}/deleteTreatment`, {ID: ID}).then(() => {
+            NotificationService.showSuccess();
+        }, error => {
+            NotificationService.showError(error);
+        });
+    }
+
+    // edit treatment
+    model.submitEditTreatment = data => {
+        $http.post(`${url}/editTreatment`, {data: data}).then(() => {
+            $('#treatmentModal').modal('toggle');
+            NotificationService.showSuccess();
+        }, error => {
+            NotificationService.showError(error);
+        });
+    }
+
+
+    // delete Service
+    model.deleteService = ID => {
+        $http.post(`${url}/deleteService`, {ID: ID}).then(() => {
+            NotificationService.showSuccess();
+        }, error => {
+            NotificationService.showError(error);
+        });
+    }
+
+    // edit Service
+    model.submitEditService = data => {
+        $http.post(`${url}/editService`, {data: data}).then(() => {
+            $('#serviceModal').modal('toggle');
+            NotificationService.showSuccess();
+        }, error => {
+            NotificationService.showError(error);
+        });
     }
 
     return model;

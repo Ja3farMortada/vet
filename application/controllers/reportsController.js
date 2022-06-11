@@ -9,6 +9,7 @@ app.controller('reportsController', function ($scope, ReportsFactory) {
     $scope.salesReport = ReportsFactory.salesReport;
     $scope.totalPayments = ReportsFactory.totalPayments;
     $scope.animalsData = ReportsFactory.animalsData;
+    $scope.animalsDataDollar = ReportsFactory.animalsDataDollar;
 
     ReportsFactory.salesReportChart();
     ReportsFactory.createAnimalsChart();

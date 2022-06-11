@@ -107,7 +107,7 @@ app.config(function ($routeProvider) {
         })
 
         .otherwise({
-            redirectTo: '/sell'
+            redirectTo: '/animals'
         });
 
 });
@@ -129,7 +129,7 @@ app.config(function ($routeProvider) {
 app.factory('mainFactory', function($location) {
     var model = {};
 
-    model.location = $location.$$path;
+    model.location = $location.$$path || '/animals';
     return model;
 })
 // Main Controller

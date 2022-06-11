@@ -9,6 +9,7 @@ app.factory('ReportsFactory', ['$http', 'NotificationService', function ($http, 
     model.salesReport = [];
     model.totalPayments = [{}];
     model.animalsData = [{}, {}];
+    model.animalsDataDollar = [{}, {}];
 
     model.dates = {
         start_date: moment().clone().startOf('month').format('YYYY-MM-DD'),
@@ -64,7 +65,18 @@ app.factory('ReportsFactory', ['$http', 'NotificationService', function ($http, 
     model.getAnimalsReport = async () => {
         $http.post(`${url}/getAnimalsReport`, model.dates).then(response => {
             angular.copy(response.data, model.animalsData);
-            model.createAnimalsChart();
+            if (model.animalsData.length == 1) {
+                model.animalsData.push({total: 0})
+            }
+            $http.post(`${url}/getAnimalsReportDollar`, model.dates).then(response => {
+                angular.copy(response.data, model.animalsDataDollar);
+                if (model.animalsDataDollar.length == 1) {
+                    model.animalsDataDollar.push({total: 0})
+                }
+                model.createAnimalsChart();
+            }, error => {
+                NotificationService.showError(error);
+            });
         }, error => {
             NotificationService.showError(error);
         });
@@ -78,11 +90,28 @@ app.factory('ReportsFactory', ['$http', 'NotificationService', function ($http, 
         animalsChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: [`Total Services`, `Total Treatments`],
+                labels: [`Total Services L.L`, `Total Treatments L.L`],
                 datasets: [{
-                    label: ['test'],
                     backgroundColor: ['#007bff', '#dc3545'],
-                    data: [model.animalsData[0].total || 0, model.animalsData[1].total || 0]
+                    data: [model.animalsData[0].total || 0, model.animalsData[1].total || 0],
+                    // stack: 'Stack 0'
+                }]
+            }
+        });
+
+        // dollar chart
+        if (typeof animalsDollarChart !== 'undefined') {
+            animalsDollarChart.destroy();
+        }
+        var ctx = document.getElementById('animalsDollarChartElement').getContext('2d');
+        animalsDollarChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [`Total Services $`, `Total Treatments $`],
+                datasets: [{
+                    backgroundColor: ['#007bff', '#dc3545'],
+                    data: [model.animalsDataDollar[0].total || 0, model.animalsDataDollar[1].total || 0],
+                    // stack: 'Stack 0'
                 }]
             }
         });

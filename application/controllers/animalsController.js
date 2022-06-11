@@ -169,8 +169,10 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
     };
 
 
+    // ########################## Treatment modal ##########################
 
-    $scope.openTreatmentModal = () => {
+    $scope.addTreatmentModal = () => {
+        $scope.treatmentModalMode = 'add';
         $scope.treatmentData = {
             animal_ID_FK: $scope.selectedAnimal.animal_ID,
             treatment_type: null,
@@ -188,29 +190,104 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
         $('#treatmentModal').modal('toggle');
     }
 
-    $scope.submitTreatment = () => {
-        $scope.treatmentData.treatment_date = DateService.getDate();
-        $scope.treatmentData.treatment_time = DateService.getTime();
-        console.log($scope.treatmentData);
-        animalsFactory.submitTreatment($scope.treatmentData);
-        $scope.showAnimalDetails($scope.selectedAnimal);
+    $scope.editTreatmentModal = data => {
+        $scope.treatmentModalMode = 'edit';
+        $scope.treatmentData = {};
+        angular.copy(data, $scope.treatmentData);
+        $('#treatmentModal').modal('toggle');
     }
 
-    $scope.openServiceModal = () => {
+    $scope.submitTreatment = () => {
+        switch ($scope.treatmentModalMode) {
+            case 'add': {
+                $scope.treatmentData.treatment_date = DateService.getDate();
+                $scope.treatmentData.treatment_time = DateService.getTime();
+                animalsFactory.submitAddTreatment($scope.treatmentData);
+                $scope.showAnimalDetails($scope.selectedAnimal);
+                break;
+            }
+            case 'edit': {
+                animalsFactory.submitEditTreatment($scope.treatmentData);
+                $scope.showAnimalDetails($scope.selectedAnimal);
+                break;
+            }
+
+        }
+
+    }
+
+
+    // delete treatment
+    $scope.deleteTreatment = ID => {
+        let index = $scope.treatmentHistory.findIndex(x => x.treatment_ID == ID);
+        NotificationService.showWarning().then(ok => {
+            if (ok.isConfirmed) {
+                animalsFactory.deleteTreatment(ID).then(function () {
+                    $scope.animals.splice(index, 1);
+                });
+            }
+        });
+    }
+
+
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Service modal $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+    // add service modal
+    $scope.addServiceModal = () => {
+        $scope.serviceModalMode = 'add';
         $scope.serviceData = {
             animal_ID_FK: $scope.selectedAnimal.animal_ID,
             service_type: null,
             service_description: null,
+            payment_currency: 'lira',
             payment_received: null,
             exchange_rate: $scope.exchangeRate.exchange_rate,
         }
         $('#serviceModal').modal('toggle');
     }
+
+    // edit service modal
+
+    $scope.editServiceModal = data => {
+        $scope.serviceModalMode = 'edit';
+        $scope.serviceData = {};
+        angular.copy(data, $scope.serviceData);
+        $('#serviceModal').modal('toggle');
+    }
+
     $scope.submitService = () => {
-        $scope.serviceData.service_date = DateService.getDate();
-        $scope.serviceData.service_time = DateService.getTime();
-        animalsFactory.submitService($scope.serviceData);
-        $scope.showAnimalDetails($scope.selectedAnimal);
+        // $scope.serviceData.service_date = DateService.getDate();
+        // $scope.serviceData.service_time = DateService.getTime();
+        // animalsFactory.submitService($scope.serviceData);
+        // $scope.showAnimalDetails($scope.selectedAnimal);
+        switch ($scope.serviceModalMode) {
+            case 'add': {
+                $scope.serviceData.service_date = DateService.getDate();
+                $scope.serviceData.service_time = DateService.getTime();
+                animalsFactory.submitAddService($scope.serviceData);
+                $scope.showAnimalDetails($scope.selectedAnimal);
+                break;
+            }
+            case 'edit': {
+                animalsFactory.submitEditService($scope.serviceData);
+                $scope.showAnimalDetails($scope.selectedAnimal);
+                break;
+            }
+
+        }
+    }
+
+    // delete service
+    $scope.deleteService = ID => {
+        let index = $scope.serviceHistory.findIndex(x => x.service_ID == ID);
+        NotificationService.showWarning().then(ok => {
+            if (ok.isConfirmed) {
+                animalsFactory.deleteService(ID).then(function () {
+                    $scope.animals.splice(index, 1);
+                });
+            }
+        });
     }
 
 });
