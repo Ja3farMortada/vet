@@ -96,7 +96,7 @@
         <div class="col-3">
             <div class="card shadow">
                 <div class="card-header text-center">
-                    <h5 class="font-weight-bold">Services Income</h5>
+                    <h5 class="font-weight-bold">Services Income LBP</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="animalsChartElement"></canvas>
@@ -119,7 +119,7 @@
         <div class="col-3">
             <div class="card shadow">
                 <div class="card-header text-center">
-                    <h5 class="font-weight-bold">Services Income</h5>
+                    <h5 class="font-weight-bold">Services Income USD</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="animalsDollarChartElement"></canvas>
@@ -129,9 +129,9 @@
                             <th>Total Treatments</th>
                         </tr>
                         <tr>
-                            <td class="text-primary h6">{{ animalsDataDollar[0].total.toLocaleString() || 0 }} $
+                            <td class="text-warning h6">{{ animalsDataDollar[0].total.toLocaleString() || 0 }} $
                             </td>
-                            <td class="text-danger h6">{{ animalsDataDollar[1].total.toLocaleString() || 0 }} $
+                            <td class="text-info h6">{{ animalsDataDollar[1].total.toLocaleString() || 0 }} $
                             </td>
                         </tr>
                     </table>

@@ -109,7 +109,7 @@ app.factory('ReportsFactory', ['$http', 'NotificationService', function ($http, 
             data: {
                 labels: [`Total Services $`, `Total Treatments $`],
                 datasets: [{
-                    backgroundColor: ['#007bff', '#dc3545'],
+                    backgroundColor: ['#ffc107', '#17a2b8'],
                     data: [model.animalsDataDollar[0].total || 0, model.animalsDataDollar[1].total || 0],
                     // stack: 'Stack 0'
                 }]
