@@ -13,6 +13,7 @@
                     <table class="table m-0 table-borderless text-center table-hover">
                         <thead class="bg-light table-sm">
                             <tr class="table-actives">
+                                <th></th>
                                 <th>
                                     <input type="text" class="form-control form-control-sm" ng-model="search.owner_name"
                                         spellcheck="false" placeholder="Owner...">
@@ -34,6 +35,7 @@
                                 </th>
                             </tr>
                             <tr>
+                                <th>ID</th>
                                 <th>Owner</th>
                                 <th>Phone</th>
                                 <th>Animal Name</th>
@@ -45,6 +47,7 @@
                                 dir-paginate="data in animals | filter:search:strict | itemsPerPage: 5"
                                 ng-click="showAnimalDetails(data)"
                                 ng-class="{'table-active': isActive(data.animal_ID)}">
+                                <td>{{ data.animal_ID }}</td>
                                 <td>{{ data.owner_name }}</td>
                                 <td>{{ data.owner_phone || '----' }}</td>
                                 <td>{{ data.animal_name }}</td>
