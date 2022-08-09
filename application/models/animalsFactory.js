@@ -114,7 +114,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
 
     // delete treatment
     model.deleteTreatment = ID => {
-        $http.post(`${url}/deleteTreatment`, {ID: ID}).then(() => {
+        return $http.post(`${url}/deleteTreatment`, {ID: ID}).then(() => {
             NotificationService.showSuccess();
         }, error => {
             NotificationService.showError(error);
@@ -134,7 +134,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
 
     // delete Service
     model.deleteService = ID => {
-        $http.post(`${url}/deleteService`, {ID: ID}).then(() => {
+        return $http.post(`${url}/deleteService`, {ID: ID}).then(() => {
             NotificationService.showSuccess();
         }, error => {
             NotificationService.showError(error);

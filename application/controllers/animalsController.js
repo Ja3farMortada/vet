@@ -102,7 +102,7 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
     function submitAddAnimal() {
         animalsFactory.addAnimal($scope.animalData).then(response => {
             if (response) {
-                $scope.animals.push(response);
+                $scope.animals.unshift(response);
             }
         })
     }
@@ -223,7 +223,7 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
         NotificationService.showWarning().then(ok => {
             if (ok.isConfirmed) {
                 animalsFactory.deleteTreatment(ID).then(function () {
-                    $scope.animals.splice(index, 1);
+                    $scope.treatmentHistory.splice(index, 1);
                 });
             }
         });
@@ -284,7 +284,7 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
         NotificationService.showWarning().then(ok => {
             if (ok.isConfirmed) {
                 animalsFactory.deleteService(ID).then(function () {
-                    $scope.animals.splice(index, 1);
+                    $scope.serviceHistory.splice(index, 1);
                 });
             }
         });
