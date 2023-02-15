@@ -1,4 +1,4 @@
-app.controller('sellController', function ($scope, $http, $timeout, sellFactory, stockFactory, DateService, NotificationService, stockModel) {
+app.controller('sellController', function ($scope, $http, $timeout, sellFactory, stockFactory, DateService, NotificationService, stockModel, customersFactory, DebtsFactory) {
 
     // define server path
     const url = `http://${keys.host}:${keys.port}`;
@@ -7,7 +7,7 @@ app.controller('sellController', function ($scope, $http, $timeout, sellFactory,
     $scope.items = stockFactory.items;
 
     // Get Customers
-    // $scope.customers = customersFactory.customers;
+    $scope.customers = customersFactory.customers;
 
     stockFactory.getItems.then(function () {
         angular.element(document.querySelector("#barcodeInput")).trigger('focus');
@@ -56,7 +56,6 @@ app.controller('sellController', function ($scope, $http, $timeout, sellFactory,
             } else {
                 $scope.printData.total = $scope.totalPrice;
             }
-            console.log($scope.printData)
             ipcRenderer.send('printDocument', [$scope.invoice, $scope.printData]);
             $('#printModal').modal('hide');
         }
@@ -178,24 +177,50 @@ app.controller('sellController', function ($scope, $http, $timeout, sellFactory,
         $scope.selectedCustomer = null;
         $scope.cashReceived = null;
         $scope.validated = true;
-        NotificationService.showWarning().then(ok => {
-            if (ok.isConfirmed) {
-                confirmOrder()
-            }
-        })
-        // $('#selectCustomer').modal('show');
-        // $('#selectCustomer').on('shown.bs.modal', function () {
-        //     $(this).find('[autofocus]').trigger('focus');
-        // });
+        $('#selectCustomer').modal('show');
+        $('#selectCustomer').on('shown.bs.modal', function () {
+            $(this).find('[autofocus]').trigger('focus');
+        });
     };
 
     $scope.validate = () => {
         $scope.validated = true;
     };
 
+    // Confirm Order button clicked!
+    $scope.confirmOrderClicked = function () {
+        if (!$scope.selectedCustomer) {
+            NotificationService.showWarning().then(ok => {
+            if (ok.isConfirmed) {
+                confirmOrder()
+            }
+        })
+        } else {
+            $scope.validated = false;
+            let customerID;
+            for (let i = 0; i < $scope.customers.length; i++) {
+                if ($scope.customers[i].customer_name == $scope.selectedCustomer) {
+                    $scope.validated = true;
+                    customerID = $scope.customers[i].customer_ID;
+                    break;
+                } else {
+                    $('#choose').trigger('select');
+                }
+            }
+            if ($scope.validated) {
+                NotificationService.showWarning().then((ok) => {
+                    if (ok.isConfirmed) {
+                        confirmOrder(customerID);
+                    } else {
+                        $('#choose').trigger('focus');
+                    }
+                });
+            }
+        }
+    };
+
     // ***** CONFIRM ORDER FUNCTION *****
     async function confirmOrder(ID) {
-        // $('#selectCustomer').modal('toggle');
         let date = DateService.getDate();
         let time = DateService.getTime();
         $('#barcodeInput').trigger('focus');
@@ -216,6 +241,7 @@ app.controller('sellController', function ($scope, $http, $timeout, sellFactory,
                 "dollar_exchange": dollar_exchange
             }
         }).then(function () {
+            $('#selectCustomer').modal('toggle');
             NotificationService.showSuccessCash();
             sellFactory.clearInvoice();
             $scope.invoice = sellFactory.invoice;

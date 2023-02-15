@@ -1,12 +1,11 @@
 const mysql = require('mysql2');
-const keys = require('../keys.json');
 
 var pool = mysql.createPool({
     connectionLimit: 1,
-    host: keys.host,
-    user: keys.username,
-    password: keys.password,
-    database: keys.database,
+    host: 'localhost',
+    user: 'root',
+    password: 'roottoor',
+    database: 'vet',
     multipleStatements: true,
     dateStrings: 'date'
 });

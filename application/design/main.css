@@ -7,9 +7,9 @@ a[ng-click] {
     user-select: none;
 }
 
-.select-off {
+/* .select-off {
     user-select: none;
-}
+} */
 
 small {
     font-size: small;

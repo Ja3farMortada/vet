@@ -17,6 +17,9 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
         $scope.tabSelected = animalsFactory.tabSelected;
     };
 
+
+    // $scope.animalReminders = [];
+
     // define datepicker value
     // $scope.datePickerValue = historyFactory.datePickerValue;
     function datepicker() {
@@ -43,6 +46,19 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
                     dateFormat: 'yy-mm-dd'
                 }).val();
                 $scope.$digest($scope.treatmentData.reminder_date = d);
+            }
+        }).datepicker("setDate", null);
+
+        $('#reminderDatepicker').datepicker({
+            dateFormat: 'yy-mm-dd',
+            changeYear: true,
+            changeMonth: true,
+            minDate: DateService.getDate(),
+            onSelect: function () {
+                var d = $('#reminderDatepicker').datepicker({
+                    dateFormat: 'yy-mm-dd'
+                }).val();
+                $scope.$digest($scope.reminderData.reminder_date = d);
             }
         }).datepicker("setDate", null);
     };
@@ -162,6 +178,11 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
                 $scope.serviceHistory = response;
             }
         })
+        animalsFactory.fetchAnimalReminders(data).then(response => {
+            if (response) {
+                $scope.animalReminders = response;
+            }
+        })
     }
 
     $scope.isActive = ID => {
@@ -177,6 +198,7 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
             animal_ID_FK: $scope.selectedAnimal.animal_ID,
             treatment_type: null,
             treatment_description: null,
+            treatment_notes: null,
             payment_currency: 'lira',
             payment_received: null,
             has_reminder: false,
@@ -289,5 +311,21 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
             }
         });
     }
+
+
+    // &&&&&&&&&&&&&&&&&&&&&&&&&&&& Reminders Modal &&&&&&&&&&&&&&&&&&&&&&&&&&
+    
+    $scope.addReminderModal = () => {
+        $('#remindersModal').modal('toggle');
+        $scope.reminderData = {
+            animal_ID_FK: $scope.selectedAnimal.animal_ID,
+            reminder_name: null,
+            reminder_date: null,
+            reminder_notes: null,
+            repeat: false,
+            repeat_reminder: null
+        }
+    }
+
 
 });

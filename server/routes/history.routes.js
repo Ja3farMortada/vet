@@ -108,7 +108,7 @@ module.exports = (server, db) => {
                                                             res.status(400).send(error);
                                                         });
                                                     }
-                                                    connection.destroy();
+                                                    connection.release();
                                                     res.send('');
                                                 });
                                             }
@@ -162,7 +162,7 @@ module.exports = (server, db) => {
                                                             res.status(400).send(error);
                                                         });
                                                     }
-                                                    connection.destroy();
+                                                    connection.release();
                                                     res.send('');
                                                 });
                                             }

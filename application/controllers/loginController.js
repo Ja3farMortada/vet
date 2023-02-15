@@ -6,9 +6,6 @@ require('bootstrap');
 const swal = require('sweetalert2');
 
 
-const keys = require('../../keys.json');
-
-
 var app = angular.module('loginApp', []);
 
 app.controller('loginController', function ($scope, $http, $timeout, NotificationService) {
@@ -21,7 +18,7 @@ app.controller('loginController', function ($scope, $http, $timeout, Notificatio
     $scope.version = package.version;
 
     // define server path
-    const url = `http://${keys.host}:${keys.port}`;
+    const url = `http://localhost:3000`;
 
     // autofocus username
     $('#usernameField').trigger('focus');

@@ -20,20 +20,20 @@
 </head>
 
 <body ng-app="loginApp" ng-controller="loginController" ng-cloak>
-    <form class="form-signin animate__animated animate__zoomIn" ng-submit="submit()">
+    <form class="form-signin" ng-submit="submit()">
         <div ng-show="!loading">
             <div class="text-center mb-0">
                 <h5><b>{{title}}</b></h5>
             </div>
             <!-- username -->
-            <div class="form-label-group animate__animated">
+            <div class="form-label-group">
                 <input id="usernameField" type="text" class="customInput" placeholder="Username" required
                     spellcheck="false" ng-model="credentials.username" autofocus>
                 <span class="bar"></span>
                 <label>Username</label>
             </div>
             <!-- password -->
-            <div class="form-label-group animate__animated" id="passwordField">
+            <div class="form-label-group" id="passwordField">
                 <span ng-click="togglePassword()" class="fas"
                     ng-class="{'fa-eye-slash': !showPassword, 'fa-eye': showPassword}"
                     style="position: absolute; margin-top: 1.5rem; margin-left: 90%; cursor: pointer;color: #393981;"></span>

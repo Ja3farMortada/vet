@@ -29,7 +29,10 @@ require('angular-material');
 // require md5 
 var md5 = require('md5');
 
-const keys = require('../../keys.json');
+const keys = {
+    host: 'localhost',
+    port: '3000'
+}
 
 require('angular-utils-pagination');
 
@@ -297,7 +300,7 @@ require('../models/settingsFactory');
 require('../models/accountFactory');
 require('../models/generalFactory');
 // require('../models/suppliersFactory');
-// require('../models/customersFactory');
+require('../models/customersFactory');
 require('../models/stockModel');
 
 //require Application Services
@@ -307,7 +310,7 @@ require('../services/dateService');
 //require Directives
 require('../directives/generalSettings');
 require('../directives/accountSettings');
-// require('../directives/customersSettings');
+require('../directives/customersSettings');
 // require('../directives/suppliersSettings');
 require('../directives/stockSettings');
 // require('../directives/doctorsSettings');

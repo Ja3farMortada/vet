@@ -18,6 +18,10 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
                 case 1:
                     this.tabSelected = 1;
                     break;
+
+                case 2:
+                    this.tabSelected = 2;
+                    break;
             };
         }
     };
@@ -49,6 +53,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
             NotificationService.showError(error);
         })
     }
+
     // fetchServiceHistory
     model.fetchServiceHistory = data => {
         return $http.get(`${url}/fetchServiceHistory`, {
@@ -62,9 +67,21 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
         })
     }
 
+    // fetchAnimalReminders
+    model.fetchAnimalReminders = data => {
+        return $http.get(`${url}/fetchAnimalReminders/${data.animal_ID}`).then(response => {
+            console.log(response.data);
+            return response.data;
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+
     // add animal
     model.addAnimal = data => {
-        return $http.post(`${url}/addAnimal`, {data: data}).then(response => {
+        return $http.post(`${url}/addAnimal`, {
+            data: data
+        }).then(response => {
             $('#animalModal').modal('toggle');
             NotificationService.showSuccess();
             return response.data;
@@ -75,7 +92,9 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
 
     // edit animal
     model.editAnimal = data => {
-        return $http.post(`${url}/editAnimal`, {data: data}).then(() => {
+        return $http.post(`${url}/editAnimal`, {
+            data: data
+        }).then(() => {
             $('#animalModal').modal('toggle');
             NotificationService.showSuccess();
         }, error => {
@@ -93,7 +112,9 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
     };
 
     model.submitAddTreatment = data => {
-        $http.post(`${url}/newTreatment`, {data: data}).then(response => {
+        $http.post(`${url}/newTreatment`, {
+            data: data
+        }).then(response => {
             NotificationService.showSuccess();
             $('#treatmentModal').modal('toggle');
             remindersFactory.fetchReminders()
@@ -103,7 +124,9 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
     }
 
     model.submitAddService = data => {
-        $http.post(`${url}/newService`, {data: data}).then(response => {
+        $http.post(`${url}/newService`, {
+            data: data
+        }).then(response => {
             NotificationService.showSuccess();
             $('#serviceModal').modal('toggle');
             remindersFactory.fetchReminders()
@@ -114,7 +137,9 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
 
     // delete treatment
     model.deleteTreatment = ID => {
-        return $http.post(`${url}/deleteTreatment`, {ID: ID}).then(() => {
+        return $http.post(`${url}/deleteTreatment`, {
+            ID: ID
+        }).then(() => {
             NotificationService.showSuccess();
         }, error => {
             NotificationService.showError(error);
@@ -123,7 +148,9 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
 
     // edit treatment
     model.submitEditTreatment = data => {
-        $http.post(`${url}/editTreatment`, {data: data}).then(() => {
+        $http.post(`${url}/editTreatment`, {
+            data: data
+        }).then(() => {
             $('#treatmentModal').modal('toggle');
             NotificationService.showSuccess();
         }, error => {
@@ -134,7 +161,9 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
 
     // delete Service
     model.deleteService = ID => {
-        return $http.post(`${url}/deleteService`, {ID: ID}).then(() => {
+        return $http.post(`${url}/deleteService`, {
+            ID: ID
+        }).then(() => {
             NotificationService.showSuccess();
         }, error => {
             NotificationService.showError(error);
@@ -143,7 +172,9 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
 
     // edit Service
     model.submitEditService = data => {
-        $http.post(`${url}/editService`, {data: data}).then(() => {
+        $http.post(`${url}/editService`, {
+            data: data
+        }).then(() => {
             $('#serviceModal').modal('toggle');
             NotificationService.showSuccess();
         }, error => {

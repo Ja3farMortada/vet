@@ -85,6 +85,19 @@ module.exports = (server, db) => {
         });
     });
 
+    // fetch reminders
+    server.get('/fetchAnimalReminders/:id', (req, res) => {
+        let ID = req.params.id;
+        let query = `SELECT * FROM reminders WHERE animal_ID_FK = ? AND reminder_status = 1`;
+        db.query(query, ID, function(error, results) {
+            if (error) {
+                res.status(400).send(error)
+            } else {
+                res.send(results)
+            }
+        })
+    })
+
     // addNewFilm
     server.post('/newTreatment', (req, res) => {
         let data = req.body.data;
@@ -93,6 +106,7 @@ module.exports = (server, db) => {
             animal_ID_FK: data.animal_ID_FK,
             treatment_type: data.treatment_type,
             treatment_description: data.treatment_description,
+            treatment_notes: data.treatment_notes,
             payment_currency: data.payment_currency,
             payment_received: data.payment_received,
             exchange_rate: data.exchange_rate,
@@ -117,25 +131,37 @@ module.exports = (server, db) => {
                 if (error) {
                     connection.destroy();
                     res.status(500).send(error);
-                }
-                let query = `INSERT INTO treatments SET ?`;
-                connection.query(query, treatmentData, function (error, result) {
-                    if (error) {
-                        connection.rollback(function () {
-                            connection.destroy();
-                            res.status(400).send(error);
-                        });
-                    } else {
-                        // let response = result;
-                        if (data.has_reminder) {
-                            let query2 = `INSERT INTO reminders SET ?`;
-                            connection.query(query2, reminderData, function (error) {
-                                if (error) {
-                                    connection.rollback(function () {
-                                        connection.destroy();
-                                        res.status(400).send(error);
+                } else {
+                    let query = `INSERT INTO treatments SET ?`;
+                    connection.query(query, treatmentData, function (error, result) {
+                        if (error) {
+                            connection.rollback(function () {
+                                connection.destroy();
+                                res.status(400).send(error);
+                            });
+                        } else {
+                            // let response = result;
+                            if (data.has_reminder) {
+                                let query2 = `INSERT INTO reminders SET ?`;
+                                connection.query(query2, reminderData, function (error) {
+                                    if (error) {
+                                        connection.rollback(function () {
+                                            connection.destroy();
+                                            res.status(400).send(error);
+                                        });
+                                    }
+                                    connection.commit(function (error) {
+                                        if (error) {
+                                            connection.rollback(function () {
+                                                connection.destroy();
+                                                res.status(400).send(error);
+                                            });
+                                        }
+                                        connection.release();
+                                        res.send('');
                                     });
-                                }
+                                })
+                            } else {
                                 connection.commit(function (error) {
                                     if (error) {
                                         connection.rollback(function () {
@@ -143,24 +169,13 @@ module.exports = (server, db) => {
                                             res.status(400).send(error);
                                         });
                                     }
-                                    connection.destroy();
+                                    connection.release();
                                     res.send('');
                                 });
-                            })
-                        } else {
-                            connection.commit(function (error) {
-                                if (error) {
-                                    connection.rollback(function () {
-                                        connection.destroy();
-                                        res.status(400).send(error);
-                                    });
-                                }
-                                connection.destroy();
-                                res.send('');
-                            });
+                            }
                         }
-                    }
-                })
+                    })
+                }
             })
         })
     })

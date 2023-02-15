@@ -143,14 +143,20 @@
                         <th>Payment</th>
                     </tr>
                 </thead>
-                <tbody dir-paginate="record in servicesInvoices | itemsPerPage: 15" pagination-id="services">
-                    <td>{{ record.service_ID }}</td>
-                    <td>{{ record.owner_name }}</td>
-                    <td>{{ record.animal_name }}</td>
-                    <td>{{ record.service_type }}</td>
-                    <td>{{ record.service_description || '----' }}</td>
-                    <td>{{ record.service_time }}</td>
-                    <td>{{ (record.payment_received).toLocaleString() }} <span ng-if="record.payment_currency == 'lira'">L.L</span><span ng-if="record.payment_currency == 'dollar'">$</span></td>
+                <tbody >
+                    <tr dir-paginate="record in servicesInvoices | itemsPerPage: 15" pagination-id="services">
+                        <td>{{ record.service_ID }}</td>
+                        <td>{{ record.owner_name }}</td>
+                        <td>{{ record.animal_name }}</td>
+                        <td>{{ record.service_type }}</td>
+                        <td>{{ record.service_description || '----' }}</td>
+                        <td>{{ record.service_time }}</td>
+                        <td>{{ (record.payment_received).toLocaleString() }} <span ng-if="record.payment_currency == 'lira'">L.L</span><span ng-if="record.payment_currency == 'dollar'">$</span></td>
+                    </tr>
+
+                    <tr ng-if="servicesInvoices.length == 0" class="table-active">
+                        <td colspan="7">No Records Yet!</td>
+                    </tr>
                 </tbody>
             </table>
             <dir-pagination-controls pagination-id="services" max-size="5"

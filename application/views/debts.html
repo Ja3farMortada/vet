@@ -14,19 +14,21 @@
             <table class="table table-sm table-bordered text-center mt-3 table-hover">
                 <thead>
                     <tr>
-                        <th width="68%">Customer Name</th>
-                        <th width="32%" ng-click="sort('customer_debit')"><i class="fas"
+                        <th width="20%">#</th>
+                        <th width="80%">Customer Name</th>
+                        <!-- <th width="32%" ng-click="sort('customer_debit')"><i class="fas"
                                 ng-show="sortData.key == 'total'"
                                 ng-class="{'fa-sort-amount-up fa-fw': !sortData.reverse, 'fa-sort-amount-down-alt fa-fw': sortData.reverse}"></i>Total
-                            Debts</th>
+                            Debts</th> -->
                     </tr>
                 </thead>
                 <tbody>
                     <tr dir-paginate="customer in customerDebts | orderBy:sortData.key:sortData.reverse| filter: searchVal | itemsPerPage:15"
                         pagination-id="customers" ng-click="getDetails(customer.customer_ID)" class="pointer"
                         ng-class="{'table-active': isActive(customer.customer_ID)}">
+                        <td>{{ customer.customer_ID }}</td>
                         <td>{{ customer.customer_name }}</td>
-                        <td>{{ customer.customer_debit.toLocaleString() }} $</td>
+                        <!-- <td>{{ customer.customer_debit.toLocaleString() }} $</td> -->
                     </tr>
                     <!-- if search is empty -->
                     <tr ng-if="(customerDebts | filter:searchVal).length == 0 && searchVal"
@@ -50,7 +52,7 @@
             <div class="row justify-content-center">
                 <div class="col-11">
                     <div ng-if="activeRow != null" class="card">
-                        <div class="card-header p-0">
+                        <!-- <div class="card-header p-0">
                             <ul class="nav nav-tabs nav-fill" style="border-bottom: 0px !important;">
                                 <li class="nav-item">
                                     <a class="nav-link text-secondary text-uppercase animate__animated"
@@ -65,7 +67,7 @@
                                         payments</a>
                                 </li>
                             </ul>
-                        </div>
+                        </div> -->
                         <div class="card-body pt-2">
                             <!-- debts archive -->
                             <div ng-if="tabSelected === 1">
@@ -244,7 +246,7 @@
 
     <!-- Invoice details modal -->
     <div class="modal fade" id="invoiceDetailsModal">
-        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-centereds modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <!-- Modal Header -->
                 <div class="modal-header">

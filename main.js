@@ -27,16 +27,15 @@ const address = require('address')
 const log = require('electron-log');
 const mysqldump = require('mysqldump');
 
-const keys = require('./keys.json');
 
-const server = require('./server');
-
+var node;
 // Check if electron is in development mode to enable Node.js on release mode 
 const isEnvSet = 'ELECTRON_IS_DEV' in process.env;
 const getFromEnv = Number.parseInt(process.env.ELECTRON_IS_DEV, 10) === 1;
 const isDev = isEnvSet ? getFromEnv : !app.isPackaged;
 if (!isDev) {
-    var node = server.listen(keys.port, () => console.log(`listening on port ${keys.port} ...`));
+    const server = require('./server');
+    node = server.listen('3000', () => console.log(`listening on port 3000 ...`));
 }
 
 
@@ -63,11 +62,15 @@ function createWindow() {
     win.show();
 
     let ID = machineIdSync();
-    // if (ID == 'a584e79c83a9d9964c0b4cb33c1479bbf2f2b9592a8e3e9ccaa3b50844800554') {
+    if (ID == 'a584e79c83a9d9964c0b4cb33c1479bbf2f2b9592a8e3e9ccaa3b50844800554') {
         win.loadFile('application/views/login.html');
-    // } else {
-    //     win.loadFile('error.html')
-    // }
+    } else {
+        if(isDev) {
+            win.loadFile('application/views/login.html')
+        } else {
+            win.loadFile('error.html')
+        }
+    }
 
     // Emitted when the window is closed.
     win.on('closed', () => {

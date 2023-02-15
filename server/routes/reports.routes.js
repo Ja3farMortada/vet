@@ -84,7 +84,7 @@ module.exports = (server, db) => {
     server.post('/getAnimalsReportDollar', (req, res) => {
         let startDate = req.body.start_date;
         let endDate = req.body.end_date;
-        let query = `SELECT IFNULL(SUM(payment_received), 0) AS total FROM services WHERE service_date >= ? AND service_date <= ? AND service_status = 1 AND payment_currency = 'dollar' UNION SELECT IFNULL(SUM(payment_received), 0) FROM treatments WHERE treatment_date >= ? AND treatment_date <= ? AND treatment_status = 1 AND payment_currency = 'dollar' `;
+        let query = `SELECT IFNULL(SUM(payment_received), 0) AS total FROM services WHERE service_date >= ? AND service_date <= ? AND service_status = 1 AND payment_currency = 'dollar' UNION ALL SELECT IFNULL(SUM(payment_received), 0) FROM treatments WHERE treatment_date >= ? AND treatment_date <= ? AND treatment_status = 1 AND payment_currency = 'dollar' `;
         db.query(query, [startDate, endDate, startDate, endDate], function (error, results) {
             if (error) {
                 res.status(400).send(error);
