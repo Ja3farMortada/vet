@@ -37,17 +37,7 @@ app.factory('remindersFactory', function ($http, NotificationService, $timeout) 
         getUpcomingReminders();
         getReminders();
     }
-    // function test() {
-    //     for(let i = 0; i < model.reminders.length; i++) {
-    //         var now = moment(new Date());
-    //         var end = (moment(model.reminders[i]['due_date'] + ' ' + model.reminders[i]['due_time']));
-    //         var duration = moment.duration(end.diff(now));
-    //         var timeToAlert = duration.asMilliseconds();
-    //         $timeout(function () {
-    //             console.log(`${i} is alerted`)
-    //         }, timeToAlert)
-    //     }
-    // }
+
     // get reminders functions
     const getReminders = () => {
         $http.get(`${url}/getReminders`).then(function (response) {
@@ -80,6 +70,7 @@ app.factory('remindersFactory', function ($http, NotificationService, $timeout) 
             NotificationService.showSuccess();
             // angular.copy(response.data, model.reminders);
             model.fetchReminders()
+            return 'success'
         }, function (error) {
             NotificationService.showError(error);
         });
@@ -87,16 +78,21 @@ app.factory('remindersFactory', function ($http, NotificationService, $timeout) 
 
     // finish reminder
     let index
-    model.removeReminder = ID => {
-        return $http.post(`${url}/removeReminder`, {
-            "ID": ID
-        }).then(function (response) {
-            index = model.reminders.findIndex(x => x.reminder_ID == ID);
-            // model.reminders.splice(index, 1);
-            // angular.copy(response.data, model.reminders);
-            NotificationService.showSuccessToast();
-            getUpcomingReminders();
-            return index;
+    model.removeReminder = reminder => {
+        return $http.post(`${url}/removeReminder`, reminder).then(function (response) {
+            NotificationService.showSuccess();
+            model.fetchReminders();
+            return 'success'
+        }, function (error) {
+            NotificationService.showError(error);
+        });
+    }
+
+    model.deleteReminder = reminder => {
+        return $http.post(`${url}/deleteReminder`, reminder).then(function (response) {
+            NotificationService.showSuccess();
+            model.fetchReminders();
+            return 'success'
         }, function (error) {
             NotificationService.showError(error);
         });

@@ -46,7 +46,7 @@
                             <tr class="border-top"
                                 dir-paginate="data in animals | filter:search:strict | itemsPerPage: 5"
                                 ng-click="showAnimalDetails(data)"
-                                ng-class="{'table-active': isActive(data.animal_ID)}">
+                                ng-class="{'table-active': data.animal_ID == selectedAnimal.animal_ID}">
                                 <td>{{ data.animal_ID }}</td>
                                 <td>{{ data.owner_name }}</td>
                                 <td>{{ data.owner_phone || '----' }}</td>
@@ -91,13 +91,14 @@
                         Service</button>
                 </div>
                 <div class="col-6 mt-3">
-                    <button ng-click="addReminderModal()" class="btn btn-outline-dark btn-lg btn-block"><i class="fas fa-stopwatch fa-lg"></i> Reminders Setup</button>
+                    <button ng-click="addReminderModal()" class="btn btn-outline-dark btn-lg btn-block"><i
+                            class="fas fa-stopwatch fa-lg"></i> New Reminder</button>
                 </div>
             </div>
         </div>
 
         <!-- Selected Animal Section -->
-        <div class="col-7" ng-show="selectedAnimal">
+        <div class="col-7" ng-show="selectedAnimal.animal_ID">
             <div class="card shadow">
                 <div class="card-header">
                     <!-- <h5 class="text-center"><i class="fas fa-info-circle fa-lg"></i> Additional Info</h5> -->
@@ -268,18 +269,20 @@
                                             <p class="mb-0">{{reminder.reminder_text}}</p>
                                             <div>
                                                 <button class="btn btn-info"
-                                                    ng-click="openReminderModal('edit', reminder.reminder_ID)"><i
+                                                    ng-click="editReminderModal(reminder)"><i
                                                         class="fas fa-edit"></i></button>
-                                                <button class="btn btn-success" ng-click="removeReminder(reminder.reminder_ID)"><i
+                                                <button class="btn btn-success"
+                                                    ng-click="removeReminder(reminder)"><i
                                                         class="fas fa-check"></i></button>
                                             </div>
                                         </div>
-                
+
                                     </div>
                                 </div>
                             </li>
 
-                            <div class="alert alert-dark text-center" ng-if="animalReminders.length == 0">There Are No Upcoming Reminders!</div>
+                            <div class="alert alert-dark text-center" ng-if="animalReminders.length == 0">There Are No
+                                Upcoming Reminders!</div>
                         </ul>
 
                     </div>
@@ -308,7 +311,7 @@
                     <div class="row">
                         <div class="col-4">
                             <label>Animal Name</label>
-                            <input ng-model="animalData.animal_name" type="text" class="form-control" autofocus required
+                            <input ng-model="animalData.animal_name" type="text" class="form-control" required
                                 spellcheck="false">
                         </div>
                         <div class="col-4">
@@ -549,7 +552,7 @@
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title"><i class="fas fa-stopwatch"></i> New Reminder</h4>
+                <h4 class="modal-title"><i class="fas fa-stopwatch"></i>{{modalMode}} Reminder</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <form ng-submit="submitReminder()">
@@ -559,7 +562,7 @@
 
                         <div class="col-6">
                             <label>Reminder Title:</label>
-                            <select class="form-control" required ng-model="reminderData.reminder_name">
+                            <select class="form-control" required ng-model="reminderData.reminder_title">
                                 <option value="">---</option>
                                 <option value="Vaccine">Vaccine</option>
                                 <option value="Deworming">Deworming</option>
@@ -570,31 +573,32 @@
                         </div>
                         <div class="col-6">
                             <label>Remind at:</label>
-                            <input ng-model="reminderData.reminder_date" id="reminderDatepicker" type="text"
+                            <input ng-model="reminderData.due_date" id="reminderDatepicker" type="text"
                                 class="form-control text-center">
                         </div>
 
                         <div class="col-12 mt-3">
                             <label>Reminder Notes</label>
-                            <input ng-model="reminderData.reminder_notes" type="text" class="form-control"
+                            <input ng-model="reminderData.reminder_text" type="text" class="form-control"
                                 spellcheck="false">
                         </div>
 
                         <div class="col-6 mt-3">
                             <label>Repeat?</label>
-                            <select class="form-control" ng-model="reminderData.repeat">
+                            <select class="form-control" ng-model="reminderData.repeated">
                                 <option ng-value="false">No</option>
                                 <option ng-value="true">Yes</option>
                             </select>
                         </div>
 
-                        <div class="col-6 mt-3" ng-show="reminderData.repeat">
+                        <div class="col-6 mt-3" ng-show="reminderData.repeated">
                             <label>Repeat Options</label>
-                            <select class="form-control" ng-model="reminderData.repreat_reminder" required>
+                            <select class="form-control" ng-model="reminderData.repeat_reminder"
+                                ng-required="reminderData.repeat">
                                 <option value="">---</option>
-                                <option value="1">1 Month</option>
-                                <option value="3">3 Months</option>
-                                <option value="6">6 Months</option>
+                                <option value="30">1 Month</option>
+                                <option value="60">3 Months</option>
+                                <option value="180">6 Months</option>
                             </select>
                         </div>
 
@@ -605,6 +609,7 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
                         Cancel</button>
+                    <button ng-click="deleteReminder()" ng-if="modalMode == 'Edit'" class="btn btn-danger" type="button"><i class="fas fa-trash-alt"></i> Delete</button>
                     <button class="btn btn-success" type="submit"><i class="fas fa-check"></i>
                         Confirm</button>
                 </div>

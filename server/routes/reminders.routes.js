@@ -45,9 +45,27 @@ module.exports = (server, db) => {
 
     // remove reminder
     server.post('/removeReminder', (req, res) => {
-        let ID = req.body.ID;
-        let query = `UPDATE reminders SET reminder_status = false WHERE reminder_ID = ?`;
-        db.query(query, ID, function (error, results) {
+        let data = req.body;
+        let query;
+        if (data.repeat_reminder) {
+            query = `UPDATE reminders SET due_date = DATE_ADD(due_date, INTERVAL ${data.repeat_reminder} DAY) WHERE reminder_ID = ?`;
+        } else {
+            query = `UPDATE reminders SET reminder_status = false WHERE reminder_ID = ?`;
+        }
+        db.query(query, data.reminder_ID, function (error) {
+            if (error) {
+                res.status(400).send(error);
+            } else {
+                getReminders(res);
+            }
+        });
+    });
+
+    // delete reminder
+    server.post('/deleteReminder', (req, res) => {
+        let data = req.body;
+        let query = `UPDATE reminders SET reminder_status = 0 WHERE reminder_ID = ?`;
+        db.query(query, data.reminder_ID, function (error) {
             if (error) {
                 res.status(400).send(error);
             } else {

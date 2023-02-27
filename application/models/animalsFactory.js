@@ -6,6 +6,10 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
     var model = {};
     model.tabSelected = 0;
     model.animals = [];
+    model.selectedAnimal = new BehaviorSubject({})
+    model.treatmentHistory = new BehaviorSubject([])
+    model.serviceHistory = new BehaviorSubject([])
+    model.animalReminders = new BehaviorSubject([])
 
     //tab selection
     model.selectTab = function (tab) {
@@ -43,12 +47,12 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
 
     // fetchTreatmentHistory
     model.fetchTreatmentHistory = data => {
-        return $http.get(`${url}/fetchTreatmentHistory`, {
+        $http.get(`${url}/fetchTreatmentHistory`, {
             params: {
                 "ID": data.animal_ID
             }
         }).then(response => {
-            return response.data;
+            model.treatmentHistory.next(response.data);
         }, error => {
             NotificationService.showError(error);
         })
@@ -56,12 +60,12 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
 
     // fetchServiceHistory
     model.fetchServiceHistory = data => {
-        return $http.get(`${url}/fetchServiceHistory`, {
+        $http.get(`${url}/fetchServiceHistory`, {
             params: {
                 "ID": data.animal_ID
             }
         }).then(response => {
-            return response.data;
+            model.serviceHistory.next(response.data);
         }, error => {
             NotificationService.showError(error);
         })
@@ -69,9 +73,8 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
 
     // fetchAnimalReminders
     model.fetchAnimalReminders = data => {
-        return $http.get(`${url}/fetchAnimalReminders/${data.animal_ID}`).then(response => {
-            console.log(response.data);
-            return response.data;
+        $http.get(`${url}/fetchAnimalReminders/${data.animal_ID}`).then(response => {
+            model.animalReminders.next(response.data);
         }, error => {
             NotificationService.showError(error);
         })
@@ -118,6 +121,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
             NotificationService.showSuccess();
             $('#treatmentModal').modal('toggle');
             remindersFactory.fetchReminders()
+            animalsFactory.fetchTreatmentHistory(model.selectedAnimal)
         }, error => {
             NotificationService.showError(error);
         })
@@ -129,7 +133,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
         }).then(response => {
             NotificationService.showSuccess();
             $('#serviceModal').modal('toggle');
-            remindersFactory.fetchReminders()
+            animalsFactory.fetchServiceHistory(model.selectedAnimal);
         }, error => {
             NotificationService.showError(error);
         })
@@ -141,6 +145,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
             ID: ID
         }).then(() => {
             NotificationService.showSuccess();
+            animalsFactory.fetchTreatmentHistory(model.selectedAnimal)
         }, error => {
             NotificationService.showError(error);
         });
@@ -153,6 +158,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
         }).then(() => {
             $('#treatmentModal').modal('toggle');
             NotificationService.showSuccess();
+            animalsFactory.fetchTreatmentHistory(model.selectedAnimal)
         }, error => {
             NotificationService.showError(error);
         });
@@ -165,6 +171,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
             ID: ID
         }).then(() => {
             NotificationService.showSuccess();
+            animalsFactory.fetchServiceHistory(model.selectedAnimal);
         }, error => {
             NotificationService.showError(error);
         });
@@ -177,9 +184,23 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
         }).then(() => {
             $('#serviceModal').modal('toggle');
             NotificationService.showSuccess();
+            animalsFactory.fetchServiceHistory(model.selectedAnimal);
         }, error => {
             NotificationService.showError(error);
         });
+    }
+
+    model.addReminder = data => {
+        data.due_time = DateService.getTime();
+
+        return $http.post(`${url}/addReminder`, data).then(response => {
+            $('#remindersModal').modal('toggle');
+            NotificationService.showSuccess()
+            remindersFactory.fetchReminders()
+            return 'success'
+        }, error => {
+            NotificationService.showError(error)
+        })
     }
 
     return model;

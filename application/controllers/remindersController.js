@@ -102,12 +102,10 @@ app.controller('remindersController', function ($scope, remindersFactory, Notifi
         remindersFactory.editReminder($scope.data);
     }
 
-    $scope.removeReminder = ID => {
+    $scope.removeReminder = data => {
         NotificationService.showWarning().then(ok => {
             if (ok.isConfirmed) {
-                remindersFactory.removeReminder(ID).then(function (index) {
-                    $scope.reminders.splice(index, 1);
-                });
+                remindersFactory.removeReminder(data);
             }
         });
     }

@@ -29,6 +29,8 @@ require('angular-material');
 // require md5 
 var md5 = require('md5');
 
+const { BehaviorSubject } = require('rxjs');
+
 const keys = {
     host: 'localhost',
     port: '3000'

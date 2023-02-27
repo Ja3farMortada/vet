@@ -88,7 +88,7 @@ module.exports = (server, db) => {
     // fetch reminders
     server.get('/fetchAnimalReminders/:id', (req, res) => {
         let ID = req.params.id;
-        let query = `SELECT * FROM reminders WHERE animal_ID_FK = ? AND reminder_status = 1`;
+        let query = `SELECT * FROM reminders WHERE animal_ID_FK = ? AND reminder_status = 1 ORDER BY due_date DESC, due_time DESC`;
         db.query(query, ID, function(error, results) {
             if (error) {
                 res.status(400).send(error)

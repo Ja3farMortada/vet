@@ -1,6 +1,6 @@
 {
     "name": "petshop",
-    "version": "1.5.2",
+    "version": "1.6.0",
     "description": "Pet Shop Veterinary System",
     "main": "main.js",
     "scripts": {
@@ -61,6 +61,7 @@
         "mysqldump": "^3.2.0",
         "node-machine-id": "^1.1.12",
         "popper.js": "^1.16.1",
+        "rxjs": "^7.8.0",
         "sweetalert2": "^11.1.8",
         "update-electron-app": "^1.5.0"
     },

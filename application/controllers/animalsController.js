@@ -1,4 +1,4 @@
-app.controller('animalsController', function ($scope, animalsFactory, DateService, NotificationService, stockModel) {
+app.controller('animalsController', function ($scope, animalsFactory, DateService, NotificationService, stockModel, remindersFactory) {
 
     // get logged in user type
     $scope.loggedInUser = JSON.parse(localStorage.getItem('setting'));
@@ -17,8 +17,31 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
         $scope.tabSelected = animalsFactory.tabSelected;
     };
 
+    let animalSubscription;
+    let treatmentSubscription;
+    let serviceSubscription;
+    let remindersSubscription;
+    $scope.$on('$viewContentLoaded', () => {
+        animalSubscription = animalsFactory.selectedAnimal.subscribe(res => {
+            $scope.selectedAnimal = res;
+        })
+        treatmentSubscription = animalsFactory.treatmentHistory.subscribe(res => {
+            $scope.treatmentHistory = res;
+        })
+        serviceSubscription = animalsFactory.serviceHistory.subscribe(res => {
+            $scope.serviceHistory = res;
+        })
+        remindersSubscription = animalsFactory.animalReminders.subscribe(res => {
+            $scope.animalReminders = res;
+        })
+    })
 
-    // $scope.animalReminders = [];
+    $scope.$on('$destroy', () => {
+        animalSubscription.unsubscribe();
+        treatmentSubscription.unsubscribe();
+        serviceSubscription.unsubscribe();
+        remindersSubscription.unsubscribe();
+    })
 
     // define datepicker value
     // $scope.datePickerValue = historyFactory.datePickerValue;
@@ -58,7 +81,7 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
                 var d = $('#reminderDatepicker').datepicker({
                     dateFormat: 'yy-mm-dd'
                 }).val();
-                $scope.$digest($scope.reminderData.reminder_date = d);
+                $scope.$digest($scope.reminderData.due_date = d);
             }
         }).datepicker("setDate", null);
     };
@@ -152,8 +175,7 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
             if (ok.isConfirmed) {
                 animalsFactory.deleteAnimal(animal).then(function () {
                     $scope.animals.splice(index, 1);
-                    $scope.selectedAnimal = null;
-                    $scope.activeRow = null;
+                    animalsFactory.selectedAnimal.next({});
                 });
             }
         });
@@ -162,33 +184,16 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
 
     // Show animal details
     $scope.showAnimalDetails = data => {
-        $scope.activeRow = data.animal_ID;
-        $scope.selectedAnimal = data; // bind data with $scope variable
+        // $scope.activeRow = data.animal_ID;
+        animalsFactory.selectedAnimal.next(data)
         let date = data.birthdate; // calculate age
         let diff = moment().diff(moment(date), 'milliseconds');
         let duration = moment.duration(diff);
         $scope.selectedAge = duration.humanize();
-        animalsFactory.fetchTreatmentHistory(data).then(response => {
-            if (response) {
-                $scope.treatmentHistory = response;
-            }
-        });
-        animalsFactory.fetchServiceHistory(data).then(response => {
-            if (response) {
-                $scope.serviceHistory = response;
-            }
-        })
-        animalsFactory.fetchAnimalReminders(data).then(response => {
-            if (response) {
-                $scope.animalReminders = response;
-            }
-        })
+        animalsFactory.fetchTreatmentHistory(data);
+        animalsFactory.fetchServiceHistory(data);
+        animalsFactory.fetchAnimalReminders(data);
     }
-
-    $scope.isActive = ID => {
-        return $scope.activeRow === ID;
-    };
-
 
     // ########################## Treatment modal ##########################
 
@@ -225,12 +230,12 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
                 $scope.treatmentData.treatment_date = DateService.getDate();
                 $scope.treatmentData.treatment_time = DateService.getTime();
                 animalsFactory.submitAddTreatment($scope.treatmentData);
-                $scope.showAnimalDetails($scope.selectedAnimal);
+                // $scope.showAnimalDetails($scope.selectedAnimal);
                 break;
             }
             case 'edit': {
                 animalsFactory.submitEditTreatment($scope.treatmentData);
-                $scope.showAnimalDetails($scope.selectedAnimal);
+                // $scope.showAnimalDetails($scope.selectedAnimal);
                 break;
             }
 
@@ -279,21 +284,17 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
     }
 
     $scope.submitService = () => {
-        // $scope.serviceData.service_date = DateService.getDate();
-        // $scope.serviceData.service_time = DateService.getTime();
-        // animalsFactory.submitService($scope.serviceData);
-        // $scope.showAnimalDetails($scope.selectedAnimal);
         switch ($scope.serviceModalMode) {
             case 'add': {
                 $scope.serviceData.service_date = DateService.getDate();
                 $scope.serviceData.service_time = DateService.getTime();
                 animalsFactory.submitAddService($scope.serviceData);
-                $scope.showAnimalDetails($scope.selectedAnimal);
+                // $scope.showAnimalDetails($scope.selectedAnimal);
                 break;
             }
             case 'edit': {
                 animalsFactory.submitEditService($scope.serviceData);
-                $scope.showAnimalDetails($scope.selectedAnimal);
+                // $scope.showAnimalDetails($scope.selectedAnimal);
                 break;
             }
 
@@ -313,17 +314,66 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
     }
 
 
-    // &&&&&&&&&&&&&&&&&&&&&&&&&&&& Reminders Modal &&&&&&&&&&&&&&&&&&&&&&&&&&
+    // &&&&&&&&&&&&&&&&&&&&&&&&&&&& Reminders &&&&&&&&&&&&&&&&&&&&&&&&&&
+
+    // submit reminder
+    $scope.removeReminder = reminder => {
+        remindersFactory.removeReminder(reminder).then(res => {
+            if (res == 'success') {
+                animalsFactory.fetchAnimalReminders($scope.selectedAnimal)
+            }
+        })
+    }
+
+    //delete reminder
+    $scope.deleteReminder = () => {
+        remindersFactory.deleteReminder($scope.reminderData).then(res => {
+            if (res == 'success') {
+                animalsFactory.fetchAnimalReminders($scope.selectedAnimal)
+                $('#remindersModal').modal('toggle');
+            }
+        })
+    }
     
+    $scope.modalMode;
     $scope.addReminderModal = () => {
         $('#remindersModal').modal('toggle');
+        $scope.modalMode = 'Add'
         $scope.reminderData = {
             animal_ID_FK: $scope.selectedAnimal.animal_ID,
-            reminder_name: null,
-            reminder_date: null,
-            reminder_notes: null,
-            repeat: false,
-            repeat_reminder: null
+            reminder_title: null,
+            due_date: null,
+            reminder_text: null,
+            repeated: false,
+            repeat_reminder: null,
+            reminder_type: 'notification'
+        }
+    }
+
+    $scope.editReminderModal = data => {
+        $scope.modalMode = 'Edit'
+        $scope.reminderData = {};
+        data.repeated = data.repeated == 0 ? false : true 
+        angular.copy(data, $scope.reminderData);
+        $('#remindersModal').modal('toggle');
+    }
+
+    $scope.submitReminder = () => {
+        switch ($scope.modalMode) {
+            case 'Add':
+                animalsFactory.addReminder($scope.reminderData).then(res => {
+                    if (res == 'success') {
+                        animalsFactory.fetchAnimalReminders($scope.selectedAnimal)
+                    }
+                })
+                break;
+
+            case 'Edit':
+                remindersFactory.editReminder($scope.reminderData).then(res => {
+                    if(res == 'success') {
+                        animalsFactory.fetchAnimalReminders($scope.selectedAnimal)
+                    }
+                })
         }
     }
 
