@@ -208,7 +208,11 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
             payment_received: null,
             has_reminder: false,
             reminder_date: null,
+            reminder_time: DateService.getTime(),
             reminder_notes: null,
+            repeated: false,
+            repeat_reminder: null,
+            reminder_type: 'notification',
             exchange_rate: $scope.exchangeRate.exchange_rate,
             animal_name: $scope.selectedAnimal.animal_name,
             owner_name: $scope.selectedAnimal.owner_name,
@@ -220,6 +224,7 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
     $scope.editTreatmentModal = data => {
         $scope.treatmentModalMode = 'edit';
         $scope.treatmentData = {};
+        // data.repeated = data.repeated == 0 ? false : true  
         angular.copy(data, $scope.treatmentData);
         $('#treatmentModal').modal('toggle');
     }
@@ -229,13 +234,19 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
             case 'add': {
                 $scope.treatmentData.treatment_date = DateService.getDate();
                 $scope.treatmentData.treatment_time = DateService.getTime();
-                animalsFactory.submitAddTreatment($scope.treatmentData);
-                // $scope.showAnimalDetails($scope.selectedAnimal);
+                animalsFactory.submitAddTreatment($scope.treatmentData).then(res => {
+                    if (res == 'success') {
+                        animalsFactory.fetchTreatmentHistory($scope.selectedAnimal)
+                    }
+                })
                 break;
             }
             case 'edit': {
-                animalsFactory.submitEditTreatment($scope.treatmentData);
-                // $scope.showAnimalDetails($scope.selectedAnimal);
+                animalsFactory.submitEditTreatment($scope.treatmentData).then(res => {
+                    if (res == 'success') {
+                        animalsFactory.fetchTreatmentHistory($scope.selectedAnimal)
+                    }
+                })
                 break;
             }
 
@@ -243,23 +254,21 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
 
     }
 
-
     // delete treatment
     $scope.deleteTreatment = ID => {
-        let index = $scope.treatmentHistory.findIndex(x => x.treatment_ID == ID);
+        // let index = $scope.treatmentHistory.findIndex(x => x.treatment_ID == ID);
         NotificationService.showWarning().then(ok => {
             if (ok.isConfirmed) {
-                animalsFactory.deleteTreatment(ID).then(function () {
-                    $scope.treatmentHistory.splice(index, 1);
-                });
+                animalsFactory.deleteTreatment(ID).then(res => {
+                    if (res == 'success') {
+                        animalsFactory.fetchTreatmentHistory($scope.selectedAnimal)
+                    }
+                })
             }
         });
     }
 
-
-
     // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Service modal $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
     // add service modal
     $scope.addServiceModal = () => {
         $scope.serviceModalMode = 'add';
@@ -288,13 +297,19 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
             case 'add': {
                 $scope.serviceData.service_date = DateService.getDate();
                 $scope.serviceData.service_time = DateService.getTime();
-                animalsFactory.submitAddService($scope.serviceData);
-                // $scope.showAnimalDetails($scope.selectedAnimal);
+                animalsFactory.submitAddService($scope.serviceData).then(res => {
+                    if (res == 'success') {
+                        animalsFactory.fetchServiceHistory($scope.selectedAnimal)
+                    }
+                })
                 break;
             }
             case 'edit': {
-                animalsFactory.submitEditService($scope.serviceData);
-                // $scope.showAnimalDetails($scope.selectedAnimal);
+                animalsFactory.submitEditService($scope.serviceData).then(res => {
+                    if (res == 'success') {
+                        animalsFactory.fetchServiceHistory($scope.selectedAnimal)
+                    }
+                })
                 break;
             }
 
@@ -306,8 +321,10 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
         let index = $scope.serviceHistory.findIndex(x => x.service_ID == ID);
         NotificationService.showWarning().then(ok => {
             if (ok.isConfirmed) {
-                animalsFactory.deleteService(ID).then(function () {
-                    $scope.serviceHistory.splice(index, 1);
+                animalsFactory.deleteService(ID).then(res => {
+                    if (res == 'success') {
+                        animalsFactory.fetchServiceHistory($scope.selectedAnimal)
+                    }
                 });
             }
         });
@@ -318,19 +335,27 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
 
     // submit reminder
     $scope.removeReminder = reminder => {
-        remindersFactory.removeReminder(reminder).then(res => {
-            if (res == 'success') {
-                animalsFactory.fetchAnimalReminders($scope.selectedAnimal)
+        NotificationService.showWarning().then(ok => {
+            if (ok.isConfirmed) {
+                remindersFactory.removeReminder(reminder).then(res => {
+                    if (res == 'success') {
+                        animalsFactory.fetchAnimalReminders($scope.selectedAnimal)
+                    }
+                })
             }
         })
     }
 
     //delete reminder
     $scope.deleteReminder = () => {
-        remindersFactory.deleteReminder($scope.reminderData).then(res => {
-            if (res == 'success') {
-                animalsFactory.fetchAnimalReminders($scope.selectedAnimal)
-                $('#remindersModal').modal('toggle');
+        NotificationService.showWarning().then(ok => {
+            if (ok.isConfirmed) {
+                remindersFactory.deleteReminder($scope.reminderData).then(res => {
+                    if (res == 'success') {
+                        animalsFactory.fetchAnimalReminders($scope.selectedAnimal)
+                        $('#remindersModal').modal('toggle');
+                    }
+                })
             }
         })
     }
@@ -376,6 +401,5 @@ app.controller('animalsController', function ($scope, animalsFactory, DateServic
                 })
         }
     }
-
 
 });

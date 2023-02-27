@@ -75,9 +75,10 @@ module.exports = (server, db) => {
     //fetchServiceHistory
     server.get('/fetchServiceHistory', (req, res) => {
         let ID = req.query.ID;
-        let query = `SELECT * FROM services WHERE animal_ID_FK = ? AND service_status = 1 ORDER BY service_date, service_time ASC`;
+        let query = `SELECT * FROM services WHERE animal_ID_FK = ? AND service_status = 1 ORDER BY service_date ASC, service_time ASC`;
         db.query(query, ID, function (error, results) {
             if (error) {
+                console.log(error);
                 res.status(400).send(error);
             } else {
                 res.send(results);
@@ -98,7 +99,7 @@ module.exports = (server, db) => {
         })
     })
 
-    // addNewFilm
+    // add new treatment
     server.post('/newTreatment', (req, res) => {
         let data = req.body.data;
 
@@ -115,12 +116,14 @@ module.exports = (server, db) => {
         };
 
         let reminderData = {
+            animal_ID_FK: data.animal_ID_FK,
             reminder_title: `${data.treatment_type} for ${data.animal_name}, Owner: ${data.owner_name}, Phone: ${data.owner_phone}`,
             reminder_text: data.reminder_notes,
             reminder_type: 'notification',
             due_date: data.reminder_date,
-            due_time: '12:00:00',
-            repeat_reminder: null
+            due_time: data.reminder_time,
+            repeated: data.repeated,
+            repeat_reminder: data.repeat_reminder
         }
 
         db.getConnection(function (error, connection) {

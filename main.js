@@ -18,11 +18,9 @@ contextMenu({
 });
 
 
-// const {
-//     autoUpdater
-// } = require('electron-updater')
-
-const address = require('address')
+const {
+    autoUpdater
+} = require('electron-updater')
 
 const log = require('electron-log');
 const mysqldump = require('mysqldump');
@@ -119,64 +117,64 @@ ipcMain.on('closeDocument', () => {
 
 // auto update module
 
-// autoUpdater.autoDownload = false;
+autoUpdater.autoDownload = false;
 
-// ipcMain.on('update', () => {
-//     autoUpdater.checkForUpdates();
-// });
+ipcMain.on('update', () => {
+    autoUpdater.checkForUpdates();
+});
 
-// ipcMain.on('download', () => {
-//     autoUpdater.downloadUpdate();
-// });
+ipcMain.on('download', () => {
+    autoUpdater.downloadUpdate();
+});
 
-// ipcMain.on('applyUpdate', () => {
-//     autoUpdater.quitAndInstall();
-// });
+ipcMain.on('applyUpdate', () => {
+    autoUpdater.quitAndInstall();
+});
 
 
-// autoUpdater.logger = log;
-// autoUpdater.logger.transports.file.level = 'info';
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
 
-// function sendStatusToWindow(message, data) {
-//     if (win) {
-//         win.webContents.send(message, data);
-//     }
-// }
+function sendStatusToWindow(message, data) {
+    if (win) {
+        win.webContents.send(message, data);
+    }
+}
 
-// autoUpdater.on('checking-for-update', () => {
-//     sendStatusToWindow('checking-for-update', 'Checking for update...');
-// });
-// autoUpdater.on('update-available', (info) => {
-//     sendStatusToWindow('update-available', info);
-// });
-// autoUpdater.on('update-not-available', (info) => {
-//     sendStatusToWindow('up-to-date', info);
-// });
-// autoUpdater.on('error', (err) => {
-//     sendStatusToWindow('error', err);
-// });
-// autoUpdater.on('download-progress', (progressObj) => {
-//     let log_message = "Download speed: " + progressObj.bytesPerSecond;
-//     log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-//     log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-//     sendStatusToWindow('downloading', progressObj);
-// });
-// autoUpdater.on('update-downloaded', (info) => {
-//     sendStatusToWindow('downloaded', info);
-// });
+autoUpdater.on('checking-for-update', () => {
+    sendStatusToWindow('checking-for-update', 'Checking for update...');
+});
+autoUpdater.on('update-available', (info) => {
+    sendStatusToWindow('update-available', info);
+});
+autoUpdater.on('update-not-available', (info) => {
+    sendStatusToWindow('up-to-date', info);
+});
+autoUpdater.on('error', (err) => {
+    sendStatusToWindow('error', err);
+});
+autoUpdater.on('download-progress', (progressObj) => {
+    let log_message = "Download speed: " + progressObj.bytesPerSecond;
+    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    sendStatusToWindow('downloading', progressObj);
+});
+autoUpdater.on('update-downloaded', (info) => {
+    sendStatusToWindow('downloaded', info);
+});
 
 ipcMain.on('backupDB', () => {
     dialog.showSaveDialog({
-        defaultPath: 'medical.sql',
+        defaultPath: 'backup.sql',
         properties: ['dontAddToRecent']
     }).then(function (data) {
         if (data.canceled == false) {
             mysqldump({
                 connection: {
-                    host: keys.host,
-                    user: keys.username,
-                    password: keys.password,
-                    database: keys.database
+                    host: 'localhost',
+                    user: 'root',
+                    password: 'roottoor',
+                    database: 'vet'
                 },
                 dumpToFile: `${data.filePath}`
             }).then(function () {

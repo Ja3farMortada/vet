@@ -1,4 +1,4 @@
-app.factory('historyFactory', function ($http, NotificationService, DateService, stockFactory) {
+app.factory('historyFactory', function ($http, NotificationService, DateService, stockFactory, DebtsFactory) {
 
     // define url
     const url = `http://${keys.host}:${keys.port}`;
@@ -94,7 +94,7 @@ app.factory('historyFactory', function ($http, NotificationService, DateService,
                     //     "debitAmount": invoice.invoice_total_price,
                     //     "method": "substract"
                     // });
-                    // DebtsFactory.getDebtsDetails(DebtsFactory.selectedID);
+                    DebtsFactory.getDebtsDetails(DebtsFactory.selectedID);
                 }
                 model.fetchSalesInvoices(date);
             }

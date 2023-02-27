@@ -114,26 +114,16 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
         });
     };
 
+
+    // ############################################# TREATMENTS SECTION #############################################
     model.submitAddTreatment = data => {
-        $http.post(`${url}/newTreatment`, {
+        return $http.post(`${url}/newTreatment`, {
             data: data
         }).then(response => {
             NotificationService.showSuccess();
             $('#treatmentModal').modal('toggle');
-            remindersFactory.fetchReminders()
-            animalsFactory.fetchTreatmentHistory(model.selectedAnimal)
-        }, error => {
-            NotificationService.showError(error);
-        })
-    }
-
-    model.submitAddService = data => {
-        $http.post(`${url}/newService`, {
-            data: data
-        }).then(response => {
-            NotificationService.showSuccess();
-            $('#serviceModal').modal('toggle');
-            animalsFactory.fetchServiceHistory(model.selectedAnimal);
+            remindersFactory.fetchReminders();
+            return 'success'
         }, error => {
             NotificationService.showError(error);
         })
@@ -145,7 +135,7 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
             ID: ID
         }).then(() => {
             NotificationService.showSuccess();
-            animalsFactory.fetchTreatmentHistory(model.selectedAnimal)
+            return 'success';
         }, error => {
             NotificationService.showError(error);
         });
@@ -153,17 +143,43 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
 
     // edit treatment
     model.submitEditTreatment = data => {
-        $http.post(`${url}/editTreatment`, {
+        return $http.post(`${url}/editTreatment`, {
             data: data
         }).then(() => {
             $('#treatmentModal').modal('toggle');
             NotificationService.showSuccess();
-            animalsFactory.fetchTreatmentHistory(model.selectedAnimal)
+            return 'success'
         }, error => {
             NotificationService.showError(error);
         });
     }
 
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SERVICE SECTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // add service
+    model.submitAddService = data => {
+        return $http.post(`${url}/newService`, {
+            data: data
+        }).then(response => {
+            NotificationService.showSuccess();
+            $('#serviceModal').modal('toggle');
+            return 'success';
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+
+    // edit Service
+    model.submitEditService = data => {
+        return $http.post(`${url}/editService`, {
+            data: data
+        }).then(() => {
+            $('#serviceModal').modal('toggle');
+            NotificationService.showSuccess();
+            return 'success'
+        }, error => {
+            NotificationService.showError(error);
+        });
+    }
 
     // delete Service
     model.deleteService = ID => {
@@ -171,25 +187,15 @@ app.factory('animalsFactory', function ($http, NotificationService, DateService,
             ID: ID
         }).then(() => {
             NotificationService.showSuccess();
-            animalsFactory.fetchServiceHistory(model.selectedAnimal);
+            return 'success'
         }, error => {
             NotificationService.showError(error);
         });
     }
 
-    // edit Service
-    model.submitEditService = data => {
-        $http.post(`${url}/editService`, {
-            data: data
-        }).then(() => {
-            $('#serviceModal').modal('toggle');
-            NotificationService.showSuccess();
-            animalsFactory.fetchServiceHistory(model.selectedAnimal);
-        }, error => {
-            NotificationService.showError(error);
-        });
-    }
+    
 
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ REMINDERS $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     model.addReminder = data => {
         data.due_time = DateService.getTime();
 
