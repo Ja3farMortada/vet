@@ -2,7 +2,10 @@ module.exports = (server, db) => {
 
     //get reminders function
     function getReminders(res) {
-        let query = `SELECT * FROM reminders WHERE reminder_status = 1 ORDER BY due_date DESC, due_time DESC`;
+        let query = `SELECT R.*, A.animal_name, A.owner_name, A.owner_phone
+        FROM reminders R
+        INNER JOIN animals A ON R.animal_ID_FK = A.animal_ID
+        WHERE reminder_status = 1 ORDER BY due_date DESC, due_time DESC`;
         db.query(query, function (error, results) {
             if (error) {
                 res.status(400).send(error);
@@ -21,7 +24,7 @@ module.exports = (server, db) => {
     server.post('/addReminder', (req, res) => {
         let data = req.body;
         let query = `INSERT INTO reminders SET ?`;
-        db.query(query, data, function (error, results) {
+        db.query(query, data, function (error) {
             if (error) {
                 res.status(400).send(error);
             } else {
@@ -33,6 +36,9 @@ module.exports = (server, db) => {
     // edit reminder API
     server.post('/editReminder', (req, res) => {
         let data = req.body;
+        delete data.animal_name;
+        delete data.owner_name;
+        delete data.owner_phone;
         let query = `UPDATE reminders SET ? WHERE reminder_ID = ${data.reminder_ID}`;
         db.query(query, data, function (error, results) {
             if (error) {
@@ -76,7 +82,10 @@ module.exports = (server, db) => {
 
     // get upcoming reminders
     server.get('/getUpcomingReminders', (req, res) => {
-        let query = `SELECT * FROM reminders WHERE reminder_type = 'notification' AND reminder_status = 1 AND due_date < DATE_ADD(CURRENT_DATE(), INTERVAL 15 DAY) ORDER BY due_date DESC, due_time DESC`;
+        let query = `SELECT R.*, A.animal_name, A.owner_name, A.owner_phone
+        FROM reminders R
+        INNER JOIN animals A ON R.animal_ID_FK = A.animal_ID
+        WHERE reminder_type = 'notification' AND reminder_status = 1 AND due_date < DATE_ADD(CURRENT_DATE(), INTERVAL 15 DAY) ORDER BY due_date DESC, due_time DESC`;
         db.query(query, function (error, results) {
             if (error) {
                 res.status(400).send(error);

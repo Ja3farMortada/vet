@@ -3,6 +3,7 @@ app.controller('remindersController', function ($scope, remindersFactory, Notifi
     // bind reminders to application model
     $scope.reminders = remindersFactory.reminders;
     $scope.upcomingReminders = remindersFactory.upcomingReminders;
+    console.log($scope.upcomingReminders)
 
     // bind moment function with a scope to use it in view
     $scope.moment = moment;

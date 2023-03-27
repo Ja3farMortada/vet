@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 16, 2023 at 11:40 PM
--- Server version: 8.0.30
--- PHP Version: 8.0.12
+-- Generation Time: Mar 27, 2023 at 05:52 PM
+-- Server version: 8.0.26
+-- PHP Version: 7.4.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -58,7 +58,7 @@ CREATE TABLE `assets` (
   `assets` int NOT NULL,
   `dollar_assets` double NOT NULL DEFAULT '0',
   `exchange_rate` float NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `assets`
@@ -149,7 +149,7 @@ CREATE TABLE `invoice` (
   `dollar_exchange` float DEFAULT NULL,
   `invoice_status` tinyint NOT NULL DEFAULT '1',
   `UID_FK` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -177,14 +177,14 @@ CREATE TABLE `invoice_details` (
 
 CREATE TABLE `payments` (
   `payment_ID` int NOT NULL,
-  `payment_title` varchar(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `payment_currency` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT 'lira',
-  `category` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `payment_title` varchar(30) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `payment_currency` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'lira',
+  `category` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `amount` int NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
-  `notes` varchar(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci ROW_FORMAT=DYNAMIC;
+  `notes` varchar(30) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -200,9 +200,17 @@ CREATE TABLE `reminders` (
   `reminder_type` varchar(15) NOT NULL DEFAULT 'text',
   `due_date` date DEFAULT NULL,
   `due_time` time DEFAULT NULL,
+  `repeated` tinyint NOT NULL DEFAULT '0',
   `repeat_reminder` varchar(10) DEFAULT NULL,
   `reminder_status` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+--
+-- Dumping data for table `reminders`
+--
+
+INSERT INTO `reminders` (`reminder_ID`, `animal_ID_FK`, `reminder_title`, `reminder_text`, `reminder_type`, `due_date`, `due_time`, `repeated`, `repeat_reminder`, `reminder_status`) VALUES
+(1, 1, 'Defleaing', 'test', 'notification', '2023-03-31', '18:41:18', 1, '180', 1);
 
 -- --------------------------------------------------------
 
@@ -358,10 +366,10 @@ INSERT INTO `treatments` (`treatment_ID`, `treatment_type`, `treatment_descripti
 
 CREATE TABLE `users` (
   `UID` int NOT NULL,
-  `username` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `password` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `type` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'user',
-  `owner` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `username` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `type` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'user',
+  `owner` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `canAddService` tinyint(1) NOT NULL DEFAULT '0',
   `canAddItem` tinyint(1) NOT NULL DEFAULT '0',
   `canViewCustomers` tinyint(1) NOT NULL DEFAULT '0',
@@ -557,7 +565,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `reminders`
 --
 ALTER TABLE `reminders`
-  MODIFY `reminder_ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `reminder_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `services`
