@@ -4,7 +4,7 @@ module.exports = (server, db) => {
     function getReminders(res) {
         let query = `SELECT R.*, A.animal_name, A.owner_name, A.owner_phone
         FROM reminders R
-        INNER JOIN animals A ON R.animal_ID_FK = A.animal_ID
+        LEFT JOIN animals A ON R.animal_ID_FK = A.animal_ID
         WHERE reminder_status = 1 ORDER BY due_date DESC, due_time DESC`;
         db.query(query, function (error, results) {
             if (error) {
