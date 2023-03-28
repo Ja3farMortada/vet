@@ -1,4 +1,20 @@
-<button class="btn btn-outline-success" ng-click="openNewCustomerModal()">+ Add +</button>
+<div class="row container-fluid">
+    <div class="col-auto">
+        <button class="btn btn-outline-success" ng-click="openNewCustomerModal()">+ Add +</button>
+    </div>
+    <div class="col-auto ml-auto">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input type="search" placeholder="Search ..." class="form-control form-control-sm col-auto"
+                ng-model="searchVal" spellcheck="false">
+        </div>
+    </div>
+</div>
+
 <table class="table table-bordered text-center table-sm mt-3" style="user-select: none">
     <thead>
         <tr>
@@ -10,7 +26,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr dir-paginate="customer in customers|itemsPerPage:10">
+        <tr dir-paginate="customer in customers | filter:searchVal | itemsPerPage:10">
             <td>{{ customer.customer_ID }}</td>
             <td>{{ customer.customer_name }}</td>
             <td>{{ customer.customer_phone || '---' }}</td>
@@ -21,6 +37,10 @@
 
         <tr class="table-active" ng-if="customers.length === 0">
             <td colspan="5">No data available in table</td>
+        </tr>
+
+        <tr ng-if="(customers | filter: searchVal).length == 0 && searchVal" class="table-active select-off">
+            <td colspan="5">No Matching Records Found!</td>
         </tr>
     </tbody>
 </table>
@@ -59,7 +79,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal"><i
                             class="fas fa-times fa-fw"></i> Cancel</button>
-                    <button ng-if="selectedModal == 'edit'" ng-click="deleteCustomer()" type="button" class="btn btn-danger"><i class="fas fa-trash-alt fa-fw"></i> Delete</button>
+                    <button ng-if="selectedModal == 'edit'" ng-click="deleteCustomer()" type="button"
+                        class="btn btn-danger"><i class="fas fa-trash-alt fa-fw"></i> Delete</button>
                     <button type="submit" class="btn btn-success"><i class="fas fa-check fa-fw"></i> Submit</button>
                 </div>
             </form>
