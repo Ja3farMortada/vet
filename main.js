@@ -61,10 +61,10 @@ function createWindow() {
 
     let ID = machineIdSync();
     if (ID == 'a584e79c83a9d9964c0b4cb33c1479bbf2f2b9592a8e3e9ccaa3b50844800554') {
-        win.loadFile('application/views/login.html');
+        win.loadFile('app/views/login.html');
     } else {
         if(isDev) {
-            win.loadFile('application/views/login.html')
+            win.loadFile('app/views/login.html')
         } else {
             win.loadFile('error.html')
         }
