@@ -154,4 +154,13 @@ app.controller('stockController', function ($scope, stockFactory, NotificationSe
             }
         }
     };
+
+    $scope.openHistoryModal = item => {
+        $scope.selectedItem = item.item_name;
+        $scope.itemsHistory = null;
+        $('#historyModal').modal('show');
+        stockFactory.fetchItemHistory(item).then(res => {
+            $scope.itemsHistory = res;
+        })
+    }
 });

@@ -1,0 +1,1 @@
+ALTER TABLE `reminders` ADD `has_notified` TINYINT NOT NULL DEFAULT '0' AFTER `repeat_reminder`;

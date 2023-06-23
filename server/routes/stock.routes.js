@@ -66,4 +66,27 @@ module.exports = (server, db) => {
             }
         });
     });
+
+    // fetchItemHistory
+    server.post('/fetchItemHistory', (req, res) => {
+        let ID = req.body.IID;
+        let query = `SELECT C.customer_name AS customer_name,
+        SUM(D.quantity) AS qty
+        FROM invoice_details D
+        INNER JOIN stock S ON S.IID = D.item_ID_FK
+        INNER JOIN invoice I ON D.invoice_ID_FK = I.invoice_ID
+        INNER JOIN customers C ON I.customer_ID_FK = C.customer_ID
+        WHERE D.record_status = 1
+        AND I.invoice_status = 1
+        AND D.item_ID_FK = ?
+        GROUP BY C.customer_name
+        ORDER BY qty DESC`;
+        db.query(query, ID, function(error, results) {
+            if (error) {
+                res.status(500).send(error);
+            } else {
+                res.send(results)
+            }
+        })
+    })
 }

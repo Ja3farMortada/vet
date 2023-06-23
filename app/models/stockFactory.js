@@ -115,5 +115,14 @@ app.factory('stockFactory', function ($http, NotificationService) {
         });
     };
 
+    // get item history
+    model.fetchItemHistory = item => {
+        return $http.post(`${url}/fetchItemHistory`, item).then(response => {
+            return response.data;
+        }, error => {
+            NotificationService.showError(error);
+        });
+    }
+
     return model;
 });

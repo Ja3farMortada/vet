@@ -111,4 +111,12 @@ app.controller('remindersController', function ($scope, remindersFactory, Notifi
         });
     }
 
+    $scope.markNotified = data => {
+        NotificationService.showWarning().then(ok => {
+            if (ok.isConfirmed) {
+                remindersFactory.markNotified(data);
+            }
+        })
+    }
+
 });

@@ -53,11 +53,12 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <p class="mb-0">{{reminder.reminder_text}} <span ng-if="reminder.owner_name">, {{ reminder.owner_name }}, {{ reminder.owner_phone }}</span></p>
                             <div>
+                                <button class="btn btn-warning" ng-click="markNotified(reminder)"><i class="fas fa-envelope"></i> Mark as Notified</button>
                                 <button class="btn btn-info"
                                     ng-click="openReminderModal('edit', reminder.reminder_ID)"><i
-                                        class="fas fa-edit"></i></button>
+                                        class="fas fa-edit"></i> Edit</button>
                                 <button class="btn btn-success" ng-click="removeReminder(reminder)"><i
-                                        class="fas fa-check"></i></button>
+                                        class="fas fa-check"></i> Process</button>
                             </div>
                         </div>
 
@@ -94,7 +95,7 @@
                                 <button class="btn btn-info"
                                     ng-click="openReminderModal('edit', reminder.reminder_ID)"><i
                                         class="fas fa-edit"></i></button>
-                                <button class="btn btn-success" ng-click="removeReminder(reminder.reminder_ID)"><i
+                                <button class="btn btn-success" ng-click="removeReminder(reminder)"><i
                                         class="fas fa-check"></i></button>
                             </div>
                         </div>
@@ -141,10 +142,13 @@
                             <label>Repeat</label>
                             <select class="form-control" ng-model="data.repeat_reminder">
                                 <option value="">Never</option>
-                                <option value="daily">Every day</option>
-                                <option value="weekly">Every week</option>
-                                <option value="monthly">Every month</option>
-                                <option value="yearly">Every year</option>
+                                <option value="1">Every day</option>
+                                <option value="7">Every week</option>
+                                <option value="30">Every month</option>
+                                <option value="60">2 months</option>
+                                <option value="90">3 months</option>
+                                <option value="180">6 months</option>
+                                <option value="365">Every year</option>
                             </select>
                         </div>
                     </div>
@@ -157,7 +161,7 @@
                         </div>
                         <div class="col-6">
                             <label>Time</label>
-                            <input type="time" class="form-control" ng-value="data.due_time" id="timeInput">
+                            <input type="time" step="1" class="form-control" ng-value="data.due_time" id="timeInput">
                         </div>
                     </div>
                 </div>

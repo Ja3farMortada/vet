@@ -80,12 +80,29 @@ module.exports = (server, db) => {
         });
     });
 
+    // mark notified
+    server.post('/markNotified', (req, res) => {
+        let data = req.body;
+        let query = `UPDATE reminders SET has_notified = 1 WHERE reminder_ID = ?`;
+        db.query(query, data.reminder_ID, function(error) {
+            if (error) {
+                res.status(400).send(error);
+            } else {
+                getReminders(res);
+            }
+        })
+    })
+
     // get upcoming reminders
     server.get('/getUpcomingReminders', (req, res) => {
         let query = `SELECT R.*, A.animal_name, A.owner_name, A.owner_phone
         FROM reminders R
         INNER JOIN animals A ON R.animal_ID_FK = A.animal_ID
-        WHERE reminder_type = 'notification' AND reminder_status = 1 AND due_date < DATE_ADD(CURRENT_DATE(), INTERVAL 15 DAY) ORDER BY due_date DESC, due_time DESC`;
+        WHERE reminder_type = 'notification'
+        AND has_notified = 0
+        AND reminder_status = 1
+        AND due_date < DATE_ADD(CURRENT_DATE(), INTERVAL 15 DAY)
+        ORDER BY due_date DESC, due_time DESC`;
         db.query(query, function (error, results) {
             if (error) {
                 res.status(400).send(error);

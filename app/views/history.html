@@ -21,7 +21,7 @@
     <div class="form-group row mb-2 col-4">
         <label class="col-2 col-form-label text-right">Date:</label>
         <div class="col-7">
-            <input type="text" class="form-control text-center" id="invoiceDatePicker">
+            <input ng-disabled="loggedInUser.type !=='admin'" type="text" class="form-control text-center" id="invoiceDatePicker">
         </div>
         <div class="col-3">
             <button class="btn btn-info" ng-click="today()">today</button>

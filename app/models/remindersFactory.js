@@ -98,5 +98,15 @@ app.factory('remindersFactory', function ($http, NotificationService, $timeout) 
         });
     }
 
+    model.markNotified = reminder => {
+        return $http.post(`${url}/markNotified`, reminder).then(function (response) {
+            NotificationService.showSuccess();
+            model.fetchReminders();
+            return 'success'
+        }, function (error) {
+            NotificationService.showError(error);
+        });
+    }
+
     return model;
 });
