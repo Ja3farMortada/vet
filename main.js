@@ -100,7 +100,7 @@ ipcMain.on('printDocument', function (event, data) {
             nativeWindowOpen: true
         }
     });
-    printWindow.loadFile('application/templates/print-invoice.html');
+    printWindow.loadFile('app/templates/print-invoice.html');
     printWindow.show();
     printWindow.webContents.on('did-finish-load', async function () {
         await printWindow.webContents.send('printDocument', data);

@@ -1,6 +1,6 @@
 {
     "name": "petshop",
-    "version": "1.7.0",
+    "version": "1.7.1",
     "description": "Pet Shop Veterinary System",
     "main": "main.js",
     "scripts": {
