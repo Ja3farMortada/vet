@@ -1,0 +1,392 @@
+<div class="container-fluid">
+    <div class="row justify-content-between mb-3 mt-3 select-off">
+        <div class="col-8">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <form class="form-inline">
+                        <label>Show</label>
+                        <select
+                            class="custom-select mr-1 ml-1"
+                            ng-model="itemsPerPage.value"
+                            ng-options="option.value as option.name for option in options"
+                        ></select>
+                        <label>entries</label>
+                    </form>
+                </div>
+                <div class="col-auto">
+                    <button
+                        class="btn btn-outline-success"
+                        ng-click="openItemModal('add', null)"
+                        ng-show="loggedInUser.canAddItem === 1"
+                    >
+                        Define New Item
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <div class="custom-control custom-switch">
+                        <input
+                            type="checkbox"
+                            class="custom-control-input pointer"
+                            id="currency"
+                            ng-model="isLira"
+                            ng-click="toggleCurrency()"
+                        />
+                        <label
+                            class="custom-control-label pointer"
+                            for="currency"
+                            >Show in LBP</label
+                        >
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <exchange-rate></exchange-rate>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+                <input
+                    id="search"
+                    type="text"
+                    class="form-control"
+                    ng-model="searchVal"
+                    placeholder="Search ..."
+                    spellcheck="false"
+                />
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <table class="table table-bordered table-striped text-center table-sm">
+            <thead>
+                <tr>
+                    <th width="5%" ng-click="sort('IID')" class="pointer">
+                        <i
+                            class="fas"
+                            ng-show="sortKey == 'IID'"
+                            ng-class="{'fa-arrow-up': !reverse, 'fa-arrow-down': reverse}"
+                        ></i>
+                        ID
+                    </th>
+                    <th width="15%">Barcode</th>
+                    <th
+                        width="25%"
+                        ng-click="sort('item_name')"
+                        class="pointer"
+                    >
+                        <i
+                            class="fas"
+                            ng-show="sortKey == 'item_name'"
+                            ng-class="{'fa-arrow-up': !reverse, 'fa-arrow-down': reverse}"
+                        ></i>
+                        Item Name
+                    </th>
+                    <th width="5%">Quantity</th>
+                    <th ng-if="loggedInUser.type === 'admin'">Cost</th>
+                    <th width="10%">Price</th>
+                    <th width="20%">Notes</th>
+                    <th colspan="2" width="10%">Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    class="pointers"
+                    dir-paginate="item in items|filter: searchVal| orderBy:sortKey:reverse|itemsPerPage:itemsPerPage.value"
+                    pagination-id="items"
+                    ng-class="{'text-danger': (item.item_qty <= item.minimum_qty)}"
+                >
+                    <td>{{item.IID}}</td>
+
+                    <td ng-if="item.barcode">{{item.barcode}}</td>
+                    <td ng-if="!item.barcode">---</td>
+
+                    <td>{{item.item_name}}</td>
+                    <td>{{item.item_qty}}</td>
+
+                    <!-- cost and price if lira is toggled off -->
+                    <td
+                        ng-if="loggedInUser.type === 'admin' && isLira === false && item.item_currency === 'dollar'"
+                    >
+                        {{ item.item_cost.toLocaleString() }} $
+                    </td>
+                    <td
+                        ng-if="isLira === false && item.item_currency === 'dollar'"
+                    >
+                        {{ item.item_price.toLocaleString() }} $
+                    </td>
+
+                    <!-- cost and price if lira is toggled on -->
+                    <td
+                        ng-if="loggedInUser.type === 'admin' && isLira === true && item.item_currency === 'dollar'"
+                    >
+                        {{ (item.item_cost *
+                        exchangeRate.exchange_rate).toLocaleString() }} L.L
+                    </td>
+                    <td
+                        ng-if="isLira === true && item.item_currency === 'dollar'"
+                    >
+                        {{ (item.item_price *
+                        exchangeRate.exchange_rate).toLocaleString() }} L.L
+                    </td>
+
+                    <!-- <td ng-if="loggedInUser.type === 'admin' && item.item_currency === 'lira'">
+                        {{ (item.item_cost).toLocaleString() }} L.L</td>
+                    <td ng-if="item.item_currency === 'lira'">
+                        {{ (item.item_price).toLocaleString() }}
+                        L.L</td> -->
+
+                    <td ng-if="item.notes">{{item.notes}}</td>
+                    <td ng-if="!item.notes">---</td>
+
+                    <td
+                        class="btn-outline-info"
+                        ng-click="openItemModal('edit', item.IID)"
+                    >
+                        <i class="fas fa-edit"></i>
+                    </td>
+                    <td
+                        class="btn-outline-dark"
+                        ng-click="openHistoryModal(item)"
+                    >
+                        <i class="fas fa-chart-line"></i>
+                    </td>
+                </tr>
+
+                <!-- if table is empty -->
+                <tr ng-if="items.length == 0" class="table-active select-off">
+                    <td colspan="8">There are no data available yet!</td>
+                </tr>
+
+                <!-- if search found nothing -->
+                <tr
+                    ng-if="(items | filter: searchVal).length == 0 && searchVal"
+                    class="table-active select-off"
+                >
+                    <td colspan="8">No Matching Records Found!</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <dir-pagination-controls
+            pagination-id="items"
+            max-size="5"
+            direction-links="true"
+            boundary-links="false"
+            template-url="templates/dirPagination.tpl.html"
+        >
+        </dir-pagination-controls>
+    </div>
+
+    <!--  Items MODAL -->
+    <div class="modal fade" id="itemModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">{{modalTitle}}</h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                        &times;
+                    </button>
+                </div>
+                <form name="itemForm" ng-submit="submit()">
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <label>Name</label>
+                        <input
+                            class="form-control mb-2"
+                            ng-model="modalItem.item_name"
+                            id="modalItemName"
+                            type="text"
+                            autocomplete="off"
+                            spellcheck="false"
+                            autofocus
+                            required
+                        />
+
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <label>Barcode</label>
+                                <input
+                                    ng-change="checkBarcode(modalItem.barcode)"
+                                    class="form-control"
+                                    ng-class="{'is-invalid': barcodeExisted === true}"
+                                    ng-model="modalItem.barcode"
+                                    id="modalItemBarcode"
+                                    autocomplete="off"
+                                />
+                                <div
+                                    ng-if="barcodeExisted === true"
+                                    class="invalid-feedback"
+                                >
+                                    Barcode Already Existed!
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label>Quantity</label>
+                                <input
+                                    ng-disabled="modalMode === 'edit' && loggedInUser.type != 'admin'"
+                                    class="form-control"
+                                    ng-model="modalItem.item_qty"
+                                    type="number"
+                                    autocomplete="off"
+                                    required
+                                    min="0"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="row my-0 mb-2">
+                            <div class="col-6">
+                                <label>Quantity Threshold</label>
+                                <input
+                                    class="form-control"
+                                    ng-model="modalItem.minimum_qty"
+                                    type="number"
+                                    autocomplete="off"
+                                    step="any"
+                                    required
+                                />
+                                <footer>
+                                    <small
+                                        >*<span class="text-danger"
+                                            ><b>notice:</b></span
+                                        >
+                                        minimum quantity</small
+                                    >
+                                </footer>
+                            </div>
+                            <div
+                                class="col-6"
+                                ng-if="loggedInUser.type ==='admin'"
+                            >
+                                <label
+                                    ng-disabled="loggedInUser.type != 'admin' && modalMode === 'edit'"
+                                    >Cost</label
+                                >
+                                <input
+                                    ng-disabled="loggedInUser.type != 'admin' && modalMode === 'edit'"
+                                    class="form-control"
+                                    ng-model="modalItem.item_cost"
+                                    type="number"
+                                    autocomplete="off"
+                                    step="any"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div
+                            class="row mb-2"
+                            ng-if="loggedInUser.type ==='admin'"
+                        >
+                            <div class="col-6">
+                                <label>Price</label>
+                                <input
+                                    class="form-control"
+                                    ng-model="modalItem.item_price"
+                                    type="number"
+                                    step="any"
+                                    autocomplete="off"
+                                    required
+                                />
+                            </div>
+                            <div class="col-6">
+                                <label>Notes</label>
+                                <input
+                                    class="form-control"
+                                    ng-model="modalItem.notes"
+                                    autocomplete="off"
+                                    spellcheck="false"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button
+                            class="btn btn-secondary"
+                            type="button"
+                            data-dismiss="modal"
+                        >
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            type="button"
+                            ng-if="modalMode === 'edit'"
+                            ng-click="deleteItem()"
+                        >
+                            <i class="far fa-trash-alt"></i> Delete Item
+                        </button>
+                        <button class="btn btn-success" type="submit">
+                            <i class="fas fa-check"></i> Confirm
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--  history MODAL -->
+<div class="modal fade" id="historyModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Purchase history for: {{selectedItem}}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <table
+                    class="table table-bordered text-center table-striped table-sm"
+                >
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            dir-paginate="data in itemsHistory | itemsPerPage:10"
+                            pagination-id="history"
+                        >
+                            <td>{{ data.customer_name }}</td>
+                            <td>{{ data.qty }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <dir-pagination-controls
+                    pagination-id="history"
+                    max-size="5"
+                    direction-links="true"
+                    boundary-links="false"
+                    template-url="templates/dirPagination.tpl.html"
+                >
+                </dir-pagination-controls>
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button
+                    class="btn btn-secondary"
+                    type="button"
+                    data-dismiss="modal"
+                >
+                    <i class="fas fa-times"></i> Dismiss
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

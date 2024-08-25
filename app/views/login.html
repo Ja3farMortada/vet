@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- load bootstrap -->
+    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../design/login.css">
+    <link rel="stylesheet" href="../../node_modules/animate.css/animate.min.css">
+
+    <script src="../controllers/loginController.js"></script>
+
+
+</head>
+
+<body ng-app="loginApp" ng-controller="loginController" ng-cloak>
+    <form class="form-signin" ng-submit="submit()">
+        <div ng-show="!loading">
+            <div class="text-center mb-0">
+                <h5 ng-click="test()"><b>{{title}}</b></h5>
+            </div>
+            <!-- username -->
+            <div class="form-label-group">
+                <input id="usernameField" type="text" class="customInput" placeholder="Username" required
+                    spellcheck="false" ng-model="credentials.username" autofocus>
+                <span class="bar"></span>
+                <label>Username</label>
+            </div>
+            <!-- password -->
+            <div class="form-label-group" id="passwordField">
+                <span ng-click="togglePassword()" class="fas"
+                    ng-class="{'fa-eye-slash': !showPassword, 'fa-eye': showPassword}"
+                    style="position: absolute; margin-top: 1.5rem; margin-left: 90%; cursor: pointer;color: #393981;"></span>
+                <input ng-attr-type="{{ showPassword ? 'text' : 'password' }}" class="customInput"
+                    placeholder="Password" required ng-model="credentials.password">
+                <span class="bar"></span>
+                <label>Password</label>
+            </div>
+            <!-- submit -->
+            <button class="btn btn-lg btn-success btn-block" style="opacity: 0.9;" type="submit"><i
+                    class="fas fa-sign-in-alt"></i> Login</button>
+            <div class="text-center">
+                <small>v<samp>{{version}}</small>
+            </div>
+        </div>
+        <div ng-show="loading" class="spinner-grow text-dark mx-auto d-flex" style="width: 6rem; height: 6rem;"
+            role="status">
+        </div>
+    </form>
+
+</body>
+
+</html>

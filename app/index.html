@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/@sweetalert2/themes/dark/dark.min.css">
+
+    <link rel="stylesheet" href="login.css">
+
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/angular/angular.min.js"></script>
+    <script src="../node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
+
+</head>
+
+<!-- <body style="background: linear-gradient(to right, #8e9eab, #eef2f3);"> -->
+
+    <body ng-app="loginApp" ng-controller="loginController" ng-cloak>
+        <form class="form-signin" ng-submit="submit()">
+            <div ng-show="!loading">
+                <div class="text-center mb-0">
+                    <h5><b>{{title}}</b></h5>
+                </div>
+                <!-- username -->
+                <div class="form-label-group">
+                    <input id="usernameField" type="text" class="customInput" placeholder="Username" required
+                        spellcheck="false" ng-model="credentials.username" autofocus>
+                    <span class="bar"></span>
+                    <label>Username</label>
+                </div>
+                <!-- password -->
+                <div class="form-label-group" id="passwordField">
+                    <span ng-click="togglePassword()" class="fas"
+                        ng-class="{'fa-eye-slash': !showPassword, 'fa-eye': showPassword}"
+                        style="position: absolute; margin-top: 1.5rem; margin-left: 90%; cursor: pointer;color: #393981;"></span>
+                    <input ng-attr-type="{{ showPassword ? 'text' : 'password' }}" class="customInput"
+                        placeholder="Password" required ng-model="credentials.password">
+                    <span class="bar"></span>
+                    <label>Password</label>
+                </div>
+                <!-- submit -->
+                <button class="btn btn-lg btn-success btn-block" style="opacity: 0.9;" type="submit"><i
+                        class="fas fa-sign-in-alt"></i> Login</button>
+                <div class="text-center">
+                    <small>v<samp>{{version}}</small>
+                </div>
+            </div>
+            <div ng-show="loading" class="spinner-grow text-dark mx-auto d-flex" style="width: 6rem; height: 6rem;"
+                role="status">
+            </div>
+        </form>
+    
+    </body>
+
+<script>
+
+const app = angular.module('loginApp', []);
+
+app.factory('mainFactory', function () {
+    let model = {};
+    model.getPackages = async () => {
+        let response = await window.electron.send('read-package');
+        if (response) {
+            return response;
+        }
+    }
+    return model;
+});
+
+
+    app.controller(
+  "loginController",
+  function ($scope, $http, $timeout, NotificationService, mainFactory) {
+
+    // Read Package.json
+    mainFactory.getPackages().then(response => {
+            $scope.$digest($scope.version = response.version);
+        });
+
+    // reset settings
+    localStorage.removeItem("setting");
+
+    // // get versions
+    // $scope.version = package.version;
+
+    // define server path
+    const url = `http://localhost:3000`;
+
+    // autofocus username
+    $("#usernameField").trigger("focus");
+
+    $scope.showPassword = false;
+    $scope.togglePassword = function () {
+      $scope.showPassword = !$scope.showPassword;
+    };
+
+    $scope.credentials = {
+      username: null,
+      password: null,
+    };
+    $scope.title = "Please Login to Continue";
+    $scope.loading = false;
+
+    $scope.submit = () => {
+      $scope.loading = true;
+      $http.post(`${url}/login`, $scope.credentials).then(
+        function (response) {
+          if (response.status == 200) {
+            if (response.data[0]) {
+              localStorage.setItem("setting", JSON.stringify(response.data[0]));
+              window.location.replace("main.html");
+            } else {
+              NotificationService.playErrorSound();
+              $scope.credentials.username = null;
+              $scope.credentials.password = null;
+              $scope.loading = false;
+              $(".form-label-group").addClass("animate__shakeX");
+              $scope.title = "Error username or password!!";
+              $timeout(function () {
+                $scope.title = "Please Login to Continue";
+                $("#usernameField").trigger("focus");
+              }, 1000);
+            }
+          }
+        },
+        function (error) {
+          $scope.credentials.username = null;
+          $scope.credentials.password = null;
+          $scope.loading = false;
+          let errorText;
+          console.log(error);
+          if (error.status == -1) {
+            errorText =
+              "Node server is offline, try restarting the application";
+          } else if (error.data.sqlMessage) {
+            errorText = error.data.sqlMessage;
+          } else {
+            errorText = error.data;
+          }
+          NotificationService.showErrorText(error.data)
+        }
+      );
+    };
+  }
+);
+</script>
+
+<script src="services/notificationService.js"></script>
+<!-- <script src="services/dateService.js"></script> -->
+
+</html>

@@ -1,0 +1,638 @@
+<div class="container-fluid">
+
+    <br>
+
+    <div class="row">
+        <div class="col-5">
+            <div class="card shadow">
+                <div class="card-header text-center" style="border-bottom: 0px;">
+                    <button class="btn btn-outline-primary btn-sm" ng-click="openAnimalModal('add')"><i
+                            class="fas fa-plus"></i> New Profile</button>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table m-0 table-borderless text-center table-hover">
+                        <thead class="bg-light table-sm">
+                            <tr class="table-actives">
+                                <th></th>
+                                <th>
+                                    <input type="text" class="form-control form-control-sm" ng-model="search.owner_name"
+                                        spellcheck="false" placeholder="Owner...">
+                                </th>
+                                <th>
+                                    <input type="text" class="form-control form-control-sm"
+                                        ng-model="search.owner_phone" spellcheck="false" placeholder="Phone...">
+                                </th>
+                                <th>
+                                    <input type="text" class="form-control form-control-sm"
+                                        ng-model="search.animal_name" spellcheck="false" placeholder="Animal Name...">
+                                </th>
+                                <th width="15%">
+                                    <select class="form-control form-control-sm" ng-model="search.species">
+                                        <option value="">Any</option>
+                                        <option value="dog">Dog</option>
+                                        <option value="cat">Cat</option>
+                                    </select>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>ID</th>
+                                <th>Owner</th>
+                                <th>Phone</th>
+                                <th>Animal Name</th>
+                                <th>Species</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-top"
+                                dir-paginate="data in animals | filter:search:strict | itemsPerPage: 5"
+                                ng-click="showAnimalDetails(data)"
+                                ng-class="{'table-active': data.animal_ID == selectedAnimal.animal_ID}">
+                                <td>{{ data.animal_ID }}</td>
+                                <td>{{ data.owner_name }}</td>
+                                <td>{{ data.owner_phone || '----' }}</td>
+                                <td>{{ data.animal_name }}</td>
+                                <td>
+                                    <span class="badge badge-pill"
+                                        ng-class="{'badge-brown text-light': data.species == 'dog', 'badge-secondary': data.species == 'cat'}">
+                                        <i class="fas"
+                                            ng-class="{'fa-dog': data.species == 'dog', 'fa-cat': data.species == 'cat'}"></i>
+                                        {{ data.species }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr class="table-active" ng-if="animals.length == 0">
+                                <td colspan="5">There Are No Records Yet!</td>
+                            </tr>
+                            <tr ng-if="(animals | filter: search).length == 0 && search"
+                                class="table-active select-off">
+                                <td colspan="5">No Matching Records Found!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer d-flex justify-content-center">
+                    <div class="col-5">
+                        <dir-pagination-controls max-size="5" direction-links="true" boundary-links="false"
+                            template-url="templates/dirPagination.tpl.html">
+                        </dir-pagination-controls>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service buttons -->
+            <div class="row mt-3" ng-show="selectedAnimal.animal_ID">
+                <div class="col-6">
+                    <button ng-click="addTreatmentModal()" class="btn btn-outline-danger btn-block"><i
+                            class="fas fa-clinic-medical fa-lg"></i> New Treatment</button>
+                </div>
+                <div class="col-6">
+                    <button ng-click="addServiceModal()" class="btn btn-outline-info btn-block"><i
+                            class="fas fa-paw fa-lg"></i> New
+                        Service</button>
+                </div>
+                <div class="col-6 mt-3">
+                    <button ng-click="addReminderModal()" class="btn btn-outline-dark btn-block"><i
+                            class="fas fa-stopwatch fa-lg"></i> New Reminder</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selected Animal Section -->
+        <div class="col-7" ng-show="selectedAnimal.animal_ID">
+            <div class="card shadow">
+                <div class="card-header">
+                    <!-- <h5 class="text-center"><i class="fas fa-info-circle fa-lg"></i> Additional Info</h5> -->
+                    <h3 class="m-0 text-center"><i class="fas fa-info-circle"></i> {{ selectedAnimal.animal_name }}
+                        <span class="float-right">
+                            <div class="dropdown">
+                                <button class="btn btn-light" data-toggle="dropdown">
+                                    <i class="fas fa-cog fa-lg text-dark"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item text-info" href="" ng-click="openAnimalModal('edit')"><i
+                                            class="fas fa-edit fa-lg"></i> Edit Profile</a>
+                                    <a class="dropdown-item text-danger" href="" ng-click="deleteAnimal()"><i
+                                            class="fas fa-trash-alt fa-lg"></i> Delete Profile</a>
+                                </div>
+                            </div>
+                        </span>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless table-sm text-center">
+
+                        <tr>
+                            <th width="20%">Breed</th>
+                            <th width="15%">Gender</th>
+                            <th width="20%">Age</th>
+                            <th width="20%">Birthdate</th>
+                            <th width="25%">Notes</th>
+                        </tr>
+                        <tr>
+                            <td>{{ selectedAnimal.breed }}</td>
+                            <td><i ng-class="{'fa-mars text-primary': selectedAnimal.gender == 'male', 'fa-venus text-pink': selectedAnimal.gender == 'female'}"
+                                    class="fas fa-lg"></i> {{ selectedAnimal.gender }}</td>
+                            <td>{{ selectedAge }}</td>
+                            <td>{{ selectedAnimal.birthdate }}</td>
+                            <td>{{ selectedAnimal.notes || '----'}}</td>
+                        </tr>
+                    </table>
+
+                    <hr>
+
+                    <div>
+                        <!-- Navigation Tabs -->
+                        <div class=" justify-content-center d-flex">
+                            <ul class="nav nav-tabs nav-fill">
+                                <li class="nav-item text-center">
+                                    <a class="nav-link text-secondary"
+                                        ng-class="{'active': tabSelected === 0, 'active-tab-dir': tabSelected === 0}"
+                                        ng-click="selectTab(0)"><i class="fas fa-notes-medical fa-2x fa-fw"></i>
+                                        Medical History</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-secondary"
+                                        ng-class="{'active': tabSelected === 1, 'active-tab-dir': tabSelected === 1}"
+                                        ng-click="selectTab(1)"><i
+                                            class="fas fa-file-invoice-dollar fa-2x fa-fw"></i>Service History</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-secondary"
+                                        ng-class="{'active': tabSelected === 2, 'active-tab-dir': tabSelected === 2}"
+                                        ng-click="selectTab(2)"><i
+                                            class="fas fa-stopwatch fa-2x fa-fw"></i>Reminders</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <br>
+
+                        <ul ng-show="tabSelected === 0" class="cbp_tmtimeline">
+                            <li>
+                                <time
+                                    class="cbp_tmtime"><span>{{ moment(selectedAnimal.birthdate).format('MMM DD YYYY') }}</span>
+                                    <span>{{ selectedAge }} ago</span></time>
+                                <div class="cbp_tmicon"
+                                    ng-class="{'bg-primary': selectedAnimal.gender == 'male', 'bg-pink': selectedAnimal.gender == 'female'}">
+                                    <i class="fas text-light"
+                                        ng-class="{'fa-dog': selectedAnimal.species == 'dog', 'fa-cat': selectedAnimal.species == 'cat'}"></i>
+                                </div>
+                                <div class="cbp_tmlabel">
+                                    <h5>Born</h5>
+                                </div>
+                            </li>
+
+                            <li ng-repeat="record in treatmentHistory">
+                                <time
+                                    class="cbp_tmtime"><span>{{ moment(record.treatment_date).format('MMM DD YYYY') }}</span>
+                                    <span>{{ (moment.duration(moment().diff(moment(record.treatment_date + ' ' + record.treatment_time), 'milliseconds'))).humanize() }}
+                                        ago</span></time>
+                                <div class="cbp_tmicon" ng-class="{'bg-success': record.treatment_type == 'vaccine',
+                                'bg-danger': record.treatment_type == 'surgery',
+                                'bg-warning': record.treatment_type == 'first aid',
+                                'bg-dark': record.treatment_type == 'other'}">
+                                    <i class="fas text-light" ng-class="{'fa-syringe': record.treatment_type == 'vaccine',
+                                'fa-user-md': record.treatment_type == 'surgery',
+                                'fa-medkit': record.treatment_type == 'first aid',
+                                'fa-hand-holding-medical': record.treatment_type == 'other'}"></i></div>
+                                <div class="cbp_tmlabel">
+                                    <span class="float-right">
+                                        <div class="dropdown">
+                                            <i class="fas fa-edit fa-lg text-dark pointer" data-toggle="dropdown"></i>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item text-info" href=""
+                                                    ng-click="editTreatmentModal(record)"><i
+                                                        class="fas fa-edit fa-lg"></i> Edit Record</a>
+                                                <a class="dropdown-item text-danger" href=""
+                                                    ng-click="deleteTreatment(record.treatment_ID)"><i
+                                                        class="fas fa-trash-alt fa-lg"></i>
+                                                    Delete Record</a>
+                                            </div>
+                                        </div>
+                                    </span>
+                                    <h5>{{ record.treatment_type }}</h5>
+                                    <p class="mb-0"><strong>Description:</strong> {{ record.treatment_description }}</p>
+                                    <p ng-if="record.treatment_notes" class="mb-0"><strong>Notes:</strong>
+                                        {{ record.treatment_notes }}</p>
+                                    <!-- <div class="bg-danger">tets</div> -->
+                                </div>
+                            </li>
+                        </ul>
+
+                        <ul ng-show="tabSelected === 1" class="cbp_tmtimeline">
+
+                            <li ng-repeat="record in serviceHistory">
+                                <time
+                                    class="cbp_tmtime"><span>{{ moment(record.service_date).format('MMM DD YYYY') }}</span>
+                                    <span>{{ (moment.duration(moment().diff(moment(record.service_date + ' ' + record.service_time), 'milliseconds'))).humanize() }}
+                                        ago</span></time>
+                                <div class="cbp_tmicon" ng-class="{'bg-primary': record.service_type == 'Shower',
+                                'bg-dark': record.service_type == 'Grooming',
+                                'bg-info': record.service_type == 'Boarding'}">
+                                    <i class="fas text-light" ng-class="{'fa-shower': record.service_type == 'Shower',
+                                'fa-feather': record.service_type == 'Grooming',
+                                'fa-hotel': record.service_type == 'Boarding'}"></i></div>
+                                <div class="cbp_tmlabel">
+                                    <span class="float-right">
+                                        <div class="dropdown">
+                                            <i class="fas fa-edit fa-lg text-dark pointer" data-toggle="dropdown"></i>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item text-info" href=""
+                                                    ng-click="editServiceModal(record)"><i
+                                                        class="fas fa-edit fa-lg"></i> Edit Record</a>
+                                                <a class="dropdown-item text-danger" href=""
+                                                    ng-click="deleteService(record.service_ID)"><i
+                                                        class="fas fa-trash-alt fa-lg"></i>
+                                                    Delete Record</a>
+                                            </div>
+                                        </div>
+                                    </span>
+                                    <h5>{{ record.service_type }}</h5>
+                                    <p class="mb-0">{{ record.service_description }}</p>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <ul ng-show="tabSelected === 2" class="list-group">
+                            <li ng-repeat="reminder in animalReminders" class="list-group-item">
+                                <div class="row">
+                                    <div class="col-1 p-0 d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-bell fa-2x text-danger"></i>
+                                    </div>
+                                    <div class="col-11 pl-0">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-0">{{reminder.reminder_title}}</h5>
+                                            <small
+                                                ng-if="reminder.reminder_type === 'notification'">{{moment(reminder.due_date + ' ' + reminder.due_time).format('LLLL')}}</small>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <p class="mb-0">{{reminder.reminder_text}}</p>
+                                            <div>
+                                                <button class="btn btn-info"
+                                                    ng-click="editReminderModal(reminder)"><i
+                                                        class="fas fa-edit"></i></button>
+                                                <button class="btn btn-success"
+                                                    ng-click="removeReminder(reminder)"><i
+                                                        class="fas fa-check"></i></button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </li>
+
+                            <div class="alert alert-dark text-center" ng-if="animalReminders.length == 0">There Are No
+                                Upcoming Reminders!</div>
+                        </ul>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Animal MODAL -->
+<div class="modal fade" id="animalModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">{{ modalTitle }}</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form ng-submit="submit()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <!-- Animal Data -->
+                    <h3>Animal Data</h3>
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Animal Name</label>
+                            <input ng-model="animalData.animal_name" type="text" class="form-control" required
+                                spellcheck="false">
+                        </div>
+                        <div class="col-4">
+                            <label>Species</label>
+                            <select ng-model="animalData.species" class="form-control" required>
+                                <option value=""> --- </option>
+                                <option value="dog">Dog</option>
+                                <option value="cat">Cat</option>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <label>Breed</label>
+                            <input ng-model="animalData.breed" type="text" class="form-control" required
+                                spellcheck="false">
+                        </div>
+                        <div class="col-4">
+                            <label>Gender</label>
+                            <select ng-model="animalData.gender" class="form-control">
+                                <option value=""> --- </option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <label>Approximate Birthdate</label>
+                            <input ng-model="animalData.birthdate" id="birthdatePicker" type="text"
+                                class="form-control text-center" required spellcheck="false">
+                        </div>
+                    </div>
+
+                    <br>
+                    <h3>Owner Data</h3>
+                    <!-- Owner data -->
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Owner Name</label>
+                            <input ng-model="animalData.owner_name" type="text" class="form-control" required
+                                spellcheck="false">
+                        </div>
+                        <div class="col-4">
+                            <label>Owner Phone</label>
+                            <input ng-model="animalData.owner_phone" type="number" class="form-control" required
+                                spellcheck="false">
+                        </div>
+                        <div class="col-4">
+                            <label>Owner Address</label>
+                            <input ng-model="animalData.address" type="text" class="form-control" spellcheck="false">
+                        </div>
+
+                        <div class="col-12">
+                            <label>Notes</label>
+                            <textarea ng-model="animalData.notes" rows="2" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
+                        Cancel</button>
+                    <button class="btn btn-success" type="submit"><i class="fas fa-check"></i>
+                        Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Treatment MODAL -->
+<div class="modal fade" id="treatmentModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fas fa-clinic-medical"></i> New Treatment</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form ng-submit="submitTreatment()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <label>Select Treatment type:</label>
+                            <select class="form-control" required ng-model="treatmentData.treatment_type">
+                                <option value="">---</option>
+                                <option value="vaccine">Vaccine</option>
+                                <option value="surgery">Surgery</option>
+                                <option value="first aid">First Aid</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- description -->
+                        <div class="col-6">
+                            <label>Treatment Description</label>
+                            <input type="text" class="form-control" required
+                                ng-model="treatmentData.treatment_description" spellcheck="false">
+                        </div>
+
+                        <!-- notes -->
+                        <div class="col-12 mt-3">
+                            <label>Treatment Notes</label>
+                            <textarea ng-model="treatmentData.treatment_notes" class="form-control" rows="3"
+                                spellcheck="false"></textarea>
+                        </div>
+
+                        <!-- currency -->
+                        <div class="form-group col-6 mt-3">
+                            <label>Payment Currency</label>
+                            <select class="form-control text-center" ng-model="treatmentData.payment_currency" required>
+                                <option value="lira" selected>Lebanese Pound L.L</option>
+                                <option value="dollar">US Dollar $</option>
+                            </select>
+                        </div>
+                        <!-- payment -->
+                        <div class="form-group col-6 mt-3">
+                            <label>Payment Received</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control text-center"
+                                    ng-model="treatmentData.payment_received" min="0" required>
+                                <div class="input-group-append">
+                                    <span ng-if="treatmentData.payment_currency == 'lira'"
+                                        class="input-group-text">L.L</span>
+                                    <span ng-if="treatmentData.payment_currency == 'dollar'"
+                                        class="input-group-text">$</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 mt-3" ng-show="treatmentModalMode == 'add'">
+                            <label>Add Reminder?</label>
+                            <select class="form-control" ng-model="treatmentData.has_reminder">
+                                <option ng-value="false">No</option>
+                                <option ng-value="true">Yes</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6 mt-3" ng-show="treatmentData.has_reminder">
+                            <label>Remind at:</label>
+                            <input ng-model="treatmentData.reminder_date" id="treatmentDatepicker" type="text"
+                                class="form-control text-center" ng-required="treatmentData.has_reminder">
+                        </div>
+
+                        <div class="col-12 mt-3" ng-show="treatmentData.has_reminder">
+                            <label>Reminder Notes</label>
+                            <input ng-model="treatmentData.reminder_notes" type="text" class="form-control"
+                                spellcheck="false">
+                        </div>
+
+                        <div class="col-6 mt-3" ng-show="treatmentModalMode == 'add' && treatmentData.has_reminder">
+                            <label>Repeat?</label>
+                            <select class="form-control" ng-model="treatmentData.repeated">
+                                <option ng-value="false">No</option>
+                                <option ng-value="true">Yes</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6 mt-3" ng-show="treatmentData.repeated">
+                            <label>Repeat Options</label>
+                            <select class="form-control" ng-model="treatmentData.repeat_reminder"
+                                ng-required="treatmentData.repeat">
+                                <option value="">---</option>
+                                <option value="30">1 Month</option>
+                                <option value="60">3 Months</option>
+                                <option value="180">6 Months</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
+                        Cancel</button>
+                    <button class="btn btn-success" type="submit"><i class="fas fa-check"></i>
+                        Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- service MODAL -->
+<div class="modal fade" id="serviceModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fas fa-paw"></i> New Service</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form ng-submit="submitService()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <label>Select service type:</label>
+                            <select class="form-control" required ng-model="serviceData.service_type">
+                                <option value="">---</option>
+                                <option value="Shower">Shower</option>
+                                <option value="Grooming">Grooming</option>
+                                <option value="Boarding">Boarding</option>
+                            </select>
+                        </div>
+
+                        <!-- <div class="col-6">
+                            <label>Payment Received</label>
+                            <input type="number" class="form-control text-center" required
+                                ng-model="serviceData.payment_received">
+                        </div> -->
+
+                        <div class="col-6">
+                            <label>Service Description</label>
+                            <input type="text" class="form-control text-center"
+                                ng-model="serviceData.service_description" spellcheck="false">
+                        </div>
+
+                        <!-- currency -->
+                        <div class="form-group col-6 mt-3">
+                            <label>Payment Currency</label>
+                            <select class="form-control text-center" ng-model="serviceData.payment_currency" required>
+                                <option value="lira" selected>Lebanese Pound L.L</option>
+                                <option value="dollar">US Dollar $</option>
+                            </select>
+                        </div>
+                        <!-- payment -->
+                        <div class="form-group col-6 mt-3">
+                            <label>Payment Received</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control text-center"
+                                    ng-model="serviceData.payment_received" min="0" required>
+                                <div class="input-group-append">
+                                    <span ng-if="serviceData.payment_currency == 'lira'"
+                                        class="input-group-text">L.L</span>
+                                    <span ng-if="serviceData.payment_currency == 'dollar'"
+                                        class="input-group-text">$</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
+                        Cancel</button>
+                    <button class="btn btn-success" type="submit"><i class="fas fa-check"></i>
+                        Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- reminders modal -->
+<div class="modal fade" id="remindersModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fas fa-stopwatch"></i>{{modalMode}} Reminder</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form ng-submit="submitReminder()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="col-6">
+                            <label>Reminder Title:</label>
+                            <select class="form-control" required ng-model="reminderData.reminder_title">
+                                <option value="">---</option>
+                                <option value="Vaccine">Vaccine</option>
+                                <option value="Deworming">Deworming</option>
+                                <option value="Defleaing">Defleaing</option>
+                                <option value="Hydatic cyst">Hydatic cyst</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label>Remind at:</label>
+                            <input ng-model="reminderData.due_date" id="reminderDatepicker" type="text"
+                                class="form-control text-center">
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <label>Reminder Notes</label>
+                            <input ng-model="reminderData.reminder_text" type="text" class="form-control"
+                                spellcheck="false">
+                        </div>
+
+                        <div class="col-6 mt-3">
+                            <label>Repeat?</label>
+                            <select class="form-control" ng-model="reminderData.repeated">
+                                <option ng-value="false">No</option>
+                                <option ng-value="true">Yes</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6 mt-3" ng-show="reminderData.repeated">
+                            <label>Repeat Options</label>
+                            <select class="form-control" ng-model="reminderData.repeat_reminder"
+                                ng-required="reminderData.repeat">
+                                <option value="">---</option>
+                                <option value="30">1 Month</option>
+                                <option value="90">3 Months</option>
+                                <option value="180">6 Months</option>
+                            </select>
+                        </div>
+
+
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
+                        Cancel</button>
+                    <button ng-click="deleteReminder()" ng-if="modalMode == 'Edit'" class="btn btn-danger" type="button"><i class="fas fa-trash-alt"></i> Delete</button>
+                    <button class="btn btn-success" type="submit"><i class="fas fa-check"></i>
+                        Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

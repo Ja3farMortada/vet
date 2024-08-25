@@ -1,0 +1,202 @@
+<div class="container-fluid" ng-cloak>
+
+    <!-- Navigation tabs -->
+    <div class="container justify-content-center d-flex">
+        <ul class="nav nav-tabs nav-fills">
+            <li class="nav-item text-center">
+                <a class="nav-link text-secondary text-uppercase animate__animated"
+                    ng-class="{'active': tabSelected === 0, 'active-tab-dir': tabSelected === 0, 'animate__fadeIn': tabSelected === 0}"
+                    ng-click="selectTab(0)"><i class="fas fa-receipt fa-2x fa-fw"></i> Sales Invoices</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-secondary text-uppercase animate__animated"
+                    ng-class="{'active': tabSelected === 1, 'active-tab-dir': tabSelected === 1, 'animate__fadeIn': tabSelected === 1}"
+                    ng-click="selectTab(1)"><i class="fas fa-file-invoice-dollar fa-2x fa-fw"></i>Services Invoices</a>
+            </li>
+        </ul>
+    </div>
+
+    <br>
+
+    <div class="form-group row mb-2 col-4">
+        <label class="col-2 col-form-label text-right">Date:</label>
+        <div class="col-7">
+            <input ng-disabled="loggedInUser.type !=='admin'" type="text" class="form-control text-center" id="invoiceDatePicker">
+        </div>
+        <div class="col-3">
+            <button class="btn btn-info" ng-click="today()">today</button>
+        </div>
+    </div>
+    <div class="row">
+        <!-- invoices table -->
+        <div class="col-4">
+            <!-- invoices -->
+            <table class="table table-bordered text-center table-hover table-sm" ng-show="tabSelected === 0">
+                <thead style="user-select: none">
+                    <tr>
+                        <th width="15%">#</th>
+                        <th width="40%">Customer name</th>
+                        <th width="25%">Time</th>
+                        <th width="20%">Total</th>
+                    </tr>
+                </thead>
+                <tbody style="user-select: none;">
+                    <!-- sales invoices -->
+                    <tr dir-paginate="invoice in salesInvoices | itemsPerPage:10" pagination-id="sales"
+                        class="pointer" ng-click="showInvoiceDetails(invoice.invoice_ID, invoice.invoice_total_price)"
+                        ng-class="{'table-active': isActive(invoice.invoice_ID)}">
+                        <td>{{ invoice.invoice_ID }}</td>
+                        <td>{{ invoice.customer_name || '----' }}</td>
+                        <td>{{ invoice.invoice_time }}</td>
+                        <td>{{ invoice.invoice_total_price.toLocaleString() }} $</td>
+                    </tr>
+
+                    <!-- services invoices -->
+                    <!-- <tr dir-paginate="invoice in servicesInvoices | itemsPerPage:10" pagination-id="services" class="pointer"
+                        ng-click="showInvoiceDetails(invoice.record_ID, invoice.total_cost)"
+                        ng-show="tabSelected === 1" ng-class="{'table-active': isActive(invoice.record_ID)}">
+                        <td>{{ invoice.record_ID }}</td>
+                        <td>{{ invoice.supplier_name || '----' }}</td>
+                        <td>{{ invoice.record_time }}</td>
+                        <td>{{ invoice.total_cost.toLocaleString() }} $</td>
+                    </tr> -->
+
+                    <!-- if no records -->
+                    <tr ng-if="salesInvoices.length == 0">
+                        <td colspan="4" class="table-active">No Records Yet!</td>
+                    </tr>
+                    <!-- <tr ng-if="servicesInvoices.length == 0 && tabSelected == 1">
+                        <td colspan="4" class="table-active">No Records Yet!</td>
+                    </tr> -->
+                </tbody>
+            </table>
+            <dir-pagination-controls pagination-id="sales" max-size="5"
+                direction-links="true" boundary-links="false" template-url="templates/dirPagination.tpl.html">
+            </dir-pagination-controls>
+            <!-- <dir-pagination-controls ng-show="tabSelected === 1" pagination-id="services" max-size="5"
+                direction-links="true" boundary-links="false" template-url="templates/dirPagination.tpl.html">
+            </dir-pagination-controls> -->
+        </div>
+
+        <!-- invoice details table -->
+        <div id="test" class="col-8" ng-show="tabSelected === 0">
+            <table class="table text-center table-sm select-off">
+                <thead class="table-bordered">
+                    <tr>
+                        <th width="50%">Name</th>
+                        <th width="20%">Unit Price</th>
+                        <th width="10%">Quantity</th>
+                        <th width="20%">Total Unit Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- sales invoice selected -->
+                    <tr ng-repeat="item in items" class="table-bordered">
+                        <td>{{ item.item_name }}</td>
+                        <td>{{ item.price.toLocaleString() }} $</td>
+                        <td>{{ item.qty }}</td>
+                        <td>{{ (item.price * item.qty).toLocaleString() }} $</td>
+                    </tr>
+                    <!-- stock invoice selected -->
+                    <!-- <tr ng-if="tabSelected == 1" ng-repeat="item in items" class="table-bordered">
+                        <td>{{ item.item_name }}</td>
+                        <td>{{ item.cost.toLocaleString() }} $</td>
+                        <td>{{ item.qty }}</td>
+                        <td>{{ (item.cost * item.qty).toLocaleString() }} $</td>
+                    </tr> -->
+
+                    <tr class="table-active" ng-if="!items">
+                        <td colspan="4">There is no invoice selected yet</td>
+                    </tr>
+
+                    <tr ng-if="items">
+                        <td colspan="3" class="pb-0 pt-1">
+                            <div class="float-left">
+                                <button class="btn btn-outline-dark btn-sm" ng-click="openPrintModal()"><i
+                                        class="fas fa-print"></i> Print</button>
+                                <button ng-if="loggedInUser.type ==='admin'" class="btn btn-outline-danger btn-sm" ng-click="deleteInvoice()"><i
+                                        class="fas fa-trash-alt"></i> Delete</button>
+                            </div>
+                        </td>
+                        <td class="table-success">
+                            <span class="h5">Total: {{ totalPrice.toLocaleString() }} $</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div ng-if="user">
+                
+                <span class="h6">{{ user }}</span>
+            </div>
+        </div>
+
+        <div class="col-12" ng-show="tabSelected === 1">
+            <table class="table table-bordered text-center table-sm">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Owner Name</th>
+                        <th>Animal Name</th>
+                        <th>Service Type</th>
+                        <th>Description</th>
+                        <th>Time</th>
+                        <th>Payment</th>
+                    </tr>
+                </thead>
+                <tbody >
+                    <tr dir-paginate="record in servicesInvoices | itemsPerPage: 15" pagination-id="services">
+                        <td>{{ record.service_ID }}</td>
+                        <td>{{ record.owner_name }}</td>
+                        <td>{{ record.animal_name }}</td>
+                        <td>{{ record.service_type }}</td>
+                        <td>{{ record.service_description || '----' }}</td>
+                        <td>{{ record.service_time }}</td>
+                        <td>{{ (record.payment_received).toLocaleString() }} <span ng-if="record.payment_currency == 'lira'">L.L</span><span ng-if="record.payment_currency == 'dollar'">$</span></td>
+                    </tr>
+
+                    <tr ng-if="servicesInvoices.length == 0" class="table-active">
+                        <td colspan="7">No Records Yet!</td>
+                    </tr>
+                </tbody>
+            </table>
+            <dir-pagination-controls pagination-id="services" max-size="5"
+                direction-links="true" boundary-links="false" template-url="templates/dirPagination.tpl.html">
+            </dir-pagination-controls>
+        </div>
+    </div>
+</div>
+
+<!-- Print Modal -->
+<div class="modal fade" id="printModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Choose Customer</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form ng-submit="print()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <label ng-if="tabSelected == 0">Customer Name</label>
+                    <input ng-if="tabSelected == 0" class="form-control" ng-model="printData.name"
+                        placeholder="Billed To .." autofocus spellcheck="false">
+                    <label>Choose Currency</label>
+                    <select class="form-control" ng-model="printData.currency">
+                        <option value="dollar">US Dollar $</option>
+                        <option value="lira">Lebanese Pound L.L</option>
+                    </select>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <!-- Add new client Button -->
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal" tabindex="2"><i
+                            class="fas fa-times"></i>
+                        Cancel</button>
+                    <button type="submit" class="btn btn-dark" tabindex="3"><i class="fas fa-print"></i>
+                        Print</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

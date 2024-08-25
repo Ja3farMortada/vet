@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>PetShop Veterinary</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- load bootstrap and designs -->
+    <link
+      rel="stylesheet"
+      href="../node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../node_modules/jquery-ui/themes/base/theme.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../node_modules/jquery-ui/themes/base/datepicker.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../node_modules/@sweetalert2/themes/dark/dark.min.css">
+
+    <!-- JS Frameworks -->
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/jquery-ui/dist/jquery-ui.min.js"></script>
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../node_modules/angular/angular.min.js"></script>
+    <script src="../node_modules/angular-route/angular-route.min.js"></script>
+    <script src="../node_modules/angular-utils-pagination/dirPagination.js"></script>
+    <script src="../node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
+    <script src="../node_modules/moment/moment.js"></script>
+    <script src="../node_modules/rxjs/dist/bundles/rxjs.umd.min.js"></script>
+
+    
+
+    <!-- Load Main Controller -->
+    <script src="mainController.js"></script>
+
+    <!-- Load Services -->
+    <script src="services/notificationService.js"></script>
+    <script src="services/dateService.js"></script>
+
+    <!-- Chart JS -->
+    <script src="../node_modules/chart.js/dist/chart.min.js"></script>
+
+    <!-- Load Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body ng-app="mainApp" ng-controller="mainController" class="bg-smoke">
+    <nav
+      class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top select-off"
+      ng-cloak
+    >
+      <!-- Brand nav -->
+      <span class="navbar-brand h1" style="user-select: none">
+        <img
+          src="./assets/vet-logo.png"
+          width="30"
+          height="30"
+          style="border-radius: 15%"
+        />
+        <small><samp>v{{package.version}}</samp></small>
+      </span>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Main nav -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav nav-pills">
+          <li class="nav-item">
+            <a
+              ng-click="clickedTab('/animals')"
+              ng-class="{active: location == '/animals'}"
+              class="nav-link"
+              tabindex="-1"
+              href="#!/animals"
+              ><i class="fas fa-paw"></i> Animals</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              ng-click="clickedTab('/sell')"
+              ng-class="{active: location == '/sell'}"
+              class="nav-link"
+              tabindex="-1"
+              href="#!/sell"
+              ><i class="fas fa-shopping-cart"></i> Sell</a
+            >
+          </li>
+          <!-- <li class="nav-item">
+                    <a ng-click="clickedTab('/supply')" ng-class="{active: location == '/supply'}" class="nav-link" tabindex="-1" href="#!/supply"><i class="fas fa-truck-loading"></i> Supply</a>
+                </li> -->
+          <li class="nav-item">
+            <a
+              ng-click="clickedTab('/stock')"
+              ng-class="{active: location == '/stock'}"
+              class="nav-link"
+              tabindex="-1"
+              href="#!/stock"
+              ><i class="fas fa-warehouse"></i> Stock</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              ng-click="clickedTab('/history')"
+              ng-class="{active: location == '/history'}"
+              class="nav-link"
+              tabindex="-1"
+              href="#!/history"
+              ><i class="fas fa-history"></i> History</a
+            >
+          </li>
+          <li class="nav-item" ng-if="loggedInUser.canViewCustomers === 1">
+            <a
+              ng-click="clickedTab('/debts')"
+              ng-class="{active: location == '/debts'}"
+              class="nav-link"
+              tabindex="-1"
+              href="#!/debts"
+              ><i class="fas fa-users"></i> Customers</a
+            >
+          </li>
+          <!-- <li class="nav-item" ng-if="loggedInUser.canViewCustomers === 1">
+                    <a ng-click="clickedTab('/suppliers')" ng-class="{active: location == '/suppliers'}" class="nav-link" tabindex="-1" href="#!/suppliers"><i class="fas fa-user-tie"></i> Suppliers</a>
+                </li> -->
+          <!-- <li class="nav-item">
+                    <a ng-click="clickedTab('/doctors')" ng-class="{active: location == '/doctors'}" class="nav-link" tabindex="-1" href="#!/doctors"><i class="fas fa-user-md"></i> Doctors</a>
+                </li> -->
+          <!-- <li class="nav-item" ng-if="loggedInUser.canViewPayments === 1">
+                    <a ng-click="clickedTab('/payments')" ng-class="{active: location == '/payments'}" class="nav-link" tabindex="-1" href="#!/payments"><i class="fas fa-money-bill-wave"></i> Payments</a>
+                </li> -->
+          <li class="nav-item" ng-if="loggedInUser.type === 'admin'">
+            <a
+              ng-click="clickedTab('/reports')"
+              ng-class="{active: location == '/reports'}"
+              class="nav-link"
+              tabindex="-1"
+              href="#!/reports"
+              ><i class="fas fa-chart-line fa-fw"></i> Reports</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              ng-click="clickedTab('/reminders')"
+              ng-class="{active: location == '/reminders'}"
+              class="nav-link"
+              tabindex="-1"
+              href="#!/reminders"
+              ><i class="fas fa-stopwatch"></i> Reminders
+              <span
+                class="badge badge-pill badge-danger"
+                ng-if="remindersCount.length > 0"
+                >{{remindersCount.length}}</span
+              ></a
+            >
+          </li>
+        </ul>
+
+        <!-- <ul class="navbar-nav mx-auto">
+                <li class="text-light">
+                    <exchange-rate></exchange-rate>
+                </li>
+            </ul> -->
+
+        <!-- Right nav -->
+        <ul class="navbar-nav ml-auto nav-pills">
+          <li class="nav-item dropdown">
+            <a
+              ng-class="{active: location == '/settings'}"
+              class="nav-link dropdown-toggle"
+              tabindex="-1"
+              href=""
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              ><i class="fas fa-user-alt fa-lg"></i>
+              {{loggedInUser.username}}</a
+            >
+            <div class="dropdown-menu dropdown-menu-right">
+              <a
+                ng-click="clickedTab('/settings')"
+                class="dropdown-item text-dark"
+                href="#!/settings"
+                ><i class="fas fa-cog fa-lg"></i> Settings</a
+              >
+              <a class="dropdown-item text-dark" href="" ng-click="about()"
+                ><i class="fas fa-info-circle fa-lg"></i> About</a
+              >
+              <a
+                class="dropdown-item text-dark"
+                href=""
+                ng-click="openUpdateModal()"
+                ><i class="fas fa-sync-alt fa-lg"></i> Check For Updates</a
+              >
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item text-danger" href="" ng-click="logout()"
+                ><i class="fas fa-sign-out-alt fa-lg"></i> Logout</a
+              >
+            </div>
+          </li>
+        </ul>
+        <!-- <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Logout</button> -->
+      </div>
+    </nav>
+
+    <div class="bg-smoke">
+      <br /><br />
+      <div ng-view class="mt-4">
+        <!-- here where the pages load their contents -->
+      </div>
+    </div>
+
+    <!-- About modal -->
+    <div class="modal fade" id="aboutModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-info-circle fa-lg"></i> About PetShop Veterinary
+            </h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <h5><b>What's new in version {{package.version}}:</b></h5>
+            <ul>
+              <li>Fix reminders' 3 months issue</li>
+              <li>Update permissions for stock and history</li>
+              <li>General Improvements</li>
+            </ul>
+            <!-- <h5>Dependencies:</h5> -->
+            <br />
+            <table class="table table-bordered table-sm text-center">
+              <thead>
+                <tr>
+                  <th>Dependency name</th>
+                  <th>Version</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>AngularJS</td>
+                  <td>{{package.dependencies.angular.slice(1, 7)}}</td>
+                </tr>
+                <tr>
+                  <td>Bootstrap</td>
+                  <td>{{package.dependencies.bootstrap.slice(1, 7)}}</td>
+                </tr>
+                <tr>
+                  <td>jQuery</td>
+                  <td>{{package.dependencies.jquery.slice(1, 7)}}</td>
+                </tr>
+                <tr>
+                  <td>ExpressJS</td>
+                  <td>{{package.dependencies.express.slice(1, 7)}}</td>
+                </tr>
+                <tr>
+                  <td>MySQL2</td>
+                  <td>{{package.dependencies.mysql2.slice(1, 7)}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- <ul>
+                        <li><b>AngularJS:</b> {{package.dependencies.angular.slice(1, 7)}}</li>
+                        <li><b>Bootstrap:</b> {{package.dependencies.bootstrap.slice(1, 7)}}</li>
+                        <li><b>jQuery:</b> {{package.dependencies.jquery.slice(1, 7)}}</li>
+                        <li><b>ExpressJS:</b> {{package.dependencies.express.slice(1, 7)}}</li>
+                        <li><b>MySQL:</b> {{package.dependencies.mysql.slice(1, 7)}}</li>
+                    </ul> -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- update modal -->
+    <div class="modal fade" id="updateModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-sync-alt fa-lg"></i> Updater(beta)
+            </h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-center">
+            <img src="assets/vet-bg.png" width="300" height="168" />
+            <!-- <h3 class="text-center">Pet Shop</h3> -->
+            <h6 class="text-center">current version: {{package.version}}</h6>
+
+            <!-- text -->
+            <h6 class="text-center mt-3">{{text}}</h6>
+
+            <!-- spinner -->
+            <div class="d-flex justify-content-center mt-3" ng-if="showSpinner">
+              <div class="spinner-grow text-primary" role="status"></div>
+            </div>
+
+            <!-- download update button -->
+            <button
+              ng-show="download == true"
+              type="button"
+              class="btn btn-outline-dark"
+              ng-click="downloadUpdate()"
+            >
+              download now
+            </button>
+
+            <!-- download progress -->
+            <div class="text-center" ng-if="downloading">
+              <div class="progress">
+                <div
+                  id="progressBar"
+                  class="progress-bar bg-success"
+                  role="progressbar"
+                ></div>
+              </div>
+              <span
+                >({{((data.transferred)/1000000).toFixed(2)}} MB /
+                {{((data.total)/1000000).toFixed(2)}} MB)</span
+              >
+            </div>
+
+            <!-- install update button -->
+            <div class="text-center" ng-if="downloaded">
+              <button class="btn btn-outline-success" ng-click="applyUpdate()">
+                install now
+              </button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <!-- check for update button -->
+            <button
+              ng-show="checked == false"
+              type="button"
+              class="btn btn-success"
+              ng-click="checkForUpdates()"
+            >
+              Check for Update
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  
+<!-- Load Controllers -->
+<script src="controller/animalsController.js"></script>
+<script src="controller/sellController.js"></script>
+<script src="controller/supplyController.js"></script>
+<script src="controller/stockController.js"></script>
+<script src="controller/historyController.js"></script>
+<script src="controller/debtsController.js"></script>
+<script src="controller/settingsController.js"></script>
+<script src="controller/paymentsController.js"></script>
+<script src="controller/reportsController.js"></script>
+<script src="controller/remindersController.js"></script>
+
+<!-- Load Models -->
+<script src="model/animalsFactory.js"></script>
+<script src="model/sellFactory.js"></script>
+<script src="model/supplyFactory.js"></script>
+<script src="model/stockFactory.js"></script>
+<script src="model/historyFactory.js"></script>
+<script src="model/debtsFactory.js"></script>
+<script src="model/settingsFactory.js"></script>
+<script src="model/paymentsFactory.js"></script>
+<script src="model/reportsFactory.js"></script>
+<script src="model/remindersFactory.js"></script>
+
+<script src="model/accountFactory.js"></script>
+<script src="model/generalFactory.js"></script>
+<script src="model/suppliersFactory.js"></script>
+<script src="model/customersFactory.js"></script>
+<script src="model/stockModel.js"></script>
+
+<!-- Load Directive's Models -->
+<script src="_directives/accountSettings.js"></script>
+<script src="_directives/customersSettings.js"></script>
+<script src="_directives/generalSettings.js"></script>
+<script src="_directives/stockSettings.js"></script>
+<script src="_directives/suppliersSettings.js"></script>
+
+</html>

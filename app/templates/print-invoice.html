@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Print Invoice</title>
+  </head>
+
+  <link
+    rel="stylesheet"
+    href="../../node_modules/bootstrap/dist/css/bootstrap.min.css"
+  />
+
+  <script src="../../node_modules/angular/angular.min.js"></script>
+  <script src="print-invoice.js"></script>
+
+  <body>
+    <div
+      ng-app="printApp"
+      ng-controller="printController"
+      class="container-fluid invisibles"
+      id="invoiceDetailsTable"
+      ng-cloak
+    >
+      <div class="row">
+        <div class="col-6 mx-auto text-center">
+          <img src="../assets/vet-logo.png" width="200" height="200" />
+        </div>
+      </div>
+
+      <br /><br />
+
+      <div class="row">
+        <div class="col-8">
+          <!-- <h5 class="font-italic" style="font-family: Courier New"><b>Address: </b>Bint Jbeil - Aitaroun Main Street</h5>
+                <h5 class="font-italic" style="font-family: Courier New"><b>Mobile: </b>+961 76 450 697</h5>
+                <h5 class="font-italic" style="font-family: Courier New"><b>Email: </b>petfectionvetclinic@hotmail.com</h5> -->
+        </div>
+        <div class="col-4">
+          <table class="table table-bordered text-center">
+            <thead>
+              <tr class="bg-secondary">
+                <th style="border: 2px solid #000000 !important">Invoice #</th>
+                <th style="border: 2px solid #000000 !important">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="border: 2px solid #000000 !important">
+                  {{invoice[0]['ID']}}
+                </td>
+                <td style="border: 2px solid #000000 !important">{{date}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <br /><br /><br /><br /><br /><br />
+      <div>
+        <h5>
+          Billed To : {{printData.name}}
+          <span ng-if="!printData.name">..............................</span>
+        </h5>
+        <br />
+        <table class="table text-center">
+          <thead class="table-bordered">
+            <tr>
+              <th style="width: 50%; border: 2px solid #000000 !important">
+                Description
+              </th>
+              <th
+                style="width: 20%; border: 2px solid #000000 !important"
+                class="blackBordered"
+              >
+                Unit Price
+              </th>
+              <th
+                style="width: 10%; border: 2px solid #000000 !important"
+                class="blackBordered"
+              >
+                Quantity
+              </th>
+              <th
+                style="width: 20%; border: 2px solid #000000 !important"
+                class="blackBordered"
+              >
+                Total Unit Price
+              </th>
+            </tr>
+          </thead>
+          <tbody class="table-bordered table-sm">
+            <tr ng-repeat="item in invoice">
+              <td>{{ item.name }}</td>
+
+              <td ng-if="printData.currency == 'dollar'">
+                {{ item.price | currency }}
+              </td>
+              <td
+                ng-if="printData.currency == 'lira' && printData.exchangeRate"
+              >
+                {{ (item.price * printData.exchangeRate).toLocaleString() }} L.L
+              </td>
+              <td
+                ng-if="printData.currency == 'lira' && !printData.exchangeRate"
+              >
+                {{ item.price.toLocaleString() }} L.L
+              </td>
+
+              <td>{{ item.quantity }}</td>
+
+              <td ng-if="printData.currency == 'dollar'">
+                {{ (item.price * item.quantity) | currency }}
+              </td>
+              <td
+                ng-if="printData.currency == 'lira' && printData.exchangeRate"
+              >
+                {{ (item.price * item.quantity *
+                printData.exchangeRate).toLocaleString() }} L.L
+              </td>
+              <td
+                ng-if="printData.currency == 'lira' && !printData.exchangeRate"
+              >
+                {{ item.price.toLocaleString() }} L.L
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="border: solid black 1px"></p>
+
+        <div class="row">
+          <div class="col-9"></div>
+          <div class="col-3 text-center">
+            <h5 ng-if="printData.currency == 'dollar'">
+              <b>Total:</b> {{ printData.total | currency }}
+            </h5>
+            <h5 ng-if="printData.currency == 'lira'">
+              <b>Total:</b> {{ printData.total.toLocaleString() }} L.L
+            </h5>
+          </div>
+        </div>
+        <!-- <h5 class="float-right">Only {{priceInName}} LBP</h5> -->
+      </div>
+
+      <br /><br /><br />
+
+      <h6 class="font-weight-bold font-italic">
+        Signature: ......................
+      </h6>
+    </div>
+  </body>
+</html>

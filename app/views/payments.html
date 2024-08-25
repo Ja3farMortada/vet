@@ -1,0 +1,287 @@
+<div class="container-fluid select-off" ng-show="loggedInUser.canViewPayments === 1">
+    <!-- Navigation tabs -->
+    <div class="container justify-content-center d-flex">
+        <ul class="nav nav-tabs nav-fills">
+            <li class="nav-item text-center">
+                <a class="nav-link text-secondary text-uppercase animate__animated"
+                    ng-class="{'active': selectedTab === 'global', 'active-tab-dir': selectedTab === 'global', 'animate__fadeIn': selectedTab === 'global'}"
+                    ng-click="selectTab('global')"><i class="fas fa-chart-pie fa-2x fa-fw"></i> GLobal position</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-secondary text-uppercase animate__animated"
+                    ng-class="{'active': selectedTab === 'details', 'active-tab-dir': selectedTab === 'details', 'animate__fadeIn': selectedTab === 'details'}"
+                    ng-click="selectTab('details')"><i class="fas fa-info fa-2x fa-fw"></i>Payment
+                    details</a>
+            </li>
+        </ul>
+    </div>
+
+    <br>
+
+    <!-- global position -->
+    <div class="container-fluid d-flex justify-content-center" ng-show="selectedTab === 'global'">
+        <div class="col-6">
+            <!-- <canvas id="myChart"></canvas> -->
+            <div class="row">
+                <div class="col-6 text-center">
+                    <div class="alert alert-success">
+                        <h4 class="alert-heading mb-0">Total Assets</h4>
+                        <hr>
+                        <h5>{{ assets.assets.toLocaleString() }} L.L</h5>
+                        <h5 class="mb-0">{{ assets.dollar_assets.toLocaleString() }} $</h5>
+                    </div>
+                    <button class="btn btn-outline-success btn-lg" ng-click="openAddMoneyModal()"><i
+                            class="fas fa-plus fa-lg"></i></button>
+                </div>
+                <div class="col-6 text-center">
+                    <div class="alert alert-dark">
+                        <h4 class="alert-heading mb-0">Today's Total Payments</h4>
+                        <hr>
+                        <h5>{{ todaysTotalPayments[0].payments.toLocaleString() || 0 }} L.L</h5>
+                        <h5 class="mb-0">{{ todaysTotalPayments[1].payments.toLocaleString() || 0 }} $</h5>
+                    </div>
+                    <button class="btn btn-outline-dark btn-lg" ng-click="openAddPaymentModal()"><i
+                            class="fas fa-plus fa-lg"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- payment details -->
+    <div class="row" ng-show="selectedTab === 'details'">
+        <div class="col-8">
+            <div class="row mb-2">
+                <div class="col-3">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                        <input id="search" type="text" class="form-control" ng-model="searchVal"
+                            placeholder="Search ..." spellcheck="false">
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <label class="col-form-label">Show Payments From:</label>
+                    <input type="text" id="datePicker1" class="text-center form-control col-3 mx-2" ng-model="datePicker1">
+                    <label class="col-form-label ml-3">To:</label>
+                    <input type="text" id="datePicker2" class="text-center form-control col-3 mx-2" ng-model="datePicker2">
+                    <button class="btn btn-outline-primary ml-3" ng-click="getPayments()" id="check">Check</button>
+                </div>
+
+            </div>
+            <table class="table table-sm table-striped table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th width="30%">Payment Category</th>
+                        <th width="25%">Amount</th>
+                        <th width="20%">Date</th>
+                        <th width="25%">Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr dir-paginate="data in payments | itemsPerPage:14 | filter: searchVal">
+                        <td>{{ data.category }}</td>
+
+                        <td ng-if="data.payment_currency == 'lira'">{{ data.amount.toLocaleString() }} L.L</td>
+                        <td ng-if="data.payment_currency == 'dollar'">{{ data.amount.toLocaleString() }} $</td>
+
+                        <td>{{ data.date }}</td>
+
+                        <td ng-if="!data.notes"> --- </td>
+                        <td ng-if="data.notes">{{ data.notes }}</td>
+                    </tr>
+                    <!-- <tr>
+                        <th colspan="5" class="ml-auto">Total: {{selectedTotalPaymentsString}} L.L</th>
+                    </tr> -->
+                    <tr ng-if="payments.length == 0">
+                        <td colspan="5" class="table-active">No Records Yet!</td>
+                    </tr>
+                    <!-- if search found nothing -->
+                    <tr ng-if="(payments | filter: searchVal).length == 0 && searchVal" class="table-active">
+                        <td colspan="5">No Matching Records Found!</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <dir-pagination-controls max-size="5" direction-links="true" boundary-links="false"
+                template-url="templates/dirPagination.tpl.html">
+            </dir-pagination-controls>
+        </div>
+        <div class="col-4">
+            <canvas id="paymentsChart"></canvas>
+            <div class=" mt-3">
+                <!-- <div class="card-header text-center">
+                    <h5 class="font-weight-bold">Total Payments by Categories</h5>
+                </div> -->
+                <!-- <div class="card-body"> -->
+                <table class="table table-sm table-bordered text-center">
+                    <thead>
+                        <th>Category</th>
+                        <th>Total LPB</th>
+                        <th>Total USD</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th class="text-warning">Whish</th>
+                            <td>{{ totalSum.totalWhish.totalLira.toLocaleString() }} L.L</td>
+                            <td>{{ totalSum.totalWhish.totalDollar.toLocaleString() }} $</td>
+                        </tr>
+                        <tr>
+                            <th class="text-info">Talaco</th>
+                            <td>{{ totalSum.totalTalaco.totalLira.toLocaleString() }} L.L</td>
+                            <td>{{ totalSum.totalTalaco.totalDollar.toLocaleString() }} $</td>
+                        </tr>
+                        <tr>
+                            <th class="text-danger">M habib</th>
+                            <td>{{ totalSum.totalMhabib.totalLira.toLocaleString() }} L.L</td>
+                            <td>{{ totalSum.totalMhabib.totalDollar.toLocaleString() }} $</td>
+                        </tr>
+                        <tr>
+                            <th class="text-success">Rent</th>
+                            <td>{{ totalSum.totalRent.totalLira.toLocaleString() }} L.L</td>
+                            <td>{{ totalSum.totalRent.totalDollar.toLocaleString() }} $</td>
+                        </tr>
+                        <tr>
+                            <th class="text-pink">Bills</th>
+                            <td>{{ totalSum.totalBills.totalLira.toLocaleString() }} L.L</td>
+                            <td>{{ totalSum.totalBills.totalDollar.toLocaleString() }} $</td>
+                        </tr>
+                        <tr>
+                            <th class="text-primary">Mwazafin</th>
+                            <td>{{ totalSum.totalMwazafin.totalLira.toLocaleString() }} L.L</td>
+                            <td>{{ totalSum.totalMwazafin.totalDollar.toLocaleString() }} $</td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary">Other</th>
+                            <td>{{ totalSum.totalOther.totalLira.toLocaleString() }} L.L</td>
+                            <td>{{ totalSum.totalOther.totalDollar.toLocaleString() }} $</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ***************************** END OF HTML MAIN VIEW ***************************** -->
+
+    <!----------------------------------------------------------------------------------------------------->
+
+
+
+    <!--  Add Money MODAL -->
+    <div class="modal fade" id="addMoneyModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Money</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <form ng-submit="addMoney()">
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Currency</label>
+                                <select class="form-control" ng-model="addMoneyObj.currency" required autofocus>
+                                    <option value=""> --- </option>
+                                    <option value="lira">Lebanese Pound L.L</option>
+                                    <option value="dollar">USD $</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label>Amount</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control text-center" ng-model="addMoneyObj.amount"
+                                        min="0" required>
+                                    <div class="input-group-append">
+                                        <span ng-if="addMoneyObj.currency == 'lira'"
+                                            class="input-group-text">L.L</span>
+                                        <span ng-if="addMoneyObj.currency == 'dollar'"
+                                            class="input-group-text">$</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Confirm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!--  Add Payment MODAL -->
+    <div class="modal fade" id="addPaymentModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Payment</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <form ng-submit="addPayment()">
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Payment Currency</label>
+                                <select class="form-control" ng-model="newPayment.payment_currency" required>
+                                    <option value="lira" selected>Lebanese Pound L.L</option>
+                                    <option value="dollar">USD $</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label>Amount</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control text-center" ng-model="newPayment.amount"
+                                        min="0" required>
+                                    <div class="input-group-append">
+                                        <span ng-if="newPayment.payment_currency == 'lira'"
+                                            class="input-group-text">L.L</span>
+                                        <span ng-if="newPayment.payment_currency == 'dollar'"
+                                            class="input-group-text">$</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Category</label>
+                                <select class="form-control" ng-model="newPayment.category" required>
+                                    <option value="">---</option>
+                                    <option value="WHISH">WHISH</option>
+                                    <option value="TALACO">TALACO</option>
+                                    <option value="MOHAMAD HABIB">MOHAMAD HABIB</option>
+                                    <option value="RENT">RENT</option>
+                                    <option value="BILLS">BILLS</option>
+                                    <option value="MWAZAFIN">MWAZAFIN</option>
+                                    <option value="OTHER">OTHER</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label>Notes</label>
+                                <input class="form-control" ng-model="newPayment.notes" type="text" autocomplete="off"
+                                    spellcheck="false">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Confirm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
