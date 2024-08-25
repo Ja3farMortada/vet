@@ -25,6 +25,10 @@
         "repo": "vet"
       }
     ],
+    "extraResources": [
+        "./server"
+    ],
+    "npmRebuild": "false",
     "directories": {
       "buildResources": "resources"
     }
