@@ -1,6 +1,6 @@
 app.factory('accountFactory', ['$http', 'NotificationService', function($http, NotificationService) {
     // define URL
-    const url = `http://${keys.host}:${keys.port}`;
+    const url = `http://localhost:3000`;
 
     var model = {};
     model.users = [];

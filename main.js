@@ -63,7 +63,7 @@ async function createWindow() {
   if (isDev) {
     win.loadFile("app/index.html");
   } else {
-    if (ID == "1a6bac19-5839-4dd9-8a42-4415e6858be3") {
+    if (ID == "1a6bac19-5839-4dd9-8a42-4415e6858be3" || ID == "9091e364-efbd-4db5-873d-4143a7931661") {
 		win.loadFile("app/index.html");
 	  } else {
 		win.loadFile("error.html");

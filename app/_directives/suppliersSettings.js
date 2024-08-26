@@ -1,7 +1,7 @@
 app.directive('suppliersSettings', function (suppliersFactory, NotificationService) {
     return {
         restrict: 'E',
-        templateUrl: '../templates/suppliersSettings.html',
+        templateUrl: 'templates/suppliersSettings.html',
         scope: {
 
         },

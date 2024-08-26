@@ -1,7 +1,7 @@
 app.directive('accountSettings', function (accountFactory, NotificationService) {
     return {
         restrict: 'E',
-        templateUrl: '../templates/accountSettings.html',
+        templateUrl: 'templates/accountSettings.html',
         scope: {
 
         },

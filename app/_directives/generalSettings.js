@@ -1,7 +1,7 @@
 app.directive('generalSettings', function (generalFactory) {
     return {
         restrict: 'E',
-        templateUrl: '../templates/generalSettings.html',
+        templateUrl: 'templates/generalSettings.html',
         scope: {
 
         },

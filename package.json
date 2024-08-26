@@ -1,11 +1,11 @@
 {
   "name": "petshop",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "Pet Shop Veterinary System",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --x64",
+    "build": "electron-builder --x64",
     "publish": "electron-builder --x64 -p always"
   },
   "author": "Jaafar Mortada",

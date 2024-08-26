@@ -1,7 +1,7 @@
 app.directive('customersSettings', function (customersFactory, NotificationService) {
     return {
         restrict: 'E',
-        templateUrl: '../templates/customersSettings.html',
+        templateUrl: 'templates/customersSettings.html',
         scope: {
 
         },
