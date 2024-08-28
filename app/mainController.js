@@ -176,7 +176,7 @@ app.controller('mainController', function ($scope, NotificationService, $rootSco
         $scope.$digest($scope.downloading = false);
         $scope.$digest($scope.downloaded = true);
         $scope.$digest($scope.download = false);
-        $scope.$digest($scope.text = `Ready to install version ${data.version} of size ${((data.files[0]['size'])/1000000).toFixed(2)} MB.`)
+        $scope.$digest($scope.text = `Ready to install version ${data.version}.`)
     });
 
     $scope.applyUpdate = function () {
